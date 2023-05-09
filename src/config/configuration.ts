@@ -1,9 +1,8 @@
 function required(key:string, defaultValue = undefined) {
     const value = process.env[key] || defaultValue;
-    console.log(value);
-    if (value == null) {
-        throw new Error(`key ${key} is undefined`);
-    }
+    // if (value == null) {
+    //     throw new Error(`key ${key} is undefined`);
+    // }
     return value;
 }
 
