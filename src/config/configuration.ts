@@ -3,6 +3,7 @@ function required(key:string, defaultValue = undefined) {
     // if (value == null) {
     //     throw new Error(`key ${key} is undefined`);
     // }
+    //console.log(value);
     return value;
 }
 
@@ -11,7 +12,7 @@ export default()=>( {
         port: parseInt(required('PORT', 3000)),
         enviroment: required('NODE_ENV', 'development'),
     },
-    database: {
+    db: {
         host: required('DATABASE_HOST'),
         port: parseInt(required('DATABASE_PORT', 3306)),
         username: required('DATABASE_USERNAME'),
