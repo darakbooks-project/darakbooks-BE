@@ -6,8 +6,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule,ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { kakaoStrategy } from './kakao/kakao.strategy';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/user/user.entity';
 import { DatabaseModule } from 'src/database/database.module';
 import { userProviders } from 'src/user/user.provider';
 
@@ -16,13 +14,7 @@ import { userProviders } from 'src/user/user.provider';
     PassportModule, 
     forwardRef(()=>UserModule),
     ConfigModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject : [ConfigService],
-      useFactory: async(configService:ConfigService)=>({
-        secret:configService.get('jwt.jwtAccessSecret')
-      })
-    }),
+    JwtModule.register({}),
     DatabaseModule,
   ],
   providers: [AuthService,JwtStrategy,kakaoStrategy,...userProviders,],
