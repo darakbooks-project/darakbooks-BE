@@ -7,12 +7,12 @@ import { DatabaseModule } from './database/database.module';
 import configuration from './config/configuration';
 
 @Module({
-  imports: [AuthModule, UserModule,ConfigModule.forRoot({
+  imports: [ConfigModule.forRoot({
     envFilePath: `.env/.env.${process.env.NODE_ENV || "development"}`,
     isGlobal: true, 
     load:[configuration]
-  }), DatabaseModule],
+  }), AuthModule, UserModule, DatabaseModule],
   controllers: [],
-  providers: [UserService],
+  providers: [],
 })
 export class AppModule {}

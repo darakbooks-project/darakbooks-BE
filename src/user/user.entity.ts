@@ -1,10 +1,9 @@
-import { Entity, PrimaryGeneratedColumn , Column } from 'typeorm';
-//camel case는 db에 올릴 때 쓰기 위해 name field 바꿈. 
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class UserEntity{
+export class User{
     @PrimaryGeneratedColumn({ name:'user_id',})
-    userId: any; // 확인 후 타입 수정 
+    userId: number; // 확인 후 타입 수정 
     @Column()
     nickname : string ; //kakao nick name 받아오지만 수정 가능 
     @Column({nullable:true, name:'profile_img', })
@@ -12,10 +11,11 @@ export class UserEntity{
     @Column({nullable:true, name:'user_info' })
     userInfo:string;
     @Column({nullable:true })
-    gender:any;
+    gender:string;
     @Column({nullable:true })
-    age:any;
-    
+    age:string;
+    @Column({default:'kakao'})
+    provider:string;
 
 
 }
