@@ -20,9 +20,9 @@ export default()=>( {
     },
     jwt: {
         jwtAccessSecret: required('JWT_SECRET_ACCESS'),
-        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 86400)),
+        accessExpiresInHour: parseInt(required('ACCESS_EXPIRES_HOUR', 6)),
         jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
-        refreshExpiresInSec: parseInt(required('REFRESH_EXPIRES_SEC', 86400)),
+        refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
     },
     search_api: {
         search_url: required('SEARCH_URL'),

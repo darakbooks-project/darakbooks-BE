@@ -39,14 +39,14 @@ export class AuthService {
     async setRefrsh(payload:object){
         return this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtRefreshSecret'),
-            expiresIn:`${this.configService.get('jwt.refreshExpiresInSec')}days`,
+            expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
     }
 
     async setAccess(payload:object){
         return this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
-            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}h`,
+            expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
         });
     }
 
