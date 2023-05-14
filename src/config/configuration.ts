@@ -3,7 +3,6 @@ function required(key:string, defaultValue = undefined) {
     // if (value == null) {
     //     throw new Error(`key ${key} is undefined`);
     // }
-    //console.log(value);
     return value;
 }
 
@@ -21,12 +20,17 @@ export default()=>( {
     },
     jwt: {
         jwtAccessSecret: required('JWT_SECRET_ACCESS'),
-        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 86400)),
+        accessExpiresInHour: parseInt(required('ACCESS_EXPIRES_HOUR', 6)),
         jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
-        refreshExpiresInSec: parseInt(required('REFRESH_EXPIRES_SEC', 86400)),
+        refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
     },
     search_api: {
         search_url: required('SEARCH_URL'),
         search_key: required('SEARCH_KEY')
+    },
+    kakao:{
+        clientSecret : required('KAKAO_CLIENT_SECRET'),
+        clientId : required('KAKAO_CLIENT_ID'),
+        callbackURL:required('KAKAO_CALLBACK_URL')
     }
 });

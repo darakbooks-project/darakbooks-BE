@@ -1,14 +1,18 @@
-import { Controller, Request, Post, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from 'src/auth/guard/local-auth.guard';
+import {Inject, Controller, Request, Post, Get, UseGuards, forwardRef } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service' ;
+import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 @Controller('user')
 export class UserController {
-    constructor(private authService: AuthService) {} 
+    constructor(@Inject(forwardRef(()=>AuthService))private authService:AuthService,) {} 
 
-    @UseGuards(LocalAuthGuard)
-    @Post('auth/login')
-    async login(@Request() req) {
-        return this.authService.login(req.user);
+    @Get('/kakao/auth')
+    @UseGuards(kakaoGuard)
+    async login(@Request() req){
+        const token = await this.authService.login(req.user);
+        return {
+            accessToken: `Bearer ${token.accessToken}`,
+            refreshToken: `Bearer ${token.refreshToken}`
+        }
     }
 
 }
