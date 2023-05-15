@@ -19,14 +19,4 @@ export default()=>( {
         password: required('DATABASE_PASSWORD'),
         name: required('DATABASE_NAME'),
     },
-    jwt: {
-        jwtAccessSecret: required('JWT_SECRET_ACCESS'),
-        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 86400)),
-        jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
-        refreshExpiresInSec: parseInt(required('REFRESH_EXPIRES_SEC', 86400)),
-    },
-    search_api: {
-        search_url: required('SEARCH_URL'),
-        search_key: required('SEARCH_KEY')
-    }
 });
