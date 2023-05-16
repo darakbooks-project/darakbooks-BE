@@ -8,7 +8,7 @@ export class UserController {
     @Get('/kakao/auth')
     @UseGuards(kakaoGuard)
     async login(@Request() req){
-        const token = await this.authService.login(req.user);
+        const token:any = await this.authService.login(req.user);
         return {
             accessToken: `Bearer ${token.accessToken}`,
             refreshToken: `Bearer ${token.refreshToken}`
