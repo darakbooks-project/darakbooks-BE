@@ -1,5 +1,5 @@
 import {Inject, Controller, Request, Post, Get, UseGuards, forwardRef } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service' ;
+import { AuthService } from '../../auth/auth.service' ;
 import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 @Controller('user')
 export class UserController {
