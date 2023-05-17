@@ -6,14 +6,16 @@ import { Repository } from 'typeorm';
 export class UserService {
     constructor(@Inject('USER_REPOSITORY') private userRepository:Repository<User>){}
 
-    //kakao userId 타입 보고 바꾸기 
-    async findByuserId(userId: number ):Promise<User | void> {
-        console.log(userId);
+    async findByuserId(userId: number ):Promise<User | null> {
         return await this.userRepository.findOneBy({userId});
     }
 
-    async createUser(userData){
-        const newUser = await this.userRepository.create(userData)
-        return newUser;
+    async createUser(userData):Promise<User> {
+        return await this.userRepository.save(userData);
+    }
+
+    async validateUserRefresh(userId:number){
+        const user = await this.findByuserId(userId);
+        if(!user) 
     }
 }

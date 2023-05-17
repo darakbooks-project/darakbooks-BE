@@ -16,6 +16,8 @@ export class User{
     age:string;
     @Column({default:'kakao'})
     provider:string;
-
+    //redis에 refresh token 저장하는 걸로 바꾸고 나면 없애야 함. 
+    @Column({nullable:true})
+    refresh:string;
 
 }

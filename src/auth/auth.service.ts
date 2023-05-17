@@ -1,7 +1,8 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/service/user.service'
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -11,23 +12,18 @@ export class AuthService {
         private configService:ConfigService,
     ){}
 
-    async login(userData: any) {
-        let user = await this.validateUser(userData);
-        if(!user) user = await this.createUser(userData);
-        return this.setToken(userData.userId);
-        // const payload = { username: user.username, sub: user.userId };
-        // return {
-        //   access_token: this.jwtService.sign(payload),
-        // };
+    async login(userData) {
+        let user:User = await this.userService.findByuserId(userData.userId);
+        if(!user) user = await this.userService.createUser(userData);
+        return this.setToken(user.userId);
     }
 
-    async validateUser(userData:any){
-        return await this.userService.findByuserId(userData.userId);
+    async validateUser(userId){
+        const user = await this.userService.findByuserId(userId);
+        if(!user) console.log('존재하지 않는 사용자입니다. ') //존재하지 않는 유저에 대한 error 메세지 작성. 
+        return user;
     }
 
-    async createUser(userData:any){
-        const user = await this.userService.createUser(userData);
-    }
 
     async setToken(userId:number):Promise<object>{
         const payload = {userId};
@@ -48,6 +44,11 @@ export class AuthService {
             secret:this.configService.get('jwt.jwtAccessSecret'),
             expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
         });
+    }
+
+    async validateRefresh(userId:number){
+        const user = await this.validateUser(userId);
+        if(!user.refresh) console.log('refresh 토큰 만료');
     }
 
 }
