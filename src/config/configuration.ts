@@ -16,6 +16,6 @@ export default()=>( {
         port: parseInt(required('DATABASE_PORT', 3306)),
         username: required('DATABASE_USERNAME'),
         password: required('DATABASE_PASSWORD'),
-        name: required('DATABASE_NAME'),
+        name: required('DATABASE_NAME2'),
     },
 });
