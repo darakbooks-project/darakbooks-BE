@@ -4,6 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/service/user.service'
 import { User } from 'src/user/user.entity';
 
+interface JwtPayload {
+    userId: number;
+  }
+
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -32,15 +37,17 @@ export class AuthService {
         return {accessToken,refreshToken};
     }
 
-    async setRefrsh(payload:object){
-        return this.jwtService.signAsync(payload,{
+    async setRefrsh(payload:JwtPayload){
+        const jwtToken = await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
+        this.userService.setRefresh(payload.userId);
+        return jwtToken;
     }
 
-    async setAccess(payload:object){
-        return this.jwtService.signAsync(payload,{
+    async setAccess(payload:JwtPayload){
+        return await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
             expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
         });

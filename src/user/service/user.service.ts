@@ -16,6 +16,17 @@ export class UserService {
 
     async validateUserRefresh(userId:number){
         const user = await this.findByuserId(userId);
-        if(!user) 
+        //if(!user) 
     }
+
+    //refresh 는 redis 사용시 추후 수정해야 함. 
+    async setRefresh(userId:number){
+        await this.userRepository.update(userId,{refresh:true});
+    }
+
+    async deleteRefresh(userId:number){
+        await this.userRepository.update(userId,{refresh:false});
+    }
+
+    
 }
