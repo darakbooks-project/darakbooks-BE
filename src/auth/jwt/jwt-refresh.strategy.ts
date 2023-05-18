@@ -20,6 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy,'jwt-refresh') {
   async validate(payload: any) {
     const userId = payload.userId ;
     await this.authService.validateRefresh(userId);
-    return userId;
+    return {userId};
   }
 }
