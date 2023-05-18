@@ -1,13 +1,12 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/service/user.service'
 import { User } from 'src/user/user.entity';
-
 interface JwtPayload {
     userId: number;
   }
-
+const USER = 'USER'
 
 @Injectable()
 export class AuthService {
@@ -25,7 +24,7 @@ export class AuthService {
 
     async validateUser(userId){
         const user = await this.userService.findByuserId(userId);
-        if(!user) console.log('존재하지 않는 사용자입니다. ') //존재하지 않는 유저에 대한 error 메세지 작성. 
+        if(!user) throw new NotFoundException(USER) 
         return user;
     }
 
@@ -54,8 +53,10 @@ export class AuthService {
     }
 
     async validateRefresh(userId:number){
+        //올바른 사용자인지 확인 
         const user = await this.validateUser(userId);
-        if(!user.refresh) console.log('refresh 토큰 만료');
+        //사용자의 refresh 토큰 validate 
+        if(!(user.refresh)) throw new NotFoundException();
     }
 
 }
