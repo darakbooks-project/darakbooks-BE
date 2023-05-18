@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import { User } from 'src/user/user.entity';
 
 export const databaseProviders = [
   {
@@ -12,7 +11,7 @@ export const databaseProviders = [
         username: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        entities: [User],
+        entities: [],
         synchronize: true, //나중에 바꾸기. 
       });
 

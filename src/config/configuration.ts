@@ -24,8 +24,9 @@ export default () => ({
         jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
         refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
     },
-    kakao: {
-        clientId: required('KAKAO_CLIENT_ID'),
-        callbackURL: required('KAKAO_CALLBACK_URL')
+    kakao:{
+        clientSecret : required('KAKAO_CLIENT_SECRET'),
+        clientId : required('KAKAO_CLIENT_ID'),
+        callbackURL:required('KAKAO_CALLBACK_URL')
     }
 });
