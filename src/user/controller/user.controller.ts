@@ -18,8 +18,8 @@ export class UserController {
 
     @ApiOperation({summary: 'kakao로 소셜 로그인'})
     @ApiResponse({status:200, description:'로그인 성공', type: LoginResponseDto})
-    @ApiNotFoundResponse({description: 'User Not Found'})
-    @ApiBadRequestResponse({ description: 'Bad Request : kakao error' })
+    @ApiNotFoundResponse({status:404, description:'NOT FOUND: USER NOT FOUND'})
+    @ApiBadRequestResponse({status:400, description:'Bad Request: error emssage'})
     @UseFilters(kakaoExceptionFilter,NotFoundExceptionFilter)
     @Get('/auth/kakao')
     @UseGuards(kakaoGuard)
@@ -36,9 +36,9 @@ export class UserController {
 
     @ApiOperation({summary: 'access token 만료시 refresh token을 이용해 재발급'})
     @ApiResponse({status:200, description:'access token 재발급', type: ReissueDto})
-    @ApiUnauthorizedResponse({ description: 'Unauthorized: Token expired' }) 
-    @ApiUnauthorizedResponse({ description: 'Unauthorized: Invalid token' }) 
-    @ApiUnauthorizedResponse({ description: 'Unauthorized: Refresh Token deleted' }) 
+    @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
+    @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
+    @ApiUnauthorizedResponse({status:401, description:'Unauthorized: Refresh Token deleted' }) 
     @UseFilters(kakaoExceptionFilter,NotFoundExceptionFilter)
     @UseFilters(JwtExceptionFilter)
     @Get('/auth/reissu')
