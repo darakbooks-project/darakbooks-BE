@@ -5,13 +5,14 @@ import { Request , Response} from 'express';
 import { JwtRefreshAuthGuard } from 'src/auth/jwt/jwt-refresh.guard';
 import kakaoExceptionFilter from '../../exceptionFilter/kakao.filter';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
+import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
 
 
 @Controller('user')
 export class UserController {
     constructor(@Inject(forwardRef(()=>AuthService))private authService:AuthService,) {} 
 
-    @UseFilters(kakaoExceptionFilter)
+    @UseFilters(kakaoExceptionFilter,NotFoundExceptionFilter)
     @Get('/auth/kakao')
     @UseGuards(kakaoGuard)
     async login(@Req() req:Request, /*@Res({ passthrough: true }) res: Response*/){

@@ -18,7 +18,7 @@ export class JwtExceptionFilter implements ExceptionFilter {
       message = 'Unauthorized: Invalid token';
     } else if (exception instanceof NotFoundException){
         statusCode = HttpStatus.UNAUTHORIZED;
-        message = 'Unauthorized: Token deleted';
+        message = 'Unauthorized: Refresh Token deleted';
     }
 
     response.status(statusCode).json({
