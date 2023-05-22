@@ -9,4 +9,5 @@ export class GroupsCreateDto extends PickType(Groups, [
   'recruitment_status',
   'region',
   'representative_image',
+  'description',
 ] as const) {}

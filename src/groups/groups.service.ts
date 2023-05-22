@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { GroupsCreateDto } from './dto/groups.create.dto';
 import { Groups } from './entities/groups.entity';
 
 @Injectable()
@@ -24,5 +25,21 @@ export class GroupsService {
     }
 
     return group;
+  }
+
+  async createGroup(body: GroupsCreateDto) {
+    const group = new Groups();
+    group.name = body.name;
+    group.meeting_type = body.meeting_type;
+    group.open_chat_link = body.open_chat_link;
+    group.participant_limit = body.participant_limit;
+    group.description = body.description;
+    group.recruitment_status = body.recruitment_status;
+    group.region = body.region;
+    group.representative_image = body.representative_image;
+
+    const createdGroup = await this.groupsRepository.save(group);
+
+    return createdGroup;
   }
 }
