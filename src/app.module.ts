@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { GroupsModule } from './groups/groups.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -8,7 +9,7 @@ import configuration from './config/configuration';
     envFilePath: `.env/.env.${process.env.NODE_ENV || "development"}`,
     isGlobal: true, 
     load:[configuration]
-  }),  DatabaseModule],
+  }),  DatabaseModule, GroupsModule],
   controllers: [],
   providers: [],
 })
