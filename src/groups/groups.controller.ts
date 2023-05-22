@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { GroupsCreateDto } from './dto/groups.create.dto';
 import { GroupsService } from './groups.service';
 
@@ -17,7 +26,11 @@ export class GroupsController {
   }
 
   @Post()
-  async createGroup(@Body() body: GroupsCreateDto) {
-    return await this.groupsService.createGroup(body);
+  @UseInterceptors(FileInterceptor('image'))
+  async createGroup(
+    @UploadedFile() imageFile: Express.Multer.File,
+    @Body() body: GroupsCreateDto,
+  ) {
+    return await this.groupsService.createGroup(imageFile, body);
   }
 }

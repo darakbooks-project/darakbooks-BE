@@ -1,7 +1,14 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { uploadFile } from 'src/config/s3uploads';
 import { Repository } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
 import { Groups } from './entities/groups.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GroupsService {
@@ -27,7 +34,14 @@ export class GroupsService {
     return group;
   }
 
-  async createGroup(body: GroupsCreateDto) {
+  async createGroup(imageFile: Express.Multer.File, body: GroupsCreateDto) {
+    const isExistName = await this.groupsRepository.findOne({
+      where: { name: body.name },
+    });
+    if (!!isExistName) {
+      throw new BadRequestException('해당 독서모임의 이름은 이미 존재 합니다.');
+    }
+
     const group = new Groups();
     group.name = body.name;
     group.meeting_type = body.meeting_type;
@@ -37,6 +51,12 @@ export class GroupsService {
     group.recruitment_status = body.recruitment_status;
     group.region = body.region;
     group.representative_image = body.representative_image;
+
+    if (!!imageFile) {
+      const imageKey = uuidv4();
+      const imageUrl = await uploadFile(imageFile, imageKey);
+      console.log(imageUrl);
+    }
 
     const createdGroup = await this.groupsRepository.save(group);
 
