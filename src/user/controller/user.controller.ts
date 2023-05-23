@@ -11,7 +11,7 @@ import { LoginResponseDto, ReissueDto } from 'src/dto/LoginResponseDTO';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { access } from 'fs';
 interface JwtPayload {
-    userId: number;
+    userId: string;
   }
 
 @Controller('user')
@@ -41,10 +41,9 @@ export class UserController {
     @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
     @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
     @ApiUnauthorizedResponse({status:401, description:'Unauthorized: Refresh Token deleted' }) 
-    @UseFilters(kakaoExceptionFilter,NotFoundExceptionFilter)
-    @UseFilters(JwtExceptionFilter)
-    @Get('/auth/reissu')
+    @UseFilters(kakaoExceptionFilter,JwtExceptionFilter,NotFoundExceptionFilter)
     @UseGuards(JwtRefreshAuthGuard)
+    @Get('/auth/reissu')
     async reissue(@Req() req:Request){
         const userId  = req.user as JwtPayload;
         const accessToken = await this.authService.setAccess(userId);
@@ -52,6 +51,7 @@ export class UserController {
     }
 
     @Get('/auth/logout')
+    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter,)
     @UseGuards(JwtAuthGuard)
     async logout(@Req() req:Request){
         const userId  = req.user as JwtPayload;

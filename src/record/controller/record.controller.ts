@@ -1,19 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseFilters,Req  } from '@nestjs/common';
 import { RecordService } from '../service/record.service';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 import { UpdateRecordDto } from '../dto/update-record.dto';
 import { recordDTO } from '../dto/record.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
-import { STATUS_CODES } from 'http';
+import { OwnerAuthGuard } from 'src/auth/owner/owner-auth.guard';
+import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
+import { Request , Response} from 'express';
+
+interface JwtPayload {
+  userId: string;
+}
+
 
 @Controller('records')
 export class RecordController {
   constructor(private readonly recordService: RecordService) {}
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createDTO: recordDTO) {
+  async create(@Body() createDTO: recordDTO,  @Req() req: Request) {
     const create_record_DTO = createDTO.record;
+    const user =  req.user as JwtPayload;
+    create_record_DTO.userId = user.userId;
     const book_DTO = createDTO.book;
     const record = await this.recordService.create(create_record_DTO);
     //책db에 책 저장하기 
@@ -36,21 +45,24 @@ export class RecordController {
       return records;
     }
   }
-  @UseFilters(NotFoundExceptionFilter)
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.recordService.findOne(+id);
   }
-
-  @UseFilters(NotFoundExceptionFilter)
+  
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
+  update(@Param('id') id: number, @Body() updateRecordDto: UpdateRecordDto) {
     return this.recordService.update(+id, updateRecordDto);
   }
 
-  @UseFilters(NotFoundExceptionFilter)
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     this.recordService.remove(+id);
     return 204;
   }

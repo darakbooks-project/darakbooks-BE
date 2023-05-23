@@ -1,5 +1,4 @@
 import { IsString, IsNumber, IsDate, IsOptional, IsArray } from 'class-validator';
-import { bookDTO } from './book.dto';
 
 export class CreateRecordDTO {
   @IsString()
@@ -16,11 +15,9 @@ export class CreateRecordDTO {
   tags: { id: number, data: string }[] ;
 
   @IsString()
-  userId: string;
-
-  @IsString()
   readAt: string;
 
+  userId: string;
 
 }
 

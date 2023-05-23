@@ -14,10 +14,6 @@ export class UpdateRecordDto extends PartialType(CreateRecordDTO) {
     @IsOptional()
     @IsString()
     recordImg: string;
-  
-    @IsOptional()
-    @IsString()
-    userId: string;
 
     @IsOptional()
     @IsString()

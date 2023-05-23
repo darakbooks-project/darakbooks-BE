@@ -10,6 +10,7 @@ export class RecordService {
 
   async create(createDTO: CreateRecordDTO) {
     const record = this.recordRepository.create(createDTO);
+    console.log(record);
     return await this.recordRepository.save(record);
   }
 
@@ -27,6 +28,7 @@ export class RecordService {
   }
 
   async remove(id: number) {
+    await this.findOne(id);
     return await this.recordRepository.delete({recordId:id});
   }
 
@@ -41,6 +43,7 @@ export class RecordService {
     return result;
   }
   async getRecordsByLastIdAndBookId(lastId: number, pageSize: number, bookId: string): Promise<Record[]> {
+
     const result = await this.recordRepository
       .createQueryBuilder('record')
       .where('record.recordId > :lastId', { lastId })

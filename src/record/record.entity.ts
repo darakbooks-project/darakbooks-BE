@@ -1,7 +1,8 @@
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
 import { CreateRecordDTO } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
 import { isArray, isObject } from 'class-validator';
+import { User } from 'src/user/user.entity';
 
 @Entity()
 export class Record {
@@ -16,7 +17,8 @@ export class Record {
     recordImg: string;
     @Column({ type: 'json', nullable: true })
     tags: { id: number, data: string }[] ;
-    @Column()
+    @ManyToOne(() => User, user => user.records)
+    @Column({name:'user_id'})
     userId: string;
     @Column({name:'created_at', type: 'datetime'})
     createdAt:Date;
