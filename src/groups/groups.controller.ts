@@ -47,7 +47,7 @@ export class GroupsController {
 
   @ApiOperation({ summary: '그룹 생성' })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: '응답성공',
     type: ReadOnlyGroupsDto,
   })
