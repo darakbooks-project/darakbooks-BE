@@ -1,4 +1,4 @@
-function required(key:string, defaultValue = undefined) {
+function required(key: string, defaultValue = undefined) {
     const value = process.env[key] || defaultValue;
     // if (value == null) {
     //     throw new Error(`key ${key} is undefined`);
@@ -6,7 +6,7 @@ function required(key:string, defaultValue = undefined) {
     return value;
 }
 
-export default()=>( {
+export default () => ({
     app: {
         port: parseInt(required('PORT', 3000)),
         enviroment: required('NODE_ENV', 'development'),
@@ -18,4 +18,15 @@ export default()=>( {
         password: required('DATABASE_PASSWORD'),
         name: required('DATABASE_NAME'),
     },
+    jwt: {
+        jwtAccessSecret: required('JWT_SECRET_ACCESS'),
+        accessExpiresInHour: parseInt(required('ACCESS_EXPIRES_HOUR', 6)),
+        jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
+        refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
+    },
+    kakao:{
+        clientSecret : required('KAKAO_CLIENT_SECRET'),
+        clientId : required('KAKAO_CLIENT_ID'),
+        callbackURL:required('KAKAO_CALLBACK_URL')
+    }
 });
