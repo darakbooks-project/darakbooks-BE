@@ -6,25 +6,25 @@ import { Repository } from 'typeorm';
 export class UserService {
     constructor(@Inject('USER_REPOSITORY') private userRepository:Repository<User>){}
 
-    async findByuserId(userId: number ):Promise<User | null> {
-        return await this.userRepository.findOneBy({userId});
+    async findByuserId(id: string ):Promise<User | null> {
+        return await this.userRepository.findOneBy({userId: id});
     }
 
     async createUser(userData):Promise<User> {
         return await this.userRepository.save(userData);
     }
 
-    async validateUserRefresh(userId:number){
+    async validateUserRefresh(userId:string){
         const user = await this.findByuserId(userId);
         //if(!user) 
     }
 
     //refresh 는 redis 사용시 추후 수정해야 함. 
-    async setRefresh(userId:number){
+    async setRefresh(userId:string){
         return await this.userRepository.update(userId,{refresh:true});
     }
 
-    async deleteRefresh(userId:number){
+    async deleteRefresh(userId:string){
         return await this.userRepository.update(userId,{refresh:false});
     }
 

@@ -1,9 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn, OneToMany } from 'typeorm';
+import { Transform } from 'class-transformer';
+import { Record } from 'src/record/record.entity';
 @Entity()
 export class User{
-    @PrimaryGeneratedColumn({ name:'user_id',})
-    userId: number; // 확인 후 타입 수정 
+    @PrimaryColumn({ name:'user_id',type: 'bigint' })
+    @Transform(({ value }) => String(value))
+    userId: string;
     @Column()
     nickname : string ; //kakao nick name 받아오지만 수정 가능 
     @Column({nullable:true, name:'profile_img', })
@@ -19,5 +21,13 @@ export class User{
     //redis에 refresh token 저장하는 걸로 바꾸고 나면 없애야 함. 
     @Column({nullable:true})
     refresh:boolean;
-
+    @Column({default:false, name:'bookshelf_is_hidden',})
+    bookshelfIsHidden:boolean;
+    @Column({default:false, name:'group_is_hidden',})
+    groupIsHidden:boolean;
+    @Column({default:false, name:'records_is_hidden',})
+    recordsIsHidden:boolean;
+    @OneToMany(() => Record, record => record.userId)
+    records: Record[];
+    
 }
