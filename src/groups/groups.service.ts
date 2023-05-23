@@ -50,12 +50,11 @@ export class GroupsService {
     group.description = body.description;
     group.recruitment_status = body.recruitment_status;
     group.region = body.region;
-    group.representative_image = body.representative_image;
 
     if (!!imageFile) {
-      const imageKey = uuidv4();
+      const imageKey = `groups/${uuidv4()}`
       const imageUrl = await uploadFile(imageFile, imageKey);
-      console.log(imageUrl);
+      group.representative_image = imageUrl;
     }
 
     const createdGroup = await this.groupsRepository.save(group);

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -26,6 +27,7 @@ export class Groups {
     example: '책 읽는 행복한 모임',
     description: '모임 이름',
   })
+  @IsNotEmpty({ message: '이름을 입력해주세요.' })
   @Column()
   name: string;
 

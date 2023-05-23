@@ -4,19 +4,20 @@ import * as fs from 'fs';
 
 dotenv.config();
 
-export const uploadFile = async (file: Express.Multer.File, fileName: string): Promise<string> => {
+export const uploadFile = async (
+  file: Express.Multer.File,
+  fileName: string,
+): Promise<string> => {
   try {
     const s3 = new AWS.S3({
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     });
 
-    const fileBuffer = fs.readFileSync(file.path);
-
     const params: AWS.S3.PutObjectRequest = {
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: fileName,
-      Body: fileBuffer,
+      Body: file.buffer,
     };
 
     const result = await s3.upload(params).promise();
