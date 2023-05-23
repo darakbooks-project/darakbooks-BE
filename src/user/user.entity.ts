@@ -19,5 +19,11 @@ export class User{
     //redis에 refresh token 저장하는 걸로 바꾸고 나면 없애야 함. 
     @Column({nullable:true})
     refresh:boolean;
-
+    @Column({nullable:true, name:'bookshelf_is_hidden',})
+    bookshelfIsHidden:boolean;
+    @Column({nullable:true, name:'group_is_hidden',})
+    groupIsHidden:boolean;
+    @Column({nullable:true, name:'records_is_hidden',})
+    recordsIsHidden:boolean;
+    
 }

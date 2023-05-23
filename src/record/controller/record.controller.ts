@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { RecordService } from '../service/record.service';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 import { UpdateRecordDto } from '../dto/update-record.dto';
 import { recordDTO } from '../dto/record.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 
 @Controller('records')
 export class RecordController {
   constructor(private readonly recordService: RecordService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createDTO: recordDTO) {
     const create_record_DTO = createDTO.record;

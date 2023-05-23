@@ -59,4 +59,10 @@ export class AuthService {
         if(!(user.refresh)) throw new NotFoundException();
     }
 
+    async logout(payload:JwtPayload){
+        const user = await this.validateUser(payload.userId);
+        //refresh token 삭제 
+        user.refresh = false;
+    }
+
 }

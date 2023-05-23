@@ -8,6 +8,8 @@ import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
 import { ApiBadRequestResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { LoginResponseDto, ReissueDto } from 'src/dto/LoginResponseDTO';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { access } from 'fs';
 interface JwtPayload {
     userId: number;
   }
@@ -46,6 +48,15 @@ export class UserController {
     async reissue(@Req() req:Request){
         const userId  = req.user as JwtPayload;
         const accessToken = await this.authService.setAccess(userId);
+        return accessToken;
+    }
+
+    @Get('/auth/logout')
+    @UseGuards(JwtAuthGuard)
+    async logout(@Req() req:Request){
+        const userId  = req.user as JwtPayload;
+        await this.authService.logout(userId) ;
+        return {message: 'logout 성공'} ;
     }
 
 }
