@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseFilters } from '@nestjs/common';
 import { RecordService } from '../service/record.service';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 import { UpdateRecordDto } from '../dto/update-record.dto';
 import { recordDTO } from '../dto/record.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
+import { STATUS_CODES } from 'http';
 
 @Controller('records')
 export class RecordController {
@@ -34,19 +36,22 @@ export class RecordController {
       return records;
     }
   }
-
+  @UseFilters(NotFoundExceptionFilter)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.recordService.findOne(+id);
   }
 
+  @UseFilters(NotFoundExceptionFilter)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
     return this.recordService.update(+id, updateRecordDto);
   }
 
+  @UseFilters(NotFoundExceptionFilter)
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.recordService.remove(+id);
+    return 204;
   }
 }

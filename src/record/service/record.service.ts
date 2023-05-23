@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 import { UpdateRecordDto } from '../dto/update-record.dto';
 import { Record } from '../record.entity';
@@ -15,7 +15,9 @@ export class RecordService {
 
   async findOne(id: number) {
     //record 가 없을 때 notfoundexception 던지기 
-    return await this.recordRepository.findOneBy({recordId:id});
+    const record = await this.recordRepository.findOneBy({recordId:id});
+    if(!record) throw new NotFoundException('record');
+    return record;
   }
 
   async update(id: number, updateDTO: UpdateRecordDto) {
