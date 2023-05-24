@@ -24,9 +24,9 @@ export class S3Service{
                 ContentType : file.mimetype,
             }
             const result = await this.s3.upload(params).promise();
-            return {'filename':filename, 'location':result.Location};
+            return {'img_name':filename, 'img_url':result.Location};
         } catch (error) {
-            throw new InternalServerErrorException(`File upload failed : ${error}`);
+            throw new InternalServerErrorException(`Server ERROR: File upload failed : ${error}`);
         }
     }
 
@@ -39,7 +39,7 @@ export class S3Service{
            }
            const result = await this.s3.deleteObject(params).promise();
        } catch (error) {
-           throw new InternalServerErrorException(`File delete failed : ${error}`);
+           throw new InternalServerErrorException(`Server ERROR:  File delete failed : ${error}`);
        }
     }
 
