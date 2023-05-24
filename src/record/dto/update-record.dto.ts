@@ -17,6 +17,14 @@ export class UpdateRecordDto extends PartialType(CreateRecordDTO) {
 
     @IsOptional()
     @IsString()
+    recordImgUrl: string;
+  
+    @IsOptional()
+    @IsArray()
+    tags: { id: number, data: string }[] ;
+    
+    @IsOptional()
+    @IsString()
     readAt: string;
   
 

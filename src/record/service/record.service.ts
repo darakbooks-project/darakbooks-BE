@@ -3,14 +3,14 @@ import { CreateRecordDTO } from '../dto/create-record.dto';
 import { UpdateRecordDto } from '../dto/update-record.dto';
 import { Record } from '../record.entity';
 import { Repository } from 'typeorm';
+import { S3Service } from 'src/common/s3.service';
 
 @Injectable()
 export class RecordService {
-  constructor(@Inject('RECORD_REPOSITORY') private recordRepository:Repository<Record>){}
+  constructor(@Inject('RECORD_REPOSITORY') private recordRepository:Repository<Record>, private readonly s3Service: S3Service){}
 
   async create(createDTO: CreateRecordDTO) {
     const record = this.recordRepository.create(createDTO);
-    console.log(record);
     return await this.recordRepository.save(record);
   }
 
@@ -28,7 +28,8 @@ export class RecordService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
+    const record = await this.findOne(id);
+    await this.s3Service.deleteFile(record.recordImg);
     return await this.recordRepository.delete({recordId:id});
   }
 

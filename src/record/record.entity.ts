@@ -13,8 +13,10 @@ export class Record {
     bookIsbn: string;
     @Column()
     text: string;
-    @Column()
+    @Column({name:'record_img'})
     recordImg: string;
+    @Column({name:'record_img_url'})
+    recordImgUrl: string;
     @Column({ type: 'json', nullable: true })
     tags: { id: number, data: string }[] ;
     @ManyToOne(() => User, user => user.records)

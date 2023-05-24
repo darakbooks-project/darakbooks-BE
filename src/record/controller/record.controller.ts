@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseFilters,Req  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseFilters,Req, UseInterceptors, UploadedFile  } from '@nestjs/common';
 import { RecordService } from '../service/record.service';
-import { CreateRecordDTO } from '../dto/create-record.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateRecordDto } from '../dto/update-record.dto';
 import { recordDTO } from '../dto/record.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
@@ -8,6 +8,7 @@ import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
 import { OwnerAuthGuard } from 'src/auth/owner/owner-auth.guard';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
 import { Request , Response} from 'express';
+import { S3Service } from 'src/common/s3.service';
 
 interface JwtPayload {
   userId: string;
@@ -16,7 +17,15 @@ interface JwtPayload {
 
 @Controller('records')
 export class RecordController {
-  constructor(private readonly recordService: RecordService) {}
+  constructor(private readonly recordService: RecordService,private readonly s3Service: S3Service ) {}
+
+  @Post('/photo')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File){
+    const result = await this.s3Service.uploadFile(file);
+    return result;
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createDTO: recordDTO,  @Req() req: Request) {
