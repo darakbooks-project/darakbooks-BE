@@ -52,7 +52,7 @@ export class GroupsService {
     group.region = body.region;
 
     if (!!imageFile) {
-      const imageKey = `groups/${uuidv4()}`
+      const imageKey = `groups/${uuidv4()}`;
       const imageUrl = await uploadFile(imageFile, imageKey);
       group.representative_image = imageUrl;
     }
