@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import { Groups } from 'src/groups/entities/groups.entity';
 import { Record } from 'src/record/record.entity';
 import { User } from 'src/user/user.entity';
+import { UserGroup } from 'src/user-group/entities/user-group.entity';
 
 export const databaseProviders = [
   {
@@ -14,8 +15,8 @@ export const databaseProviders = [
         username: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        entities: [Groups, User, Record],
-        synchronize: true, //나중에 바꾸기. 
+        entities: [Groups, User, Record, UserGroup],
+        synchronize: true, //나중에 바꾸기.
       });
 
       return dataSource.initialize();

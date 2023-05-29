@@ -10,11 +10,18 @@ import { UserService } from './user/service/user.service';
 import configuration from './config/configuration';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    envFilePath: `.env/.env.${process.env.NODE_ENV || "development"}`,
-    isGlobal: true, 
-    load:[configuration]
-  }), AuthModule, UserModule, DatabaseModule, GroupsModule,RecordModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: `.env/.env.${process.env.NODE_ENV || 'development'}`,
+      isGlobal: true,
+      load: [configuration],
+    }),
+    AuthModule,
+    UserModule,
+    DatabaseModule,
+    GroupsModule,
+    RecordModule,
+  ],
   controllers: [],
   providers: [],
 })

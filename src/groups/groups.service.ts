@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { uploadFile } from 'src/config/s3uploads';
 import { Repository } from 'typeorm';
+import { User } from '../user/user.entity';
 import { GroupsCreateDto } from './dto/groups.create.dto';
 import { Groups } from './entities/groups.entity';
 import { v4 as uuidv4 } from 'uuid';
@@ -60,5 +61,52 @@ export class GroupsService {
     const createdGroup = await this.groupsRepository.save(group);
 
     return createdGroup;
+  }
+
+  async getAllUsersInGroup(group_id: number) {
+    const group = await this.groupsRepository.find({
+      where: { group_id },
+      relations: ['userGroup'],
+    });
+
+    if (!group) {
+      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+    }
+
+    const users = group[0].userGroup;
+    return users;
+  }
+
+  async addUserToGroup(group_id: number, userId: string) {
+    const group = await this.groupsRepository.findOne({
+      where: { group_id },
+    });
+    if (!group) {
+      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+    }
+    // 유저 아이디가 존재하는지 체크
+
+    group[0].userGroup.push(userId);
+
+    const updatedGroup = await this.groupsRepository.save(group);
+
+    return updatedGroup;
+  }
+
+  async removeUserFromGroup(group_id: number, userId: string) {
+    const group = await this.groupsRepository.findOne({
+      where: { group_id },
+      relations: ['userGroup'],
+    });
+
+    if (!group) {
+      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+    }
+
+    group[0].userGroup.splice(userId, 1);
+
+    const updatedGroup = await this.groupsRepository.save(group);
+
+    return updatedGroup;
   }
 }

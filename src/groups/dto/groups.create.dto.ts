@@ -1,5 +1,5 @@
-import { PickType } from '@nestjs/swagger';
 import { Groups } from '../entities/groups.entity';
+import { PickType } from '@nestjs/swagger';
 
 export class GroupsCreateDto extends PickType(Groups, [
   'name',
@@ -9,4 +9,5 @@ export class GroupsCreateDto extends PickType(Groups, [
   'recruitment_status',
   'region',
   'description',
+  'userGroup',
 ] as const) {}
