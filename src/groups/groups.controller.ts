@@ -13,7 +13,7 @@ import { GroupsCreateDto } from './dto/groups.create.dto';
 import { ReadOnlyGroupsDto } from './dto/groups.dto';
 import { GroupsService } from './groups.service';
 
-@ApiTags('그룹정보')
+@ApiTags('groups')
 @ApiResponse({
   status: 500,
   description: '서버처리오류, 담당자 문의',

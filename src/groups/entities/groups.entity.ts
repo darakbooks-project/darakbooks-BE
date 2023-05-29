@@ -1,13 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+import { UserGroup } from '../../user-group/entities/user-group.entity';
 
 export enum MeetingType {
   ONLINE = 'online',
@@ -79,6 +82,13 @@ export class Groups {
   })
   @Column({ nullable: true })
   representative_image: string;
+
+  @ApiProperty({
+    example: '[user1, user2, user3]',
+    description: '그룹에 속한 user 아이디',
+  })
+  @OneToMany(() => UserGroup, (userGroup) => userGroup.group)
+  userGroup: UserGroup[];
 
   @CreateDateColumn({
     nullable: false,
