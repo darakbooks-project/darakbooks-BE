@@ -13,14 +13,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     isGlobal: true, 
     load:[configuration]
   }), 
-  CacheModule.register({
-    store: 'redis',
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    password:process.env.REDIS_PASSWORD,
-    isGlobal:true,
-  }),
-  AuthModule, UserModule, RecordModule, DatabaseModule],
+  AuthModule, UserModule, RecordModule, DatabaseModule,CacheModule,],
   controllers: [],
   providers: [],
 })
