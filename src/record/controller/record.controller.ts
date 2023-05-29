@@ -22,6 +22,7 @@ interface JwtPayload {
 export class RecordController {
   constructor(private readonly recordService: RecordService,private readonly s3Service: S3Service ) {}
 
+  //jwt auth guard 추가 해야 함. 
   @ApiOperation({summary: 'record 사진 등록'})
   @ApiResponse({status:201, type: photoDto})
   @ApiInternalServerErrorResponse({status:500, description:'Server ERROR: File upload failed :'})
@@ -36,16 +37,28 @@ export class RecordController {
   @ApiResponse({status:201, type: Record})
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createDTO: recordDTO,  @Req() req: Request) {
     const create_record_DTO = createDTO.record;
-    const user =  req.user as JwtPayload;
-    create_record_DTO.userId = user.userId;
+    //const user =  req.user as JwtPayload;
+    //create_record_DTO.userId = user.userId;
+    create_record_DTO.userId = "239487289347289"
     const book_DTO = createDTO.book;
     const record = await this.recordService.create(create_record_DTO);
     //책db에 책 저장하기 
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
+  }
+  @ApiOperation({summary: '독서기록 수정'})
+  @ApiResponse({status:200, type:Record})
+  @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
+  @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
+  @ApiUnauthorizedResponse({status:401, description: 'Unathorized: You are not the owner of this resource.' }) 
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  @Patch(':id')
+  update(@Param('id') id: number, @Body() updateRecordDto: UpdateRecordDto) {
+    return this.recordService.update(+id, updateRecordDto);
   }
 
   @ApiOperation({summary: '전달한 BookId와 일치하는 독서기록 요청'})
@@ -66,27 +79,18 @@ export class RecordController {
       return records;
     }
   }
+
   @ApiOperation({summary: '전달한 id와 일치하는 독서기록 요청'})
   @ApiResponse({status:200, type:Record})
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.recordService.findOne(+id);
   }
-  @ApiOperation({summary: '독서기록 수정'})
-  @ApiResponse({status:200, type:Record})
-  @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
-  @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
-  @ApiUnauthorizedResponse({status:401, description: 'Unathorized: You are not the owner of this resource.' }) 
-  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
-  @Patch(':id')
-  update(@Param('id') id: number, @Body() updateRecordDto: UpdateRecordDto) {
-    return this.recordService.update(+id, updateRecordDto);
-  }
+
 
   @ApiOperation({summary: '독서기록 삭제'})
   @ApiResponse({status:204})
@@ -94,11 +98,12 @@ export class RecordController {
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
   @ApiUnauthorizedResponse({status:401, description: 'Unathorized: You are not the owner of this resource.' }) 
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  //@UseGuards(JwtAuthGuard,OwnerAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {
     this.recordService.remove(+id);
-    return 204;
+    return ;
   }
+  
 }
 

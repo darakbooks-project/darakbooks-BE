@@ -21,7 +21,7 @@ export default () => ({
     jwt: {
         jwtAccessSecret: required('JWT_SECRET_ACCESS'),
         accessExpiresInHour: parseInt(required('ACCESS_EXPIRES_HOUR', 6)),
-        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 10)),
+        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 30)),
         jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
         refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
     },

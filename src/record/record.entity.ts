@@ -33,7 +33,7 @@ export class Record {
     tags: { id: number, data: string }[] ;
     
     @ApiProperty({ example: 12934829348 , description: 'userId' })   
-    @ManyToOne(() => User, user => user.records)
+    // @ManyToOne(() => User, user => user.records)
     @Column({name:'user_id'})
     userId: string;
 

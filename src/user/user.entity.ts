@@ -38,7 +38,7 @@ export class User{
     @Column({default:false, name:'records_is_hidden',})
     recordsIsHidden:boolean;
     
-    @OneToMany(() => Record, record => record.userId)
-    records: Record[];
+    // @OneToMany(() => Record, record => record.userId)
+    // records: Record[];
     
 }

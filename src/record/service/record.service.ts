@@ -34,6 +34,7 @@ export class RecordService {
   }
 
   async getRecordsByLastId(lastId: number, pageSize: number): Promise<Record[]>{
+    if(!lastId) lastId = 0;
     const result = await this.recordRepository
       .createQueryBuilder('record')
       .where('record.recordId > :lastId', { lastId }) // lastId보다 큰 ID를 가진 레코드를 필터링합니다.
