@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/service/user.service'
 import { User } from 'src/user/user.entity';
 interface JwtPayload {
-    userId: number;
+    userId: string;
   }
 const USER = 'USER'
 
@@ -29,7 +29,7 @@ export class AuthService {
     }
 
 
-    async setToken(userId:number):Promise<object>{
+    async setToken(userId:string):Promise<object>{
         const payload = {userId};
         const accessToken = await this.setAccess(payload);
         const refreshToken = await this.setRefrsh(payload);
@@ -48,15 +48,22 @@ export class AuthService {
     async setAccess(payload:JwtPayload){
         return await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
-            expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
+            //expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
+            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}s`
         });
     }
 
-    async validateRefresh(userId:number){
+    async validateRefresh(userId:string){
         //올바른 사용자인지 확인 
         const user = await this.validateUser(userId);
         //사용자의 refresh 토큰 validate 
         if(!(user.refresh)) throw new NotFoundException();
+    }
+
+    async logout(payload:JwtPayload){
+        const user = await this.validateUser(payload.userId);
+        //refresh token 삭제 
+        user.refresh = false;
     }
 
 }
