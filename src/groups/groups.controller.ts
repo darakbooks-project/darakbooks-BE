@@ -4,8 +4,8 @@ import {
   Get,
   Delete,
   Param,
+  Patch,
   Post,
-  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { GroupsUserGroupDto } from './dto/groups.user-group.dto';
@@ -47,6 +47,28 @@ export class GroupsController {
     return await this.groupsService.getOneGroupById(group_id);
   }
 
+  @ApiOperation({ summary: 'top3 그룹조회' })
+  @ApiResponse({
+    status: 200,
+    description: '응답성공',
+    type: ReadOnlyGroupsDto,
+  })
+  @Get('/top3')
+  async getTopThreeGroups() {
+    return await this.getTopThreeGroups();
+  }
+
+  @ApiOperation({ summary: '특정 그룹의 그룹장 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '응답성공',
+    type: ReadOnlyGroupsDto,
+  })
+  @Get('/:group_id/group_lead')
+  async getGroupLeadById(@Param('group_id') group_id: number) {
+    return await this.groupsService.getGroupLeadById(group_id);
+  }
+
   @ApiOperation({ summary: '그룹 생성' })
   @ApiResponse({
     status: 201,
@@ -56,10 +78,33 @@ export class GroupsController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createGroup(
-    @UploadedFile() imageFile: Express.Multer.File,
+    // @UploadedFile() imageFile: Express.Multer.File,
     @Body() body: GroupsCreateDto,
   ) {
-    return await this.groupsService.createGroup(imageFile, body);
+    return await this.groupsService.createGroup(body);
+  }
+
+  @ApiOperation({ summary: '그룹 삭제' })
+  @ApiResponse({
+    status: 200,
+    description: '삭제 성공',
+  })
+  @Delete(':groupId')
+  async deleteGroup(@Param('groupId') groupId: number) {
+    return await this.groupsService.deleteGroup(groupId);
+  }
+
+  @ApiOperation({ summary: '그룹 수정' })
+  @ApiResponse({
+    status: 200,
+    description: '수정 성공',
+  })
+  @Patch(':groupId')
+  async editGroup(
+    @Param('groupId') groupId: number,
+    @Body() body: GroupsCreateDto,
+  ) {
+    return await this.groupsService.editGroup(groupId, body);
   }
 
   @ApiOperation({ summary: '그룹의 모든 user 조회' })

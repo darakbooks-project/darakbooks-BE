@@ -77,14 +77,14 @@ export class Groups {
   open_chat_link: string;
 
   @ApiProperty({
-    example: 'aws image ....',
-    description: '대표 이미지',
+    example: 1,
+    description: '그룹장',
   })
   @Column({ nullable: true })
-  representative_image: string;
+  group_lead: number;
 
   @ApiProperty({
-    example: '[user1, user2, user3]',
+    example: [1, 2, 3],
     description: '그룹에 속한 user 아이디',
   })
   @OneToMany(() => UserGroup, (userGroup) => userGroup.group)

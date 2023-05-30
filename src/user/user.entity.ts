@@ -90,8 +90,8 @@ export class User {
   records: Record[];
 
   @ApiProperty({
-    example: '[group_id, group_id, group_id]',
-    description: 'user가 속한 그룹)',
+    example: [2, 3, 4],
+    description: 'user가 속한 그룹',
   })
   @OneToMany(() => UserGroup, (userGroup) => userGroup.user)
   userGroup: UserGroup[];
