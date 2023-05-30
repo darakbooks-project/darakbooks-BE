@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { RecordModule } from './record/record.module';
 import configuration from './config/configuration';
-import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -13,7 +12,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     isGlobal: true, 
     load:[configuration]
   }), 
-  AuthModule, UserModule, RecordModule, DatabaseModule,CacheModule,],
+  AuthModule, UserModule, RecordModule, DatabaseModule,],
   controllers: [],
   providers: [],
 })

@@ -8,6 +8,10 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 import { kakaoStrategy } from './kakao/kakao.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { userProviders } from 'src/user/user.provider';
+import { CacheModule } from '@nestjs/cache-manager';
+import type { RedisClientOptions } from 'redis';
+import * as redisStore from 'cache-manager-redis-store';
+import { CacheConfigModule } from 'src/database/cache.module';
 
 @Module({
   imports: [
@@ -18,6 +22,6 @@ import { userProviders } from 'src/user/user.provider';
     DatabaseModule,
   ],
   providers: [AuthService,JwtStrategy,kakaoStrategy,...userProviders,],
-  exports: [AuthService,PassportModule,JwtModule]
+  exports: [AuthService,PassportModule,JwtModule,  CacheConfigModule,]
 })
 export class AuthModule {}
