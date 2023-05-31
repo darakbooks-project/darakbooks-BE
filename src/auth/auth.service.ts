@@ -3,6 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/service/user.service'
 import { User } from 'src/user/user.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import {Cache} from 'cache-manager';
+
 interface JwtPayload {
     userId: string;
   }
@@ -14,6 +17,7 @@ export class AuthService {
         @Inject(forwardRef(()=>UserService))private userService:UserService,
         private jwtService: JwtService,
         private configService:ConfigService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ){}
 
     async login(userData) {
@@ -41,6 +45,8 @@ export class AuthService {
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
+        await this.cacheManager.set(payload.userId, jwtToken);
+
         this.userService.setRefresh(payload.userId);
         return jwtToken;
     }

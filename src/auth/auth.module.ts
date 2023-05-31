@@ -22,6 +22,6 @@ import { CacheConfigModule } from 'src/database/cache.module';
     DatabaseModule,
   ],
   providers: [AuthService,JwtStrategy,kakaoStrategy,...userProviders,],
-  exports: [AuthService,PassportModule,JwtModule,  CacheConfigModule,]
+  exports: [AuthService,PassportModule,JwtModule,]
 })
 export class AuthModule {}
