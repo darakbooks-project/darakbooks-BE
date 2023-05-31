@@ -55,13 +55,18 @@ export class GroupsService {
   async getTopThreeGroups() {
     const groups = await this.groupsRepository.find({
       relations: ['userGroup'],
-      order: {
-        userGroup: 'DESC',
-      },
-      take: 3,
     });
 
-    return groups;
+    const topThreeGroups = groups
+      .map((group) => ({
+        id: group.group_id,
+        name: group.name,
+        userCount: group.userGroup.length,
+      }))
+      .sort((a, b) => b.userCount - a.userCount)
+      .slice(0, 3);
+
+    return topThreeGroups;
   }
 
   async getGroupLeadById(group_id: number) {
