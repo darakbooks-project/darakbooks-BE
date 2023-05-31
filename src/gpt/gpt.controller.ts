@@ -1,13 +1,28 @@
 import * as https from 'https';
 
+import {
+  ApiBadRequestResponse,
+  ApiHeader,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Configuration, CreateCompletionRequest, OpenAIApi } from 'openai';
 import { Controller, Get } from '@nestjs/common';
 
 import axios from 'axios';
+import { gptDTO } from './dto/gpt.dto';
 import { parseStringPromise } from 'xml2js';
 
+@ApiTags('gpt_recs')
 @Controller('recs')
 export class GPTController {
+  @ApiOperation({ summary: '추천받기' })
+  @ApiResponse({ status: 201, type: gptDTO })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Bad Request: error emssage',
+  })
   @Get('recommendations')
   async getBookRecommendations(): Promise<any> {
     const apiUrl = 'https://nl.go.kr/NL/search/openApi/saseoApi.do';
