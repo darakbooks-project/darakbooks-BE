@@ -1,7 +1,7 @@
-import { Groups } from '../entities/groups.entity';
+import { GroupEntity } from '../entities/groups.entity';
 import { PickType } from '@nestjs/swagger';
 
-export class GroupsCreateDto extends PickType(Groups, [
+export class GroupsCreateDto extends PickType(GroupEntity, [
   'name',
   'meeting_type',
   'open_chat_link',

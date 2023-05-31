@@ -8,7 +8,6 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { GroupsUserGroupDto } from './dto/groups.user-group.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GroupsCreateDto } from './dto/groups.create.dto';
@@ -73,7 +72,7 @@ export class GroupsController {
   @ApiResponse({
     status: 201,
     description: '응답성공',
-    type: ReadOnlyGroupsDto,
+    type: GroupsCreateDto,
   })
   @Post()
   @UseInterceptors(FileInterceptor('image'))
@@ -102,7 +101,7 @@ export class GroupsController {
   @Patch(':groupId')
   async editGroup(
     @Param('groupId') groupId: number,
-    @Body() body: GroupsCreateDto,
+    @Body() body: ReadOnlyGroupsDto,
   ) {
     return await this.groupsService.editGroup(groupId, body);
   }
@@ -112,7 +111,7 @@ export class GroupsController {
     status: 200,
     description: '응답성공',
     isArray: true,
-    type: GroupsUserGroupDto,
+    type: ReadOnlyGroupsDto,
   })
   @Get('/:group_id/users')
   async getAllUsersInGroup(@Param('group_id') groupId: number) {

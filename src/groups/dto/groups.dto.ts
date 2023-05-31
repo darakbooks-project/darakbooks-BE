@@ -1,3 +1,3 @@
-import { Groups } from '../entities/groups.entity';
+import { GroupEntity } from '../entities/groups.entity';
 
-export class ReadOnlyGroupsDto extends Groups {}
+export class ReadOnlyGroupsDto extends GroupEntity {}

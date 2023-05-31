@@ -1,10 +1,11 @@
 import { DataSource } from 'typeorm';
-import { Groups } from './entities/groups.entity';
+import { GroupEntity } from './entities/groups.entity';
 
 export const groupsProviders = [
   {
     provide: 'GROUPS_REPOSITORY',
-    useFactory: (dataSource: DataSource) => dataSource.getRepository(Groups),
+    useFactory: (dataSource: DataSource) =>
+      dataSource.getRepository(GroupEntity),
     inject: ['DATA_SOURCE'],
   },
 ];

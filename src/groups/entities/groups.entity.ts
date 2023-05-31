@@ -3,22 +3,23 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  ManyToMany,
+  JoinTable,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { UserGroup } from '../../user-group/entities/user-group.entity';
+import { User } from '../../user/user.entity';
 
 export enum MeetingType {
   ONLINE = 'online',
   OFFLINE = 'offline',
 }
 
-@Entity({ name: 'groups' })
-export class Groups {
+@Entity({ name: 'groupsentity' })
+export class GroupEntity {
   @ApiProperty({
     example: 1,
     description: '그룹 id',
@@ -83,12 +84,10 @@ export class Groups {
   @Column({ nullable: true })
   group_lead: number;
 
-  @ApiProperty({
-    example: [1, 2, 3],
-    description: '그룹에 속한 user 아이디',
-  })
-  @OneToMany(() => UserGroup, (userGroup) => userGroup.group)
-  userGroup: UserGroup[];
+  @ApiProperty({ type: () => User, isArray: true })
+  @ManyToMany(() => User, (user) => user.groups)
+  @JoinTable()
+  userGroup: User[];
 
   @CreateDateColumn({
     nullable: false,

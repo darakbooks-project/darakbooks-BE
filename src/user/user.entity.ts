@@ -1,9 +1,16 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 
 import { ApiProperty } from '@nestjs/swagger';
+import { GroupEntity } from '../groups/entities/groups.entity';
 import { Record } from 'src/record/record.entity';
 import { Transform } from 'class-transformer';
-import { UserGroup } from '../user-group/entities/user-group.entity';
 
 @Entity()
 export class User {
@@ -93,6 +100,7 @@ export class User {
     example: [2, 3, 4],
     description: 'user가 속한 그룹',
   })
-  @OneToMany(() => UserGroup, (userGroup) => userGroup.user)
-  userGroup: UserGroup[];
+  @ManyToMany(() => GroupEntity, (group) => group.userGroup)
+  @JoinTable()
+  groups: GroupEntity[];
 }

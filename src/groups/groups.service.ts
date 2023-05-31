@@ -6,16 +6,21 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { uploadFile } from 'src/config/s3uploads';
-import { Repository } from 'typeorm';
-import { User } from '../user/user.entity';
+import { Repository, Entity } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
-import { Groups } from './entities/groups.entity';
+import { ReadOnlyGroupsDto } from './dto/groups.dto';
+import { GroupEntity } from './entities/groups.entity';
+import { User } from '../user/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../auth/auth.service';
+import { UserGroup } from '../user-group/entities/user-group.entity';
 @Injectable()
 export class GroupsService {
   constructor(
-    @Inject('GROUPS_REPOSITORY') private groupsRepository: Repository<Groups>,
+    @Inject('GROUPS_REPOSITORY')
+    private groupsRepository: Repository<GroupEntity>,
+    @Inject('USER_REPOSITORY') private userRepository: Repository<User>,
+    @Inject('USER_GROUP_REPOSITORY') private usergroupRepository: Repository<UserGroup>,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
   ) {}
@@ -26,9 +31,18 @@ export class GroupsService {
     return groups;
   }
 
+  async getUserGroup(group_id: number) {
+    const group = await this.groupsRepository.findOne({
+      where: { group_id },
+      relations: ['userGroup'],
+    });
+    return group.userGroup;
+  }
+
   async getOneGroupById(group_id: number) {
     const group = await this.groupsRepository.findOne({
       where: { group_id },
+      relations: ['userGroup'],
     });
 
     if (!group) {
@@ -75,7 +89,7 @@ export class GroupsService {
       throw new BadRequestException('해당 독서모임의 이름은 이미 존재 합니다.');
     }
 
-    const group = new Groups();
+    const group = new GroupEntity();
     group.name = body.name;
     group.meeting_type = body.meeting_type;
     group.open_chat_link = body.open_chat_link;
@@ -83,25 +97,37 @@ export class GroupsService {
     group.description = body.description;
     group.recruitment_status = body.recruitment_status;
     group.region = body.region;
-    group.userGroup = body.userGroup;
     group.group_lead = body.group_lead;
-
-    // if (!!imageFile) {
-    //   const imageKey = `groups/${uuidv4()}`;
-    //   const imageUrl = await uploadFile(imageFile, imageKey);
-    //   group.representative_image = imageUrl;
-    // }
 
     const createdGroup = await this.groupsRepository.save(group);
 
+    const userIds = body.userGroup;
+
+    const userGroupEntities = userIds.map((userId) => {
+      const userGroup = new UserGroup();
+      userGroup.group = group;
+      userGroup.user = userId;
+      return userGroup;
+    });
+    const updatedGroup = await this.usergroupRepository.save(userGroupEntities);
     return createdGroup;
   }
 
   async deleteGroup(group_id: number) {
+    const groupfind = await this.groupsRepository.find({
+      where: { group_id },
+    });
+
+    if (!groupfind) {
+      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+    }
+
+    await this.usergroupRepository.delete({ group: groupfind });
     await this.groupsRepository.delete(group_id);
   }
 
-  async editGroup(group_id: number, body: GroupsCreateDto) {
+  // usergroup edit 추가하기
+  async editGroup(group_id: number, body: ReadOnlyGroupsDto) {
     const group = await this.groupsRepository.findOne({
       where: { group_id },
     });
@@ -116,7 +142,6 @@ export class GroupsService {
     group.description = body.description;
     group.recruitment_status = body.recruitment_status;
     group.region = body.region;
-    group.userGroup = body.userGroup;
     group.group_lead = body.group_lead;
 
     const editedGroup = await this.groupsRepository.save(group);
@@ -124,59 +149,65 @@ export class GroupsService {
   }
 
   async getAllUsersInGroup(group_id: number) {
-    const group = await this.groupsRepository.find({
+    const groupfind = await this.groupsRepository.find({
       where: { group_id },
-      relations: ['userGroup'],
     });
 
-    if (!group) {
+    if (!groupfind) {
       throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
     }
 
-    const users = group[0].userGroup;
-    return users;
+    const groupusers = await this.usergroupRepository.find({
+      where: { group: groupfind[0] },
+      relations: ['user'],
+    });
+    const userIds = groupusers.map((userGroup) => userGroup.user);
+    return userIds;
   }
 
-  async addUserToGroup(group_id: number, userId: string) {
-    const group = await this.groupsRepository.findOne({
+  async addUserToGroup(group_id: number, user_id: string) {
+    const groupfind = await this.groupsRepository.find({
       where: { group_id },
     });
-    if (!group) {
+
+    if (!groupfind) {
+      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+    }
+    console.log(groupfind);
+
+    const userfind = await this.userRepository.findOne({
+      where: { userId: user_id },
+    });
+
+    const userGroup = new UserGroup();
+    userGroup.group = groupfind[0];
+    userGroup.user = userfind;
+
+    const savedUserGroup = await this.usergroupRepository.save(userGroup);
+
+    return savedUserGroup;
+  }
+
+  async removeUserFromGroup(group_id: number, user_id: string) {
+    const groupfind = await this.groupsRepository.findOne({
+      where: { group_id },
+    });
+
+    if (!groupfind) {
       throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
     }
 
-    const user = await this.authService.validateUser(userId);
-    if (user) {
-      group[0].userGroup.push(userId);
-    } else {
-      throw new NotFoundException('유저 정보가 존재하지 않습니다.');
+    const userfind = await this.userRepository.findOne({
+      where: { userId: user_id },
+    });
+
+    if (!userfind) {
+      throw new NotFoundException('해당 유저 정보가 존재하지 않습니다.');
     }
-
-    const updatedGroup = await this.groupsRepository.save(group);
-
+    const updatedGroup = await this.usergroupRepository.delete({
+      user: userfind,
+      group: groupfind,
+    });
     return updatedGroup;
   }
-
-  async removeUserFromGroup(group_id: number, userId: string) {
-    const group = await this.groupsRepository.findOne({
-      where: { group_id },
-      relations: ['userGroup'],
-    });
-
-    if (!group) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
-    }
-
-    const user = await this.authService.validateUser(userId);
-    if (user) {
-      group[0].userGroup.splice(userId, 1);
-    } else {
-      throw new NotFoundException('유저 정보가 존재하지 않습니다.');
-    }
-    const updatedGroup = await this.groupsRepository.save(group);
-    return updatedGroup;
-  }
-}
-function group_id(group_id: any, number: any, userId: any, string: any) {
-  throw new Error('Function not implemented.');
 }
