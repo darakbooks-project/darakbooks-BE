@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { uploadFile } from 'src/config/s3uploads';
 import { Repository } from 'typeorm';
@@ -10,11 +11,13 @@ import { User } from '../user/user.entity';
 import { GroupsCreateDto } from './dto/groups.create.dto';
 import { Groups } from './entities/groups.entity';
 import { v4 as uuidv4 } from 'uuid';
-
+import { AuthService } from '../auth/auth.service';
 @Injectable()
 export class GroupsService {
   constructor(
     @Inject('GROUPS_REPOSITORY') private groupsRepository: Repository<Groups>,
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
   ) {}
 
   async findAllGroups() {
@@ -141,11 +144,13 @@ export class GroupsService {
     if (!group) {
       throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
     }
-    // 유저 아이디가 존재하는지 체크
 
-    // authService.validateUser(userId)
-
-    group[0].userGroup.push(userId);
+    const user = await this.authService.validateUser(userId);
+    if (user) {
+      group[0].userGroup.push(userId);
+    } else {
+      throw new NotFoundException('유저 정보가 존재하지 않습니다.');
+    }
 
     const updatedGroup = await this.groupsRepository.save(group);
 
@@ -161,18 +166,17 @@ export class GroupsService {
     if (!group) {
       throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
     }
-    // 유저 아이디가 존재하는지 체크
 
-    // authService.validateUser(userId)
-
-    group[0].userGroup.splice(userId, 1);
-
+    const user = await this.authService.validateUser(userId);
+    if (user) {
+      group[0].userGroup.splice(userId, 1);
+    } else {
+      throw new NotFoundException('유저 정보가 존재하지 않습니다.');
+    }
     const updatedGroup = await this.groupsRepository.save(group);
-
     return updatedGroup;
   }
 }
 function group_id(group_id: any, number: any, userId: any, string: any) {
   throw new Error('Function not implemented.');
 }
-
