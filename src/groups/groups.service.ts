@@ -45,7 +45,6 @@ export class GroupsService {
       where: { group_id },
       relations: ['userGroup'],
     });
-    console.log('here');
 
     if (!group) {
       throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
@@ -54,7 +53,6 @@ export class GroupsService {
     return group;
   }
 
-  // edit
   async getTopGroups(count: number) {
     const groupUserCounts = await this.usergroupRepository
       .createQueryBuilder('userGroup')
@@ -65,8 +63,6 @@ export class GroupsService {
       .orderBy('userCount', 'DESC')
       .limit(count)
       .getRawMany();
-
-    console.log(groupUserCounts);
 
     return groupUserCounts;
   }
@@ -81,10 +77,19 @@ export class GroupsService {
     }
 
     if (!group.group_lead) {
-      throw new NotFoundException('해당 독서모임장 정보가 존재하지 않습니다.');
+      throw new NotFoundException(
+        '해당 독서모임에 모임장 정보가 존재하지 않습니다.',
+      );
+    }
+    const groupLead = await this.userRepository.findOne({
+      where: { userId: group.group_lead },
+    });
+
+    if (!groupLead) {
+      throw new NotFoundException('해당 유저가 존재하지 않습니다.');
     }
 
-    return group.group_lead;
+    return groupLead;
   }
 
   async createGroup(body: GroupsCreateDto) {
@@ -108,6 +113,17 @@ export class GroupsService {
     const createdGroup = await this.groupsRepository.save(group);
 
     const userIds = body.userGroup;
+
+    userIds.map(async (userId) => {
+      const user = await this.userRepository.findOne({
+        where: { userId: userId.userId },
+      });
+      if (!user) {
+        throw new NotFoundException(
+          `해당 ${user.userId} 정보가 존재하지 않습니다.`,
+        );
+      }
+    });
 
     const userGroupEntities = userIds.map((userId) => {
       const userGroup = new UserGroup();

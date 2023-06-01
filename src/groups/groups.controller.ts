@@ -46,7 +46,7 @@ export class GroupsController {
     return await this.groupsService.getOneGroupById(group_id);
   }
 
-  @ApiOperation({ summary: 'top3 그룹조회' })
+  @ApiOperation({ summary: 'user 수 가장 많은 top n개 그룹조회' })
   @ApiResponse({
     status: 200,
     description: '응답성공',

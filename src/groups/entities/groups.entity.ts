@@ -3,8 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToMany,
   JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -82,7 +82,7 @@ export class GroupEntity {
     description: '그룹장',
   })
   @Column({ nullable: true })
-  group_lead: number;
+  group_lead: string;
 
   @ApiProperty({ type: () => User, isArray: true })
   @ManyToMany(() => User, (user) => user.groups)
