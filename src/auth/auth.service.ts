@@ -5,6 +5,7 @@ import { UserService } from '../user/service/user.service'
 import { User } from 'src/user/user.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {Cache} from 'cache-manager';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 interface JwtPayload {
     userId: string;
@@ -45,9 +46,7 @@ export class AuthService {
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
-        await this.cacheManager.set(payload.userId, jwtToken);
-
-        this.userService.setRefresh(payload.userId);
+        await this.cacheManager.set(payload.userId,jwtToken, 60 * 60 * 24 * 60 ); //60days>ms
         return jwtToken;
     }
 
@@ -59,11 +58,14 @@ export class AuthService {
         });
     }
 
-    async validateRefresh(userId:string){
-        //올바른 사용자인지 확인 
-        const user = await this.validateUser(userId);
-        //사용자의 refresh 토큰 validate 
-        if(!(user.refresh)) throw new NotFoundException();
+    async validateRefresh(token:string){
+        //올바른 secret으로 만든 refreshtoken인지 확인 
+        const payload = await this.jwtService.verifyAsync(token,
+            {secret:this.configService.get('jwt.jwtRefreshSecret'),});
+        //cache에 저장된 refresh token인지 확인 
+        const stored  = await this.cacheManager.get(payload.userId);
+        if(stored===token) return payload.userId;
+        else throw new JsonWebTokenError('Unauthorized: Invalid token') ;
     }
 
     async logout(payload:JwtPayload){
