@@ -13,12 +13,17 @@ import { ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiNotFoundRespo
 import { photoDto } from '../dto/photo.dto';
 import { Record } from '../record.entity';
 import { CreateRecordDTO } from '../dto/create-record.dto';
+import { BookshelfService } from 'src/bookshelf/service/bookshelf.service';
 
 
 @ApiTags('record')
 @Controller('records')
 export class RecordController {
-  constructor(private readonly recordService: RecordService,private readonly s3Service: S3Service ) {}
+  constructor(
+    private readonly recordService: RecordService,
+    private readonly s3Service: S3Service,
+    private readonly bookshelfService:BookshelfService,
+    ) {}
 
   //jwt auth guard 추가 해야 함. 
   @ApiOperation({summary: 'record 사진 등록'})
@@ -39,11 +44,13 @@ export class RecordController {
   @Post()
   async create(@Body() createDTO: CreateRecordDTO,  @Req() req: Request) {
     const create_record_DTO = createDTO ;
-    //const user =  req.user as JwtPayload;
-    //create_record_DTO.userId = user.userId;
-    create_record_DTO.userId = "239487289347289"
+    //const {userId} =  req.user as JwtPayload;
+    //create_record_DTO.userId = userId;
+    const userId = "239487289347289";
+    create_record_DTO.userId = userId;
     const record = await this.recordService.create(create_record_DTO);
     //책db에 책 저장하기 
+    await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
   }
   @ApiOperation({summary: '독서기록 수정'})
