@@ -13,10 +13,5 @@ export class UserService {
     async createUser(userData):Promise<User> {
         return await this.userRepository.save(userData);
     }
-
-    async validateUserRefresh(userId:string){
-        const user = await this.findByuserId(userId);
-        //if(!user) 
-    }
     
 }

@@ -10,8 +10,8 @@ import { DatabaseModule } from 'src/database/database.module';
 import { userProviders } from './user.provider';
 import { CacheConfigModule } from 'src/database/cache.module';
 @Module({
-    imports:[DatabaseModule,forwardRef(() => AuthModule),],
-    providers:[...userProviders, UserService,AuthService,JwtService, CacheConfigModule,],
+    imports:[DatabaseModule,forwardRef(() => AuthModule),CacheConfigModule],
+    providers:[...userProviders, UserService,AuthService,JwtService],
     controllers: [UserController],    
     exports : [UserService],
 })
