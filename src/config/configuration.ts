@@ -34,5 +34,10 @@ export default () => ({
         accessKey: required('AWS_ACCESS_KEY_ID'),
         secretKey: required('AWS_SECRET_ACCESS_KEY'),
         bucket   : required('AWS_BUCKET_NAME'),
+    },
+    redis:{
+        host:required('REDIS_HOST'),
+        port:required('REDIS_PORT'),
+        password:required('REDIS_PASSWORD'),
     }
 });

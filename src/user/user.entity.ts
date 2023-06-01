@@ -25,19 +25,12 @@ export class User{
     @Column({default:'kakao'})
     provider:string;
 
-    //redis에 refresh token 저장하는 걸로 바꾸고 나면 없애야 함. 
-    @Column({nullable:true})
-    refresh:boolean;
-
     @Column({default:false, name:'bookshelf_is_hidden',})
     bookshelfIsHidden:boolean;
 
     @Column({default:false, name:'group_is_hidden',})
     groupIsHidden:boolean;
 
-    @Column({default:false, name:'records_is_hidden',})
-    recordsIsHidden:boolean;
-    
     // @OneToMany(() => Record, record => record.userId)
     // records: Record[];
     
