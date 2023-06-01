@@ -14,9 +14,6 @@ import { photoDto } from '../dto/photo.dto';
 import { Record } from '../record.entity';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 
-interface JwtPayload {
-  userId: string;
-}
 
 @ApiTags('record')
 @Controller('records')

@@ -3,14 +3,13 @@ import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
 import { BookDTO } from '../book.dto';
-import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/service/user.service';
 
 @Injectable()
 export class BookshelfService {
     constructor(
         @Inject('BOOK_REPOSITORY') private bookRepository:Repository<Book>, 
-        @Inject('BOOSEHLF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
+        @Inject('BOOKSHELF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
         private userService:UserService,
     ){}
 

@@ -4,8 +4,6 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { RecordModule } from './record/record.module';
-import { BookshelfController } from './bookshelf/bookshelf.controller';
-import { BookshelfService } from './bookshelf/bookshelf.service';
 import { BookshelfModule } from './bookshelf/bookshelf.module';
 import configuration from './config/configuration';
 
@@ -16,7 +14,7 @@ import configuration from './config/configuration';
     load:[configuration]
   }), 
   AuthModule, UserModule, RecordModule, DatabaseModule, BookshelfModule,],
-  controllers: [BookshelfController],
-  providers: [BookshelfService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

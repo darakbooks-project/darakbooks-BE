@@ -11,7 +11,7 @@ export class BookshelfController {
     constructor(private readonly bookshelfService:BookshelfService){}
     @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
     @UseGuards(JwtAuthGuard)
-    @Post('/:bookId')
+    @Post('/')
     async add(@Body() bookDTO:BookDTO, @Req() req:Request){
         const {userId} =  req.user as JwtPayload;
         return this.bookshelfService.addBookToBookshelf(userId,bookDTO);
