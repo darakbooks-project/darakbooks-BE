@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
-import { bookDTO } from '../book.dto';
+import { BookDTO } from '../book.dto';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/service/user.service';
 
@@ -14,7 +14,7 @@ export class BookshelfService {
         private userService:UserService,
     ){}
 
-    async addBookToBookshelf(userId:string, createDTO:bookDTO){
+    async addBookToBookshelf(userId:string, createDTO:BookDTO){
         //책 있는지 확인 후 책 data 만들기 
         let book = await this.findOne(createDTO.bookIsbn);
         if(!book) book = await this.addBookToDB(createDTO);
@@ -33,7 +33,7 @@ export class BookshelfService {
         else return book;
     }
 
-    async addBookToDB(createDTO:bookDTO){
+    async addBookToDB(createDTO:BookDTO){
         //책 없으면 책db에 추가 
         const book = this.bookRepository.create(createDTO);
         return await this.bookRepository.save(book);

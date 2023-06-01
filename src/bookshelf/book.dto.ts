@@ -1,7 +1,6 @@
 import { IsArray, IsString } from 'class-validator';
 
-
-export class bookDTO {
+export class BookDTO {
     @IsString()
     bookIsbn: string;
   
