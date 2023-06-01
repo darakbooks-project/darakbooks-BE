@@ -1,6 +1,13 @@
 import { IsString, IsNumber, IsDate, IsOptional, IsArray } from 'class-validator';
 
 export class CreateRecordDTO {
+  
+  @IsString()
+  title: string;
+
+  @IsString()
+  thumbnail: string;
+
   @IsString()
   bookIsbn: string;
 

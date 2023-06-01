@@ -4,9 +4,6 @@ import { CreateRecordDTO } from './create-record.dto';
 
 export class recordDTO{
     @IsObject()
-    book : bookDTO; 
-
-    @IsObject()
     record : CreateRecordDTO;
 
 }

@@ -12,6 +12,7 @@ import { S3Service } from 'src/common/s3.service';
 import { ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { photoDto } from '../dto/photo.dto';
 import { Record } from '../record.entity';
+import { CreateRecordDTO } from '../dto/create-record.dto';
 
 interface JwtPayload {
   userId: string;
@@ -39,12 +40,11 @@ export class RecordController {
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
   //@UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createDTO: recordDTO,  @Req() req: Request) {
-    const create_record_DTO = createDTO.record;
+  async create(@Body() createDTO: CreateRecordDTO,  @Req() req: Request) {
+    const create_record_DTO = createDTO ;
     //const user =  req.user as JwtPayload;
     //create_record_DTO.userId = user.userId;
     create_record_DTO.userId = "239487289347289"
-    const book_DTO = createDTO.book;
     const record = await this.recordService.create(create_record_DTO);
     //책db에 책 저장하기 
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
