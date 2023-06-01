@@ -69,9 +69,10 @@ export class AuthService {
     }
 
     async logout(payload:JwtPayload){
-        const user = await this.validateUser(payload.userId);
+        const userId = payload.userId;
+        const user = await this.validateUser(userId);
         //refresh token 삭제 
-        user.refresh = false;
+        this.cacheManager.del(userId);
     }
 
 }
