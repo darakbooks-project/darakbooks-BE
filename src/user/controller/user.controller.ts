@@ -2,7 +2,6 @@ import {Inject, Controller, Post, Get, UseGuards, forwardRef, Req, Res, UseFilte
 import { AuthService } from '../../auth/auth.service' ;
 import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 import { Request , Response} from 'express';
-import { JwtRefreshAuthGuard } from 'src/auth/jwt/jwt-refresh.guard';
 import kakaoExceptionFilter from '../../exceptionFilter/kakao.filter';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
@@ -25,16 +24,16 @@ export class UserController {
     @UseFilters(kakaoExceptionFilter,NotFoundExceptionFilter)
     @Get('/auth/kakao')
     @UseGuards(kakaoGuard)
-    async login(@Query('Code') code: string, @Req() req:Request, /*@Res({ passthrough: true }) res: Response*/): Promise<{ accessToken: any; refreshToken: any; }>{
+    async login(@Query('Code') code: string, @Req() req:Request, @Res({ passthrough: true }) res: Response){
         const {accessToken,refreshToken}:any = await this.authService.login(req.user);
-        // res.cookie('RefreshToken',refreshToken,{
-        //     httpOnly:true,
-        //     sameSite:'none' ,
-        //     secure: true, //https로 backend 바꿔야 함.  
-            
-        // })
-        return {accessToken,refreshToken};
+        res.cookie('RefreshToken',refreshToken,{
+            httpOnly:true,
+            sameSite:'none' ,
+            secure: true, 
+        })
+        return {accessToken};
     }
+    
     @ApiTags('Authentication')
     @ApiOperation({summary: 'access token 만료시 refresh token을 이용해 재발급'})
     @ApiHeader({ name: 'Authorization', description: 'Bearer {refresh_token}' })
@@ -58,10 +57,10 @@ export class UserController {
     @Get('/auth/logout')
     @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter,)
     @UseGuards(JwtAuthGuard)
-    async logout(@Req() req:Request){
+    async logout(@Req() req:Request,@Res() res: Response){
         const userId  = req.user as JwtPayload;
         await this.authService.logout(userId) ;
-        return 204;
+        res.status(204).send();
     }
 
 }
