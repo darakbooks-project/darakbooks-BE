@@ -52,9 +52,9 @@ export class GroupsController {
     description: '응답성공',
     type: ReadOnlyGroupsDto,
   })
-  @Get('/top3')
-  async getTopThreeGroups() {
-    return await this.getTopThreeGroups();
+  @Get('/top/:count')
+  async getTopGroups(@Param('count') count: number) {
+    return await this.groupsService.getTopGroups(count);
   }
 
   @ApiOperation({ summary: '특정 그룹의 그룹장 조회' })

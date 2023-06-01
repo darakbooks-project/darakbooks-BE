@@ -20,7 +20,8 @@ export class GroupsService {
     @Inject('GROUPS_REPOSITORY')
     private groupsRepository: Repository<GroupEntity>,
     @Inject('USER_REPOSITORY') private userRepository: Repository<User>,
-    @Inject('USER_GROUP_REPOSITORY') private usergroupRepository: Repository<UserGroup>,
+    @Inject('USER_GROUP_REPOSITORY')
+    private usergroupRepository: Repository<UserGroup>,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
   ) {}
@@ -44,6 +45,7 @@ export class GroupsService {
       where: { group_id },
       relations: ['userGroup'],
     });
+    console.log('here');
 
     if (!group) {
       throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
@@ -52,21 +54,21 @@ export class GroupsService {
     return group;
   }
 
-  async getTopThreeGroups() {
-    const groups = await this.groupsRepository.find({
-      relations: ['userGroup'],
-    });
+  // edit
+  async getTopGroups(count: number) {
+    const groupUserCounts = await this.usergroupRepository
+      .createQueryBuilder('userGroup')
+      .select('userGroup.group', 'group')
+      .addSelect('COUNT(userGroup.user.userId)', 'userCount')
+      .innerJoinAndSelect('userGroup.group', 'group')
+      .groupBy('userGroup.group')
+      .orderBy('userCount', 'DESC')
+      .limit(count)
+      .getRawMany();
 
-    const topThreeGroups = groups
-      .map((group) => ({
-        id: group.group_id,
-        name: group.name,
-        userCount: group.userGroup.length,
-      }))
-      .sort((a, b) => b.userCount - a.userCount)
-      .slice(0, 3);
+    console.log(groupUserCounts);
 
-    return topThreeGroups;
+    return groupUserCounts;
   }
 
   async getGroupLeadById(group_id: number) {
@@ -85,7 +87,6 @@ export class GroupsService {
     return group.group_lead;
   }
 
-  // imageFile: Express.Multer.File,
   async createGroup(body: GroupsCreateDto) {
     const isExistName = await this.groupsRepository.findOne({
       where: { name: body.name },
