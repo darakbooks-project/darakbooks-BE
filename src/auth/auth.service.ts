@@ -27,13 +27,6 @@ export class AuthService {
         return this.setToken(user.userId);
     }
 
-    async validateUser(userId){
-        const user = await this.userService.findByuserId(userId);
-        if(!user) throw new NotFoundException(USER) 
-        return user;
-    }
-
-
     async setToken(userId:string):Promise<object>{
         const payload = {userId};
         const accessToken = await this.setAccess(payload);
@@ -70,7 +63,7 @@ export class AuthService {
 
     async logout(payload:JwtPayload){
         const userId = payload.userId;
-        const user = await this.validateUser(userId);
+        const user = await this.userService.validateUser(userId);
         //refresh token 삭제 
         this.cacheManager.del(userId);
     }

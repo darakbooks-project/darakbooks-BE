@@ -9,11 +9,6 @@ export class bookDTO {
     title: string;
   
     @IsArray()
-    authors: string[];
-  
-    @IsString()
-    publisher: string;
-  
-    @IsString()
     thumbnail: string;
+
 }
