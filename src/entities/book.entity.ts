@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { User } from 'src/user/user.entity';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
+import { Bookshelf } from './BookShelf.entity';
 
 @Entity()
-export class Record {
+export class Book {
     @ApiProperty({ example: "쇼코의 미소" , description: '책 제목' })   
     @Column()
     title:string;
@@ -15,4 +17,12 @@ export class Record {
     @PrimaryColumn({name:'book_isbn'})
     bookIsbn: string;
 
+        
+    @OneToMany(() => Bookshelf, bookshelf => bookshelf.book)
+    bookshelves: Bookshelf[];
+    
+    @ManyToMany(()=>User, user=>user.books)
+    users:User[];
+
+    
 }
