@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Us
 import { RecordService } from '../service/record.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateRecordDto } from '../dto/update-record.dto';
-import { recordDTO } from '../dto/record.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
 import { OwnerAuthGuard } from 'src/auth/owner/owner-auth.guard';
@@ -53,6 +52,8 @@ export class RecordController {
     await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
   }
+
+  
   @ApiOperation({summary: '독서기록 수정'})
   @ApiResponse({status:200, type:Record})
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
