@@ -143,7 +143,8 @@ export class GroupsController {
   async removeUserFromGroup(
     @Param('group_id') groupId: number,
     @Param('user_id') userId: string,
+    @Res() res: Response,
   ) {
-    return await this.groupsService.removeUserFromGroup(groupId, userId);
+    return await this.groupsService.removeUserFromGroup(groupId, userId, res);
   }
 }

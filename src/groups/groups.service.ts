@@ -3,17 +3,12 @@ import {
   Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { uploadFile } from 'src/config/s3uploads';
-import { Repository, Entity } from 'typeorm';
+import { Response } from 'express';
+import { Repository } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
-import { ReadOnlyGroupsDto } from './dto/groups.dto';
 import { GroupEntity } from './entities/groups.entity';
 import { User } from '../user/user.entity';
-import { v4 as uuidv4 } from 'uuid';
-import { AuthService } from '../auth/auth.service';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 @Injectable()
 export class GroupsService {
@@ -23,11 +18,9 @@ export class GroupsService {
     @Inject('USER_REPOSITORY') private userRepository: Repository<User>,
     @Inject('USER_GROUP_REPOSITORY')
     private usergroupRepository: Repository<UserGroup>,
-    @Inject(forwardRef(() => AuthService))
-    private authService: AuthService,
   ) {}
 
-  private async saveGroupData(group: GroupEntity, dto: GroupsCreateDto) {
+  async saveGroupData(group: GroupEntity, dto: GroupsCreateDto) {
     group.name = dto.name;
     group.meeting_type = dto.meeting_type;
     group.open_chat_link = dto.open_chat_link;
@@ -38,7 +31,7 @@ export class GroupsService {
     group.group_lead = dto.group_lead;
   }
 
-  private async checkUserExistence(userIds: User[]) {
+  async findUserList(userIds: User[]) {
     for (const userId of userIds) {
       const user = await this.userRepository.findOne({
         where: { userId: userId.userId },
@@ -52,18 +45,22 @@ export class GroupsService {
     }
   }
 
+  async findUser(user_id: string) {
+    const userfind = await this.userRepository.findOne({
+      where: { userId: user_id },
+    });
+
+    if (!userfind) {
+      throw new NotFoundException('해당 유저 정보가 존재하지 않습니다.');
+    }
+
+    return userfind;
+  }
+
   async findAllGroups() {
     const groups = await this.groupsRepository.find();
 
     return groups;
-  }
-
-  async getUserGroup(group_id: number) {
-    const group = await this.groupsRepository.findOne({
-      where: { group_id },
-      relations: ['userGroup'],
-    });
-    return group.userGroup;
   }
 
   async getOneGroupById(group_id: number) {
@@ -94,13 +91,7 @@ export class GroupsService {
   }
 
   async getGroupLeadById(group_id: number) {
-    const group = await this.groupsRepository.findOne({
-      where: { group_id },
-    });
-
-    if (!group) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
-    }
+    const group = await this.getOneGroupById(group_id);
 
     if (!group.group_lead) {
       throw new NotFoundException(
@@ -125,14 +116,11 @@ export class GroupsService {
     if (!!isExistName) {
       throw new BadRequestException('해당 독서모임의 이름은 이미 존재 합니다.');
     }
-
     const group = new GroupEntity();
     this.saveGroupData(group, body);
-
     const createdGroup = await this.groupsRepository.save(group);
-
     const userIds = body.userGroup;
-    await this.checkUserExistence(userIds);
+    await this.findUserList(userIds);
 
     const userGroupEntities = userIds.map((userId) => {
       const userGroup = new UserGroup();
@@ -140,20 +128,13 @@ export class GroupsService {
       userGroup.user = userId;
       return userGroup;
     });
-
     await this.usergroupRepository.save(userGroupEntities);
+
     return createdGroup;
   }
 
   async deleteGroup(group_id: number, res: Response) {
-    const groupfind = await this.groupsRepository.find({
-      where: { group_id },
-    });
-
-    if (!groupfind) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
-    }
-
+    const groupfind = await this.getOneGroupById(group_id);
     await this.usergroupRepository.delete({ group: groupfind });
     await this.groupsRepository.delete(group_id);
 
@@ -161,79 +142,43 @@ export class GroupsService {
   }
 
   async editGroup(group_id: number, body: GroupsCreateDto) {
-    const group = await this.groupsRepository.findOne({
-      where: { group_id },
-    });
-    if (!group) {
-      throw new BadRequestException('해당 독서모임은 존재하지 않습니다');
-    }
-
+    const group = await this.getOneGroupById(group_id);
     this.saveGroupData(group, body);
-
     const editedGroup = await this.groupsRepository.save(group);
+
     return editedGroup;
   }
 
   async getAllUsersInGroup(group_id: number) {
-    const groupfind = await this.groupsRepository.find({
-      where: { group_id },
-    });
-
-    if (!groupfind) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
-    }
-
+    const groupfind = await this.getOneGroupById(group_id);
     const groupusers = await this.usergroupRepository.find({
-      where: { group: groupfind[0] },
+      where: { group: groupfind },
       relations: ['user'],
     });
     const userIds = groupusers.map((userGroup) => userGroup.user);
+
     return userIds;
   }
 
   async addUserToGroup(group_id: number, user_id: string) {
-    const groupfind = await this.groupsRepository.find({
-      where: { group_id },
-    });
-
-    if (!groupfind) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
-    }
-    console.log(groupfind);
-
-    const userfind = await this.userRepository.findOne({
-      where: { userId: user_id },
-    });
-
+    const groupfind = await this.getOneGroupById(group_id);
+    const userfind = await this.findUser(user_id);
     const userGroup = new UserGroup();
     userGroup.group = groupfind[0];
     userGroup.user = userfind;
-
     const savedUserGroup = await this.usergroupRepository.save(userGroup);
 
     return savedUserGroup;
   }
 
-  async removeUserFromGroup(group_id: number, user_id: string) {
-    const groupfind = await this.groupsRepository.findOne({
-      where: { group_id },
-    });
-
-    if (!groupfind) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
-    }
-
-    const userfind = await this.userRepository.findOne({
-      where: { userId: user_id },
-    });
-
-    if (!userfind) {
-      throw new NotFoundException('해당 유저 정보가 존재하지 않습니다.');
-    }
-    const updatedGroup = await this.usergroupRepository.delete({
+  async removeUserFromGroup(group_id: number, user_id: string, res: Response) {
+    const groupfind = await this.getOneGroupById(group_id);
+    const userfind = await this.findUser(user_id);
+    await this.usergroupRepository.delete({
       user: userfind,
       group: groupfind,
     });
-    return updatedGroup;
+
+    return res.status(204).send();
   }
 }
