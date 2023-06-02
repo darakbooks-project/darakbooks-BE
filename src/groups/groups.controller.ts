@@ -78,11 +78,9 @@ export class GroupsController {
   })
   @Post()
   @UseInterceptors(FileInterceptor('image'))
-  async createGroup(
-    // @UploadedFile() imageFile: Express.Multer.File,
-    @Body() body: GroupsCreateDto,
-  ) {
-    return await this.groupsService.createGroup(body);
+  async createGroup(@Body() body: GroupsCreateDto, @Res() res: Response) {
+    await this.groupsService.createGroup(body);
+    return res.sendStatus(204);
   }
 
   @ApiOperation({ summary: '그룹 삭제' })
