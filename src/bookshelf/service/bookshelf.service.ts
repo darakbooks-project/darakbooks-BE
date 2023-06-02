@@ -40,9 +40,12 @@ export class BookshelfService {
     }
 
     async addBookToBookshelfByRecord(userId:string, createDTO:CreateRecordDTO){
+        const { title, thumbnail, bookIsbn } = createDTO;
+        const bookDTO = { title, thumbnail, bookIsbn } ;
+        
         //책 있는지 확인 후 책 data 만들기 
-        let book = await this.findOne(createDTO.bookIsbn);
-        if(!book) book = await this.addBookToDB(createDTO);
+        let book = await this.findOne(bookDTO.bookIsbn);
+        if(!book) book = await this.addBookToDB(bookDTO);
         //안 읽은 책이면 책장에 추가하기 
         const user = await this.userService.addBook(userId,book);
         const bookshelf = new Bookshelf();
@@ -50,6 +53,10 @@ export class BookshelfService {
         bookshelf.book = book;
         await this.bookShelfRepository.save(bookshelf);
 
+    }
+
+    async getBookshelfByUserId(ownerId:string, userId:string){
+        this.userService.getUserBooks(ownerId,userId) ;
     }
 
 }

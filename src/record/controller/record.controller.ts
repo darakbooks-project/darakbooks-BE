@@ -53,7 +53,7 @@ export class RecordController {
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
   }
 
-  
+
   @ApiOperation({summary: '독서기록 수정'})
   @ApiResponse({status:200, type:Record})
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
@@ -66,7 +66,7 @@ export class RecordController {
     return this.recordService.update(+id, updateRecordDto);
   }
 
-  @ApiOperation({summary: '전달한 BookId와 일치하는 독서기록 요청'})
+  @ApiOperation({summary: '전달한 BookIsbn와 일치하는 독서기록 요청'})
   @ApiResponse({status:200, type:[Record]})
   @Get()
   async getRecords(
