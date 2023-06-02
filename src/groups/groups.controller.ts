@@ -6,8 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GroupsCreateDto } from './dto/groups.create.dto';
@@ -89,8 +91,9 @@ export class GroupsController {
     description: '삭제 성공',
   })
   @Delete(':groupId')
-  async deleteGroup(@Param('groupId') groupId: number) {
-    return await this.groupsService.deleteGroup(groupId);
+  async deleteGroup(@Param('groupId') groupId: number, @Res() res: Response) {
+    await this.groupsService.deleteGroup(groupId, res);
+    return res.sendStatus(204);
   }
 
   @ApiOperation({ summary: '그룹 수정' })

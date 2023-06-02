@@ -5,6 +5,7 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
+import { Request , Response} from 'express';
 import { uploadFile } from 'src/config/s3uploads';
 import { Repository, Entity } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
@@ -135,7 +136,7 @@ export class GroupsService {
     return createdGroup;
   }
 
-  async deleteGroup(group_id: number) {
+  async deleteGroup(group_id: number, res: Response) {
     const groupfind = await this.groupsRepository.find({
       where: { group_id },
     });
@@ -146,6 +147,8 @@ export class GroupsService {
 
     await this.usergroupRepository.delete({ group: groupfind });
     await this.groupsRepository.delete(group_id);
+
+    return res.status(204).send();
   }
 
   // usergroup edit 추가하기
