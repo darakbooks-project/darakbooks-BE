@@ -79,7 +79,7 @@ export class GroupEntity {
 
   @ApiProperty({
     example: 1,
-    description: '그룹장',
+    description: '그룹장_id',
   })
   @Column({ nullable: true })
   group_lead: string;

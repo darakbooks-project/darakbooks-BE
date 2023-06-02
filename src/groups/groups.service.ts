@@ -5,7 +5,7 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { Request , Response} from 'express';
+import { Request, Response } from 'express';
 import { uploadFile } from 'src/config/s3uploads';
 import { Repository, Entity } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
@@ -151,7 +151,6 @@ export class GroupsService {
     return res.status(204).send();
   }
 
-  // usergroup edit 추가하기
   async editGroup(group_id: number, body: ReadOnlyGroupsDto) {
     const group = await this.groupsRepository.findOne({
       where: { group_id },
