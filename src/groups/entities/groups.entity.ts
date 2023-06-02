@@ -50,6 +50,20 @@ export class GroupEntity {
   meeting_type: MeetingType;
 
   @ApiProperty({
+    example: '월요일',
+    description: '모임 요일',
+  })
+  @Column()
+  day: string;
+
+  @ApiProperty({
+    example: '15:00',
+    description: '모임 시간',
+  })
+  @Column()
+  time: string;
+
+  @ApiProperty({
     example: '서울 강서구',
     description: '모임 장소',
   })

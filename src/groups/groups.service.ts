@@ -25,6 +25,8 @@ export class GroupsService {
     group.meeting_type = dto.meeting_type;
     group.open_chat_link = dto.open_chat_link;
     group.participant_limit = dto.participant_limit;
+    group.day = dto.day;
+    group.time = dto.time;
     group.description = dto.description;
     group.recruitment_status = dto.recruitment_status;
     group.region = dto.region;
