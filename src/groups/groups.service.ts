@@ -27,6 +27,31 @@ export class GroupsService {
     private authService: AuthService,
   ) {}
 
+  private async saveGroupData(group: GroupEntity, dto: GroupsCreateDto) {
+    group.name = dto.name;
+    group.meeting_type = dto.meeting_type;
+    group.open_chat_link = dto.open_chat_link;
+    group.participant_limit = dto.participant_limit;
+    group.description = dto.description;
+    group.recruitment_status = dto.recruitment_status;
+    group.region = dto.region;
+    group.group_lead = dto.group_lead;
+  }
+
+  private async checkUserExistence(userIds: User[]) {
+    for (const userId of userIds) {
+      const user = await this.userRepository.findOne({
+        where: { userId: userId.userId },
+      });
+
+      if (!user) {
+        throw new NotFoundException(
+          `해당 ${user.userId} 정보가 존재하지 않습니다.`,
+        );
+      }
+    }
+  }
+
   async findAllGroups() {
     const groups = await this.groupsRepository.find();
 
@@ -102,29 +127,12 @@ export class GroupsService {
     }
 
     const group = new GroupEntity();
-    group.name = body.name;
-    group.meeting_type = body.meeting_type;
-    group.open_chat_link = body.open_chat_link;
-    group.participant_limit = body.participant_limit;
-    group.description = body.description;
-    group.recruitment_status = body.recruitment_status;
-    group.region = body.region;
-    group.group_lead = body.group_lead;
+    this.saveGroupData(group, body);
 
     const createdGroup = await this.groupsRepository.save(group);
 
     const userIds = body.userGroup;
-
-    userIds.map(async (userId) => {
-      const user = await this.userRepository.findOne({
-        where: { userId: userId.userId },
-      });
-      if (!user) {
-        throw new NotFoundException(
-          `해당 ${user.userId} 정보가 존재하지 않습니다.`,
-        );
-      }
-    });
+    await this.checkUserExistence(userIds);
 
     const userGroupEntities = userIds.map((userId) => {
       const userGroup = new UserGroup();
@@ -132,7 +140,8 @@ export class GroupsService {
       userGroup.user = userId;
       return userGroup;
     });
-    const updatedGroup = await this.usergroupRepository.save(userGroupEntities);
+
+    await this.usergroupRepository.save(userGroupEntities);
     return createdGroup;
   }
 
@@ -151,7 +160,7 @@ export class GroupsService {
     return res.status(204).send();
   }
 
-  async editGroup(group_id: number, body: ReadOnlyGroupsDto) {
+  async editGroup(group_id: number, body: GroupsCreateDto) {
     const group = await this.groupsRepository.findOne({
       where: { group_id },
     });
@@ -159,14 +168,7 @@ export class GroupsService {
       throw new BadRequestException('해당 독서모임은 존재하지 않습니다');
     }
 
-    group.name = body.name;
-    group.meeting_type = body.meeting_type;
-    group.open_chat_link = body.open_chat_link;
-    group.participant_limit = body.participant_limit;
-    group.description = body.description;
-    group.recruitment_status = body.recruitment_status;
-    group.region = body.region;
-    group.group_lead = body.group_lead;
+    this.saveGroupData(group, body);
 
     const editedGroup = await this.groupsRepository.save(group);
     return editedGroup;
