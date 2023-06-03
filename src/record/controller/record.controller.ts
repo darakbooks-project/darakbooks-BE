@@ -46,7 +46,7 @@ export class RecordController {
     }
   }
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.recordService.findOne(+id);
