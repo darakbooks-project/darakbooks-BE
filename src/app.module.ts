@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { RecordModule } from './record/record.module';
+import { BookshelfModule } from './bookshelf/bookshelf.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -12,7 +13,7 @@ import configuration from './config/configuration';
     isGlobal: true, 
     load:[configuration]
   }), 
-  AuthModule, UserModule, RecordModule, DatabaseModule,],
+  AuthModule, UserModule, RecordModule, DatabaseModule, BookshelfModule,],
   controllers: [],
   providers: [],
 })

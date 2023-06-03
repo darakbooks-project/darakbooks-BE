@@ -1,7 +1,6 @@
 import { IsArray, IsString } from 'class-validator';
 
-
-export class bookDTO {
+export class BookDTO {
     @IsString()
     bookIsbn: string;
   
@@ -9,11 +8,6 @@ export class bookDTO {
     title: string;
   
     @IsArray()
-    authors: string[];
-  
-    @IsString()
-    publisher: string;
-  
-    @IsString()
     thumbnail: string;
+
 }

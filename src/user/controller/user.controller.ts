@@ -26,10 +26,10 @@ export class UserController {
     @UseGuards(kakaoGuard)
     async login(@Query('Code') code: string, @Req() req:Request, @Res({ passthrough: true }) res: Response){
         const {accessToken,refreshToken}:any = await this.authService.login(req.user);
-        res.cookie('RefreshToken',refreshToken,{
+        res.cookie('refreshToken',refreshToken,{
             httpOnly:true,
             sameSite:'none' ,
-            secure: true, 
+            //secure: true, 
         })
         return {accessToken};
     }
@@ -41,14 +41,15 @@ export class UserController {
     @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
     @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
     @ApiUnauthorizedResponse({status:401, description:'Unauthorized: Refresh Token deleted' }) 
-    @UseFilters(kakaoExceptionFilter,JwtExceptionFilter,NotFoundExceptionFilter)
+    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
     @Get('/auth/reissu')
     async reissue(@Req() req:Request){
         const refreshToken = req.cookies.refreshToken;
-        const userId       = await this.authService.validateRefresh(refreshToken);
-        const accessToken = await this.authService.setAccess(userId);
-        return accessToken;
+        const payload       = await this.authService.validateRefresh(refreshToken);
+        const accessToken = await this.authService.setAccess(payload);
+        return {accessToken};
     }
+    
     @ApiTags('Authentication')
     @ApiOperation({summary: 'logout'})
     @ApiResponse({status:204})

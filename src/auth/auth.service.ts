@@ -27,13 +27,6 @@ export class AuthService {
         return this.setToken(user.userId);
     }
 
-    async validateUser(userId){
-        const user = await this.userService.findByuserId(userId);
-        if(!user) throw new NotFoundException(USER) 
-        return user;
-    }
-
-
     async setToken(userId:string):Promise<object>{
         const payload = {userId};
         const accessToken = await this.setAccess(payload);
@@ -46,7 +39,7 @@ export class AuthService {
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
-        await this.cacheManager.set(payload.userId,jwtToken, 60 * 60 * 24 * 60 ); //60days>ms
+        await this.cacheManager.set(payload.userId,jwtToken, this.configService.get('redis.ttls') ); //60days>ms
         return jwtToken;
     }
 
@@ -54,7 +47,7 @@ export class AuthService {
         return await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
             //expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
-            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}s`
+            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}`,
         });
     }
 
@@ -64,13 +57,14 @@ export class AuthService {
             {secret:this.configService.get('jwt.jwtRefreshSecret'),});
         //cache에 저장된 refresh token인지 확인 
         const stored  = await this.cacheManager.get(payload.userId);
-        if(stored===token) return payload.userId;
+        console.log(stored,token);
+        if(stored===token) return {userId:payload.userId};
         else throw new JsonWebTokenError('Unauthorized: Invalid token') ;
     }
 
     async logout(payload:JwtPayload){
         const userId = payload.userId;
-        const user = await this.validateUser(userId);
+        const user = await this.userService.validateUser(userId);
         //refresh token 삭제 
         this.cacheManager.del(userId);
     }

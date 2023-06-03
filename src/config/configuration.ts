@@ -1,3 +1,5 @@
+import { rmSync } from 'fs';
+
 function required(key: string, defaultValue = undefined) {
     const value = process.env[key] || defaultValue;
     // if (value == null) {
@@ -39,5 +41,6 @@ export default () => ({
         host:required('REDIS_HOST'),
         port:required('REDIS_PORT'),
         password:required('REDIS_PASSWORD'),
+        ttls:required('TTLS'),
     }
 });
