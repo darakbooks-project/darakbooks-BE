@@ -31,7 +31,7 @@ export class AuthService {
         return {accessToken,refreshToken};
     }
 
-    async setRefrsh(payload:JwtPayload){
+    async setRefrsh(payload:any){
         const jwtToken = await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
@@ -42,7 +42,7 @@ export class AuthService {
         return jwtToken;
     }
 
-    async setAccess(payload:JwtPayload){
+    async setAccess(payload:any){
         return await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
             //expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
@@ -60,7 +60,7 @@ export class AuthService {
         else throw new JsonWebTokenError('Unauthorized: Invalid token') ;
     }
 
-    async logout(payload:JwtPayload){
+    async logout(payload:any){
         const userId = payload.userId;
         const user = await this.userService.validateUser(userId);
         //refresh token 삭제 

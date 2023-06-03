@@ -9,9 +9,11 @@ import { JwtService } from '@nestjs/jwt';
 import { DatabaseModule } from 'src/database/database.module';
 import { userProviders } from './user.provider';
 import { CacheConfigModule } from 'src/database/cache.module';
+import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 @Module({
     imports:[DatabaseModule,forwardRef(() => AuthModule),CacheConfigModule],
-    providers:[...userProviders, UserService,AuthService,JwtService],
+    providers:[...userProviders, UserService,AuthService,JwtService,JwtStrategy,JwtAuthGuard],
     controllers: [UserController],    
     exports : [UserService],
 })

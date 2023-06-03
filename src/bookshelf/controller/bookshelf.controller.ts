@@ -14,7 +14,7 @@ export class BookshelfController {
     @UseGuards(JwtAuthGuard)
     @Post('/')
     async addBook(@Body() bookDTO:BookDTO, @Req() req:Request){
-        const {userId} =  req.user as JwtPayload;
+        const {userId} =  req.user as any;
         return this.bookshelfService.addBookToBookshelf(userId,bookDTO);
     }
 
@@ -25,7 +25,7 @@ export class BookshelfController {
         @Query('ownerId') ownerId: string,
         @Req() req:Request
     ){
-        const {userId} =  req.user as JwtPayload;
+        const {userId} =  req.user as any;
         //특정 사용자의 책장 
         if(userId){
             await this.bookshelfService.getBookshelfByUserId(ownerId,userId);

@@ -60,7 +60,7 @@ export class RecordController {
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
   @ApiUnauthorizedResponse({status:401, description: 'Unathorized: You are not the owner of this resource.' }) 
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  //@UseGuards(JwtAuthGuard,OwnerAuthGuard)
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateRecordDto: UpdateRecordDto) {
     return this.recordService.update(+id, updateRecordDto);
@@ -93,6 +93,7 @@ export class RecordController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: number) {
+    console.log("1");
     return this.recordService.findOne(+id);
   }
 

@@ -55,7 +55,7 @@ export class UserController {
     @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter,)
     @UseGuards(JwtAuthGuard)
     async logout(@Req() req:Request,@Res() res: Response){
-        const userId  = req.user as JwtPayload;
+        const userId  = req.user as any;
         await this.authService.logout(userId) ;
         res.status(204).send();
     }
