@@ -6,11 +6,14 @@ import cookieParser from 'cookie-parser';
 declare const module: any;
 
 async function bootstrap() {
+  
   const app = await NestFactory.create(AppModule, 
     {
       cors:{
-        origin: 'https://mafiawithbooks.site',
+        methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization'] ,
         credentials:true,
+        
       }
     });
   

@@ -15,11 +15,11 @@ export class Record {
     @Column()
     thumbnail:string;
 
-    @ApiProperty({ example: 1 , description: 'recordId' })   
+    @ApiProperty({ example: 1 , description: 'record_id' })   
     @PrimaryGeneratedColumn({name:'record_id'})
     recordId:number;
     
-    @ApiProperty({ example: '39834244', description: 'bookIsbn' })
+    @ApiProperty({ example: '39834244', description: 'book_isbn' })
     @Column({name:'book_isbn'})
     bookIsbn: string;
 

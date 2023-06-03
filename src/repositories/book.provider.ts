@@ -1,6 +1,7 @@
 
+import { Book } from 'src/entities/book.entity';
 import { DataSource } from 'typeorm';
-import { Book } from '../entities/Book.entity';
+
 
 export const bookProvider = [
   {

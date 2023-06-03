@@ -28,10 +28,10 @@ export class BookshelfController {
         const {userId} =  req.user as JwtPayload;
         //특정 사용자의 책장 
         if(userId){
-            this.bookshelfService.getBookshelfByUserId(ownerId,userId);
+            await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
         }
         else{ //메인화면에서 사용할 책장 
-
+            //await this.bookshelfService.getRecommendedBookshelf()
         }
 
     }

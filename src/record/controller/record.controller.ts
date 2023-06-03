@@ -49,7 +49,7 @@ export class RecordController {
     create_record_DTO.userId = userId;
     const record = await this.recordService.create(create_record_DTO);
     //책db에 책 저장하기 
-    await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
+    //await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
   }
 
