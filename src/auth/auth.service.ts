@@ -7,9 +7,6 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {Cache} from 'cache-manager';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
-interface JwtPayload {
-    userId: string;
-  }
 const USER = 'USER'
 
 @Injectable()

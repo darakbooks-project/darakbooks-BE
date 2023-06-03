@@ -8,10 +8,6 @@ import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiHeader, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { LoginResponseDto, ReissueDto } from 'src/dto/LoginResponseDTO';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
-interface JwtPayload {
-    userId: string;
-  }
-
 
 @Controller('user')
 export class UserController {
