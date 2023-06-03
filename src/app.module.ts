@@ -11,7 +11,7 @@ import configuration from './config/configuration';
   imports: [ConfigModule.forRoot({
     envFilePath: `.env/.env.${process.env.NODE_ENV || "development"}`,
     isGlobal: true, 
-    load:[configuration]
+    load:[configuration],
   }), 
   AuthModule, UserModule, RecordModule, DatabaseModule, BookshelfModule,],
   controllers: [],

@@ -10,10 +10,10 @@ import { ConfigService } from '@nestjs/config';
 // if you use redis
       useFactory: async (configService: ConfigService) => ({
           store: redisStore as any,
-          host: configService.get('redis.host'),
-          port: configService.get('redis.port'),
-          password:configService.get('redis.password'),
-          ttls:311040000 ,
+          host: configService.get('cache.host'),
+          port: configService.get('cache.port'),
+          password:configService.get('cache.password'),
+          ttls:configService.get('cache.ttls') ,
       }),
       inject: [ConfigService], // ConfigService 주입,
   }),

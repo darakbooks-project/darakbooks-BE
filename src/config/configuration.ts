@@ -37,10 +37,13 @@ export default () => ({
         secretKey: required('AWS_SECRET_ACCESS_KEY'),
         bucket   : required('AWS_BUCKET_NAME'),
     },
-    redis:{
+    cache:{
         host:required('REDIS_HOST'),
         port:required('REDIS_PORT'),
         password:required('REDIS_PASSWORD'),
-        ttls:required('TTLS'),
+        ttls:required('CACHE_TTLS'),
+    },
+    redis:{
+        ttls:required('REDIS_TTLS'),
     }
 });

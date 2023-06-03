@@ -36,7 +36,9 @@ export class AuthService {
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
-        await this.cacheManager.set(payload.userId,jwtToken, this.configService.get('redis.ttls') ); //60days>ms
+        console.log(this.configService.get('redis.ttls'));
+        console.log(typeof(this.configService.get('redis.ttls')));
+        await this.cacheManager.set(payload.userId,jwtToken,this.configService.get('redis.ttls') ); //60days>ms
         return jwtToken;
     }
 
@@ -54,7 +56,6 @@ export class AuthService {
             {secret:this.configService.get('jwt.jwtRefreshSecret'),});
         //cache에 저장된 refresh token인지 확인 
         const stored  = await this.cacheManager.get(payload.userId);
-        console.log(stored,token);
         if(stored===token) return {userId:payload.userId};
         else throw new JsonWebTokenError('Unauthorized: Invalid token') ;
     }
