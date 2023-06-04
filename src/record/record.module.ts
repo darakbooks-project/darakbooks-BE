@@ -13,6 +13,6 @@ import { userProviders } from 'src/user/user.provider';
 @Module({
   imports: [DatabaseModule],
   controllers: [RecordController],
-  providers: [...recordProviders,...bookProvider,...bookshelfProviders,...userProviders,RecordService,S3Service,BookshelfService,UserService]
+  providers: [...recordProviders,...bookProvider,...bookshelfProviders,...userProviders,RecordService,S3Service,BookshelfService,UserService,]
 })
 export class RecordModule {}

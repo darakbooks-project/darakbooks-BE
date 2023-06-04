@@ -6,6 +6,8 @@ import { DatabaseModule } from './database/database.module';
 import { RecordModule } from './record/record.module';
 import { BookshelfModule } from './bookshelf/bookshelf.module';
 import configuration from './config/configuration';
+import { APP_FILTER } from '@nestjs/core';
+import { NotFoundExceptionFilter } from './exceptionFilter/notfound.filter';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -15,6 +17,9 @@ import configuration from './config/configuration';
   }), 
   AuthModule, UserModule, RecordModule, DatabaseModule, BookshelfModule,],
   controllers: [],
-  providers: [],
+  providers: [{
+    provide: APP_FILTER,
+    useClass: NotFoundExceptionFilter,
+  },],
 })
 export class AppModule {}
