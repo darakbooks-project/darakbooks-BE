@@ -13,7 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy,'jwt') {
       ignoreExpiration: false,
       secretOrKey: configService.get('jwt.jwtAccessSecret')
     });
-    
   }
 
   async validate(payload: any) {

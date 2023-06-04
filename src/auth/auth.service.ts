@@ -36,8 +36,6 @@ export class AuthService {
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
-        console.log(this.configService.get('redis.ttls'));
-        console.log(typeof(this.configService.get('redis.ttls')));
         await this.cacheManager.set(payload.userId,jwtToken,this.configService.get('redis.ttls') ); //60days>ms
         return jwtToken;
     }
