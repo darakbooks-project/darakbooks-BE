@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { RecordService } from '../../record/service/record.service';
 
 @Injectable()
@@ -22,7 +22,9 @@ export class OwnerAuthGuard implements CanActivate {
     console.log(resource);
     // 인증된 사용자의 ID와 리소스의 소유자 ID를 비교하여 본인인증 여부를 확인합니다.
     const isOwner = userId === resourceOwnerId;
-
+    if (!isOwner) {
+      throw new UnauthorizedException('Unathorized:You are not the owner of this resource.');
+    }
     return isOwner;
   }
 }

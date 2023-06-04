@@ -10,6 +10,9 @@ export class CreateRecordDTO {
   @IsString()
   recordImg: string;
 
+  @IsString()
+  recordImgUrl: string;
+
   @IsOptional()
   @IsArray()
   tags: { id: number, data: string }[] ;
