@@ -39,17 +39,17 @@ export class RecordController {
   @ApiResponse({status:201, type: Record})
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createDTO: CreateRecordDTO,  @Req() req: Request) {
     const create_record_DTO = createDTO ;
-    //const {userId} =  req.user as JwtPayload;
-    //create_record_DTO.userId = userId;
-    const userId = "239487289347289";
+    const {userId} =  req.user as JwtPayload;
     create_record_DTO.userId = userId;
+    //const userId = "239487289347289";
+    //create_record_DTO.userId = userId;
     const record = await this.recordService.create(create_record_DTO);
     //책db에 책 저장하기 
-    //await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
+    await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
     return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
   }
 
@@ -76,11 +76,11 @@ export class RecordController {
     if (bookIsbn) {
       // bookID를 사용하여 작업 수행
       // 예: bookID를 이용해 데이터 조회 등
-      const records = await this.recordService.getRecordsByLastIdAndBookId(lastId,pageSize,bookIsbn);
+      const records = await this.recordService.getByLastIdAndBookId(lastId,pageSize,bookIsbn);
       return records;
     } else {
       // bookID가 없을 경우의 동작 처리
-      const records = await this.recordService.getRecordsByLastId(lastId, pageSize);
+      const records = await this.recordService.getByLastId(lastId, pageSize);
       return records;
     }
   }
@@ -93,7 +93,6 @@ export class RecordController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: number) {
-    console.log("1");
     return this.recordService.findOne(+id);
   }
 
@@ -104,7 +103,7 @@ export class RecordController {
   @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
   @ApiUnauthorizedResponse({status:401, description: 'Unathorized: You are not the owner of this resource.' }) 
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  //@UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {
     this.recordService.remove(+id);

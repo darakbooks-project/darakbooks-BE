@@ -24,7 +24,7 @@ export class S3Service{
                 ContentType : file.mimetype,
             }
             const result = await this.s3.upload(params).promise();
-            return {'img_name':filename, 'img_url':result.Location};
+            return {'recordImg':filename, 'recordImgUrl':result.Location};
         } catch (error) {
             throw new InternalServerErrorException(`Server ERROR: File upload failed : ${error}`);
         }

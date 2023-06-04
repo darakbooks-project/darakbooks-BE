@@ -20,7 +20,7 @@ export class AuthService {
 
     async login(userData) {
         let user:User = await this.userService.findByuserId(userData.userId);
-        if(!user) user = await this.userService.createUser(userData);
+        if(!user) user = await this.userService.create(userData);
         return this.setToken(user.userId);
     }
 

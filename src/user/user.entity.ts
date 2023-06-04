@@ -3,6 +3,7 @@ import { Transform } from 'class-transformer';
 import { Record } from 'src/record/record.entity';
 import { Book } from 'src/entities/book.entity';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
+import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 @Entity()
 export class User{
     @PrimaryColumn({ name:'user_id',type: 'bigint' })
@@ -35,11 +36,11 @@ export class User{
 
     // @OneToMany(() => Record, record => record.userId)
     // records: Record[];
-
-    @ManyToMany(() => Book, book => book.users)
-    books: Book[];
-
+    
     @OneToMany(() => Bookshelf, bookshelf => bookshelf.user)
     bookshelves: Bookshelf[];
     
+    set update(dto:UpdateUserDTO){
+        Object.assign(this,dto);
+    }
 }
