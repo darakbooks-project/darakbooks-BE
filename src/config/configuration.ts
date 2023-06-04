@@ -1,4 +1,5 @@
 import { rmSync } from 'fs';
+import { parse } from 'path';
 
 function required(key: string, defaultValue = undefined) {
     const value = process.env[key] || defaultValue;
@@ -37,10 +38,13 @@ export default () => ({
         secretKey: required('AWS_SECRET_ACCESS_KEY'),
         bucket   : required('AWS_BUCKET_NAME'),
     },
+    cache:{
+        host:required('CACHE_HOST'),
+        port:required('CACHE_PORT'),
+        password:required('CACHE_PASSWORD'),
+        ttls:parseInt(required('CACHE_TTLS')),
+    },
     redis:{
-        host:required('REDIS_HOST'),
-        port:required('REDIS_PORT'),
-        password:required('REDIS_PASSWORD'),
-        ttls:parseInt(required('TTLS')),
+        ttls:parseInt(required('REDIS_TTLS'))
     }
 });
