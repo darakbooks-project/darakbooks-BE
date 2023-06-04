@@ -44,7 +44,7 @@ export class AuthService {
         return await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
             //expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
-            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}`,
+            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}s`,
         });
     }
 
