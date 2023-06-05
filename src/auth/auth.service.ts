@@ -54,7 +54,6 @@ export class AuthService {
             {secret:this.configService.get('jwt.jwtRefreshSecret'),});
         //cache에 저장된 refresh token인지 확인 
         const stored  = await this.cacheManager.get(payload.userId);
-        console.log(stored,token);
         if(stored===token) return {userId:payload.userId};
         else throw new JsonWebTokenError('Unauthorized: Invalid token') ;
     }
@@ -65,5 +64,4 @@ export class AuthService {
         //refresh token 삭제 
         this.cacheManager.del(userId);
     }
-
 }
