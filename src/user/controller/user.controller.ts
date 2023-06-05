@@ -4,58 +4,57 @@ import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 import { Request , Response} from 'express';
 import kakaoExceptionFilter from '../../exceptionFilter/kakao.filter';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
-import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfoud.filter';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiHeader, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { LoginResponseDto, ReissueDto } from 'src/dto/LoginResponseDTO';
+import { accessDTO, refreshHeader, refreshRes, unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponseDTO';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
-interface JwtPayload {
-    userId: string;
-  }
-
-
 @Controller('user')
 export class UserController {
-    constructor(@Inject(forwardRef(()=>AuthService))private authService:AuthService,) {} 
+    constructor(@Inject(forwardRef(()=>AuthService))private authService:AuthService,) {}
+    
+    @ApiBearerAuth() 
     @ApiTags('Authentication')
-    @ApiOperation({summary: 'kakao로 소셜 로그인'})
-    @ApiResponse({status:200, type: LoginResponseDto})
-    @ApiNotFoundResponse({status:404, description:'NOT FOUND: USER NOT FOUND'})
+    @ApiOperation({summary: 'kakao로 소셜 로그인(회원가입)'})
+    @ApiResponse({status:200,  description: '로그인 성공',type: accessDTO, headers:refreshRes,})
     @ApiBadRequestResponse({status:400, description:'Bad Request: error emssage'})
-    @UseFilters(kakaoExceptionFilter,NotFoundExceptionFilter)
+    @UseFilters(kakaoExceptionFilter)
     @Get('/auth/kakao')
     @UseGuards(kakaoGuard)
-    async login(@Query('Code') code: string, @Req() req:Request, @Res({ passthrough: true }) res: Response){
+    async login(@Query('code') code: string, @Req() req:Request, @Res({ passthrough: true }) res: Response){
         const {accessToken,refreshToken}:any = await this.authService.login(req.user);
-        res.cookie('RefreshToken',refreshToken,{
+        res.cookie('refreshToken',refreshToken,{
             httpOnly:true,
             sameSite:'none' ,
-            secure: true, 
-        })
-        return {accessToken};
+            domain:'mafiawithbooks.site',
+            path:'/',
+            secure: false, 
+        });
+        res.send({accessToken});
     }
     
+    @ApiBearerAuth() 
     @ApiTags('Authentication')
     @ApiOperation({summary: 'access token 만료시 refresh token을 이용해 재발급'})
-    @ApiHeader({ name: 'Authorization', description: 'Bearer {refresh_token}' })
-    @ApiResponse({status:200, type: ReissueDto})
-    @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
-    @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
-    @ApiUnauthorizedResponse({status:401, description:'Unauthorized: Refresh Token deleted' }) 
-    @UseFilters(kakaoExceptionFilter,JwtExceptionFilter,NotFoundExceptionFilter)
+    @ApiHeader(refreshHeader)
+    @ApiResponse({status:200, type: accessDTO})
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
+    @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
+    @UseFilters(JwtExceptionFilter)
     @Get('/auth/reissu')
     async reissue(@Req() req:Request){
         const refreshToken = req.cookies.refreshToken;
-        const userId       = await this.authService.validateRefresh(refreshToken);
-        const accessToken = await this.authService.setAccess(userId);
-        return accessToken;
+        const payload       = await this.authService.validateRefresh(refreshToken);
+        const accessToken = await this.authService.setAccess(payload);
+        return {accessToken};
     }
+    
+    @ApiBearerAuth() 
     @ApiTags('Authentication')
     @ApiOperation({summary: 'logout'})
     @ApiResponse({status:204})
-    @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Token expired' }) 
-    @ApiUnauthorizedResponse({status:401, description: 'Unauthorized: Invalid token' }) 
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
+    @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @Get('/auth/logout')
-    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter,)
+    @UseFilters(JwtExceptionFilter,)
     @UseGuards(JwtAuthGuard)
     async logout(@Req() req:Request,@Res() res: Response){
         const userId  = req.user as JwtPayload;

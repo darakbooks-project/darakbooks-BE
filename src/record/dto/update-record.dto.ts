@@ -1,34 +1,34 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateRecordDTO } from './create-record.dto';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class UpdateRecordDto extends PartialType(CreateRecordDTO) {
-    @ApiProperty({ example: '39834244', description: 'bookIsbn' })
+    @ApiPropertyOptional({ example: '8996991341', description: 'bookIsbn' })
     @IsOptional()
     @IsString()
     bookIsbn: string;
 
-    @ApiProperty({ example: '다음권이 너무 궁금하다. ', description: 'text' })
+    @ApiPropertyOptional({ example: '다음권이 너무 궁금하다. ', description: '독서기록' })
     @IsOptional()
     @IsString()
     text: string;
 
-    @ApiProperty({ example: '1684897517164_86', description: 'recordImg' })
+    @ApiPropertyOptional({ example: '1684897517164_86', description: '독서기록의 사진 name(key)' })
     @IsOptional()
     @IsString()
     recordImg: string;
 
-    @ApiProperty({ example: "https://avostorage.s3.amazonaws.com/1684897517164_86", description: 'recordImgUrl' })
+    @ApiPropertyOptional({ example: "https://avostorage.s3.amazonaws.com/1684897517164_86", description: '독서기록의 사진 url' })
     @IsOptional()
     @IsString()
     recordImgUrl: string;
 
-    @ApiProperty({ example: [{"id": 1, "data": "tag1"}, {"id": 2, "data": "tag2"}, {"id": 3, "data": "tag3"}], description: 'tags' })
+    @ApiPropertyOptional({ example: [{"id": 1, "data": "마음단단"}, {"id": 2, "data": "자기계발"}], description: '독서기록의 tag' })
     @IsOptional()
     @IsArray()
     tags: { id: number, data: string }[] ;
 
-    @ApiProperty({ example: '2023-05-23', description: 'readAt' })   
+    @ApiPropertyOptional({ example: '2023-05-23', description: '읽은 날짜' })   
     @IsOptional()
     @IsString()
     readAt: string;

@@ -1,7 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { Book } from 'src/entities/book.entity';
+import { UpdateUserDTO } from 'src/dto/updateUserDTO';
+import { Bookshelf } from 'src/entities/BookShelf.entity';
 
 @Injectable()
 export class UserService {
@@ -11,25 +13,33 @@ export class UserService {
         return await this.userRepository.findOneBy({userId: id});
     }
 
-    async createUser(userData):Promise<User> {
+    async create(userData):Promise<User> {
         return await this.userRepository.save(userData);
     }
     
-    async validateUser(userId){
-        const user = await this.findByuserId(userId);
+    async validateUser(id:string){
+        const user = await this.userRepository.findOneBy({userId: id});
         if(!user) throw new NotFoundException('USER'); 
         return user;
     }
 
-    async addBook(userId:string, book:Book){
-        //user찾기 
-        const user = await this.validateUser(userId);
-        const isread = await this.isBookInUserReadBooks(user,book);
-        if(!isread) user.books.push(book);
+    async update(id:string, updateDTO: UpdateUserDTO){
+        const user = await this.validateUser(id);
+        //update method 
+        user.update = updateDTO;
         return await this.userRepository.save(user);
     }
-    async isBookInUserReadBooks(user:User, book:Book){
-        //user가 읽은 책인지 확인하기 
-        return user.books.find((b) => b.bookIsbn === book.bookIsbn);
+
+    async updateBookshelf(user:User,bookshelf:Bookshelf){
+        //update method 
+        user.bookshelves.push(bookshelf);
+        return await this.userRepository.save(user);
+    }
+
+    async canViewBookshelf(ownerId:string, userId:string){
+        const user = await this.validateUser(ownerId);
+        if(user.bookshelfIsHidden && userId!==ownerId) 
+            throw new UnauthorizedException("Unahtorized: this is hideen booksehlf");
+        return ;
     }
 }

@@ -6,7 +6,8 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse();
     const message = `NOT FOUND: ${exception.message} NOT FOUND`;
     response.status(404).json({ message });
+    throw exception;
+
   }
 }
-
 export default NotFoundException;

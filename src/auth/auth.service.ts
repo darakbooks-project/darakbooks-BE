@@ -7,9 +7,6 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {Cache} from 'cache-manager';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
-interface JwtPayload {
-    userId: string;
-  }
 const USER = 'USER'
 
 @Injectable()
@@ -23,7 +20,7 @@ export class AuthService {
 
     async login(userData) {
         let user:User = await this.userService.findByuserId(userData.userId);
-        if(!user) user = await this.userService.createUser(userData);
+        if(!user) user = await this.userService.create(userData);
         return this.setToken(user.userId);
     }
 
@@ -34,20 +31,20 @@ export class AuthService {
         return {accessToken,refreshToken};
     }
 
-    async setRefrsh(payload:JwtPayload){
+    async setRefrsh(payload:any){
         const jwtToken = await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtRefreshSecret'),
             expiresIn:`${this.configService.get('jwt.refreshExpiresInDay')}days`,
         });
-        await this.cacheManager.set(payload.userId,jwtToken, 60 * 60 * 24 * 60 ); //60days>ms
+        await this.cacheManager.set(payload.userId,jwtToken,this.configService.get('redis.ttls') ); //60days>ms
         return jwtToken;
     }
 
-    async setAccess(payload:JwtPayload){
+    async setAccess(payload:any){
         return await this.jwtService.signAsync(payload,{
             secret:this.configService.get('jwt.jwtAccessSecret'),
             //expiresIn:`${this.configService.get('jwt.accessExpiresInHour')}h`,
-            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}s`
+            expiresIn:`${this.configService.get('jwt.accessExpiresInSec')}s`,
         });
     }
 
@@ -57,15 +54,14 @@ export class AuthService {
             {secret:this.configService.get('jwt.jwtRefreshSecret'),});
         //cache에 저장된 refresh token인지 확인 
         const stored  = await this.cacheManager.get(payload.userId);
-        if(stored===token) return payload.userId;
+        if(stored===token) return {userId:payload.userId};
         else throw new JsonWebTokenError('Unauthorized: Invalid token') ;
     }
 
-    async logout(payload:JwtPayload){
+    async logout(payload:any){
         const userId = payload.userId;
         const user = await this.userService.validateUser(userId);
         //refresh token 삭제 
         this.cacheManager.del(userId);
     }
-
 }

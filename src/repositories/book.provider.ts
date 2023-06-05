@@ -1,8 +1,9 @@
 
+import { Book } from 'src/entities/book.entity';
 import { DataSource } from 'typeorm';
-import { Book } from '../entities/Book.entity';
 
-export const BookProvider = [
+
+export const bookProvider = [
   {
     provide: 'BOOK_REPOSITORY',
     useFactory: (dataSource: DataSource) => dataSource.getRepository(Book),

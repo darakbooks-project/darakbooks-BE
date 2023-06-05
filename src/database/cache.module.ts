@@ -1,16 +1,23 @@
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
-import { RedisClientOptions } from 'redis';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    CacheModule.register<RedisClientOptions>({
-      store: redisStore,
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-      isGlobal:true,
-    },),
+    CacheModule.register({
+      isGlobal: true,
+// if you use redis
+      useFactory: async (configService: ConfigService) => ({
+          store: redisStore as any,
+          host: configService.get('cache.host'),
+          port: configService.get('cache.port'),
+          password:configService.get('cache.password'),
+          ttls:configService.get('cache.ttls') ,
+      }),
+      inject: [ConfigService], // ConfigService 주입,
+  }),
+  
   ],
 })
 export class CacheConfigModule {}
