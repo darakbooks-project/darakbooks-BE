@@ -19,14 +19,16 @@ export class UserController {
     @UseFilters(kakaoExceptionFilter)
     @Get('/auth/kakao')
     @UseGuards(kakaoGuard)
-    async login(@Query('Code') code: string, @Req() req:Request, @Res({ passthrough: true }) res: Response){
+    async login(@Query('code') code: string, @Req() req:Request, @Res({ passthrough: true }) res: Response){
         const {accessToken,refreshToken}:any = await this.authService.login(req.user);
         res.cookie('refreshToken',refreshToken,{
             httpOnly:true,
             sameSite:'none' ,
-            //secure: true, 
-        })
-        return {accessToken};
+            domain:'mafiawithbooks.site',
+            path:'/',
+            secure: false, 
+        });
+        res.send({accessToken});
     }
     
     @ApiBearerAuth() 
