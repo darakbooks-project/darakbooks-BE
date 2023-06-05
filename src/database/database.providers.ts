@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { Book } from 'src/entities/book.entity';
 import { Record } from 'src/record/record.entity';
+import { UserGroup } from 'src/user-group/entities/user-group.entity';
 import { User } from 'src/user/user.entity';
 import { DataSource } from 'typeorm';
 
@@ -16,7 +17,7 @@ export const databaseProviders = [
         username: configService.get('db.username'),
         password: configService.get('db.password'),
         database: configService.get('db.name'),
-        entities: [User,Record,Book,Bookshelf],
+        entities: [User,Record,Book,Bookshelf,UserGroup],
         synchronize: true, //나중에 바꾸기. 
       });
 
