@@ -21,7 +21,7 @@ export default () => ({
     jwt: {
         jwtAccessSecret: required('JWT_SECRET_ACCESS'),
         accessExpiresInHour: parseInt(required('ACCESS_EXPIRES_HOUR', 6)),
-        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 10)),
+        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 30)),
         jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
         refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
     },
@@ -34,5 +34,10 @@ export default () => ({
         accessKey: required('AWS_ACCESS_KEY_ID'),
         secretKey: required('AWS_SECRET_ACCESS_KEY'),
         bucket   : required('AWS_BUCKET_NAME'),
+    },
+    redis:{
+        host:required('REDIS_HOST'),
+        port:required('REDIS_PORT'),
+        password:required('REDIS_PASSWORD'),
     }
 });

@@ -6,9 +6,15 @@ import cookieParser from 'cookie-parser';
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, 
+    {
+      cors:{
+        origin: 'https://mafiawithbooks.site',
+        credentials:true,
+      }
+    });
   
-  //app.use(cookieParser());
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('독서')
