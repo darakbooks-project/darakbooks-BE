@@ -34,5 +34,9 @@ export default () => ({
         accessKey: required('AWS_ACCESS_KEY_ID'),
         secretKey: required('AWS_SECRET_ACCESS_KEY'),
         bucket   : required('AWS_BUCKET_NAME'),
+    },
+    gpt:{
+        openaiKey: required('OPENAI_API_KEY'),
+        libraryKey: required('LIBRARY_API_KEY'),
     }
 });
