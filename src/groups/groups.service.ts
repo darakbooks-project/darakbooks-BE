@@ -69,15 +69,20 @@ export class GroupsService {
     // skip 할 만큼
     const skipCount = (page - 1) * limit;
 
-    const groups = await this.groupsRepository
+    const [groups, totalGroups] = await this.groupsRepository
       .createQueryBuilder('groupsentity')
       .skip(skipCount)
       .take(limit)
-      .getMany();
+      .getManyAndCount();
 
-    console.log('HEREEE');
+    const totalPages = Math.ceil(totalGroups / limit);
 
-    return groups;
+    return {
+      groups,
+      totalPages,
+      totalGroups,
+      currentPage: page,
+    };
   }
 
   async getOneGroupById(group_id: number) {

@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UseGuards,
 } from '@nestjs/common';
+import { GroupsMetaDto } from './dto/groups.meta.dto';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -46,15 +47,24 @@ export class GroupsController {
     status: 200,
     description: '응답성공',
     isArray: true,
-    type: ReadOnlyGroupsDto,
+    type: GroupsMetaDto,
   })
   @Get('/find')
   async findNGroups(
     @Query('page') page: number,
     @Query('limit') limit: number,
   ) {
-    const groups = await this.groupsService.findNGroups(page, limit);
-    return groups;
+    const { groups, totalGroups } = await this.groupsService.findNGroups(
+      page,
+      limit,
+    );
+    const totalPages = Math.ceil(totalGroups / limit);
+    return {
+      groups,
+      totalPages,
+      totalGroups,
+      currentPage: page,
+    };
   }
 
   @ApiOperation({ summary: '특정 그룹 조회' })
