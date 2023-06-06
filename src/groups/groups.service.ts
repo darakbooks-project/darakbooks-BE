@@ -143,15 +143,23 @@ export class GroupsService {
     const createdGroup = await this.groupsRepository.save(group);
     const userIds = body.userGroup;
     await this.findUserList(userIds);
+    const lastUserGroup = await this.usergroupRepository.findOne({
+      where: {},
+      order: { id: 'DESC' },
+    });
 
     const userGroupEntities = userIds.map((userId) => {
       const userGroup = new UserGroup();
-      userGroup.group = group;
+      userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
       userGroup.user = userId;
+      userGroup.group = group;
       return userGroup;
     });
-    await this.usergroupRepository.save(userGroupEntities);
 
+    const createdGroupUser = await this.usergroupRepository.save(
+      userGroupEntities,
+      { reload: true },
+    );
     return createdGroup;
   }
 
