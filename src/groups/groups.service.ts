@@ -65,6 +65,21 @@ export class GroupsService {
     return groups;
   }
 
+  async findNGroups(page, limit) {
+    // skip 할 만큼
+    const skipCount = (page - 1) * limit;
+
+    const groups = await this.groupsRepository
+      .createQueryBuilder('groupsentity')
+      .skip(skipCount)
+      .take(limit)
+      .getMany();
+
+    console.log('HEREEE');
+
+    return groups;
+  }
+
   async getOneGroupById(group_id: number) {
     const group = await this.groupsRepository.findOne({
       where: { group_id },
