@@ -35,8 +35,6 @@ export class GPTController {
     bookdata: any[],
     @Body() userInput: any,
   ): Promise<any> {
-    const model = new OpenAI({ maxConcurrency: 10, temperature: 0 });
-    const chainA = loadQARefineChain(model);
 
     bookdata = await Promise.all(
       bookdata.map(async (book) => {
@@ -58,14 +56,17 @@ export class GPTController {
       }),
     );
 
-    // With a `StructuredOutputParser` we can define a schema for the output.
     const parser = StructuredOutputParser.fromNamesAndDescriptions({
       Title: 'Title: of the recommendation',
       Author: 'Author: of the recommendation',
       Image: 'Book Image: of the recommendation',
+      Reason: 'Why you recommended the book',
     });
 
     const formatInstructions = parser.getFormatInstructions();
+
+    const model = new OpenAI({ maxConcurrency: 10, temperature: 0 });
+    const chainA = loadQARefineChain(model);
 
     const resA = await chainA.call({
       input_documents: bookdata,
@@ -87,7 +88,7 @@ export class GPTController {
   async getBookAPI(@Body() userInput: any): Promise<any> {
     const apiUrl = 'https://nl.go.kr/NL/search/openApi/saseoApi.do';
     const apiKey = process.env.LIBRARY_API_KEY;
-    const startDate = '19700101';
+    const startDate = '19400101';
     const endDate = '20230431';
     const drCode = 11;
     // 분류번호(11:문학, 6:인문과학, 5:사회과학, 4:자연과학)
