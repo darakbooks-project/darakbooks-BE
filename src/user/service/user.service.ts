@@ -1,6 +1,9 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
+import { Book } from 'src/entities/book.entity';
+import { UpdateUserDTO } from 'src/dto/updateUserDTO';
+import { Bookshelf } from 'src/entities/BookShelf.entity';
 
 @Injectable()
 export class UserService {
@@ -10,23 +13,33 @@ export class UserService {
         return await this.userRepository.findOneBy({userId: id});
     }
 
-    async createUser(userData):Promise<User> {
+    async create(userData):Promise<User> {
         return await this.userRepository.save(userData);
     }
-
-    async validateUserRefresh(userId:string){
-        const user = await this.findByuserId(userId);
-        //if(!user) 
-    }
-
-    //refresh 는 redis 사용시 추후 수정해야 함. 
-    async setRefresh(userId:string){
-        return await this.userRepository.update(userId,{refresh:true});
-    }
-
-    async deleteRefresh(userId:string){
-        return await this.userRepository.update(userId,{refresh:false});
-    }
-
     
+    async validateUser(id:string){
+        const user = await this.userRepository.findOneBy({userId: id});
+        if(!user) throw new NotFoundException('USER'); 
+        return user;
+    }
+
+    async update(id:string, updateDTO: UpdateUserDTO){
+        const user = await this.validateUser(id);
+        //update method 
+        user.update = updateDTO;
+        return await this.userRepository.save(user);
+    }
+
+    async updateBookshelf(user:User,bookshelf:Bookshelf){
+        //update method 
+        user.bookshelves.push(bookshelf);
+        return await this.userRepository.save(user);
+    }
+
+    async canViewBookshelf(ownerId:string, userId:string){
+        const user = await this.validateUser(ownerId);
+        if(user.bookshelfIsHidden && userId!==ownerId) 
+            throw new UnauthorizedException("Unahtorized: this is hideen booksehlf");
+        return ;
+    }
 }

@@ -29,11 +29,13 @@ export class RecordService {
 
   async remove(id: number) {
     const record = await this.findOne(id);
+    console.log(record);
     await this.s3Service.deleteFile(record.recordImg);
     return await this.recordRepository.delete({recordId:id});
   }
 
-  async getRecordsByLastId(lastId: number, pageSize: number): Promise<Record[]>{
+  async getByLastId(lastId: number, pageSize: number): Promise<Record[]>{
+    if(!lastId) lastId = 0;
     const result = await this.recordRepository
       .createQueryBuilder('record')
       .where('record.recordId > :lastId', { lastId }) // lastId보다 큰 ID를 가진 레코드를 필터링합니다.
@@ -43,7 +45,7 @@ export class RecordService {
 
     return result;
   }
-  async getRecordsByLastIdAndBookId(lastId: number, pageSize: number, bookId: string): Promise<Record[]> {
+  async getByLastIdAndBookId(lastId: number, pageSize: number, bookId: string): Promise<Record[]> {
 
     const result = await this.recordRepository
       .createQueryBuilder('record')

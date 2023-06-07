@@ -1,0 +1,4 @@
+interface JwtPayload {
+    userId: string;
+  }
+  

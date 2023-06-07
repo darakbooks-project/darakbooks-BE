@@ -7,24 +7,31 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Record {
-    
-    @ApiProperty({ example: 1 , description: 'recordId' })   
+    @ApiProperty({ example: "쇼코의 미소" , description: '책 제목' })   
+    @Column()
+    title:string;
+
+    @ApiProperty({ example: "thumnail url" , description:'kakao api에서 받은 책 사진' })   
+    @Column()
+    thumbnail:string;
+
+    @ApiProperty({ example: 1 , description: 'record_id' })   
     @PrimaryGeneratedColumn({name:'record_id'})
     recordId:number;
     
-    @ApiProperty({ example: '39834244', description: 'bookIsbn' })
+    @ApiProperty({ example: '39834244', description: 'book_isbn' })
     @Column({name:'book_isbn'})
     bookIsbn: string;
 
-    @ApiProperty({ example: '다음권이 너무 궁금하다. ', description: 'text' })
+    @ApiProperty({ example: '다음권이 너무 궁금하다. ', description: '독서 기록 글' })
     @Column()
     text: string;
 
-    @ApiProperty({ example: '1684897517164_86', description: 'recordImg' })
+    @ApiProperty({ example: '1684897517164_86', description: '독서기록 사진 key값'})
     @Column({name:'record_img'})
     recordImg: string;
 
-    @ApiProperty({ example: "https://avostorage.s3.amazonaws.com/1684897517164_86", description: 'recordImgUrl' })
+    @ApiProperty({ example: "https://avostorage.s3.amazonaws.com/1684897517164_86", description: '독서기록 사진 url' })
     @Column({name:'record_img_url'})
     recordImgUrl: string;
 
@@ -33,19 +40,19 @@ export class Record {
     tags: { id: number, data: string }[] ;
     
     @ApiProperty({ example: 12934829348 , description: 'userId' })   
-    @ManyToOne(() => User, user => user.records)
+    // @ManyToOne(() => User, user => user.records)
     @Column({name:'user_id'})
     userId: string;
 
-    @ApiProperty({ example: '2023-05-24T03:13:33.488Z', description: 'createdAt' })
+    @ApiProperty({ example: '2023-05-24T03:13:33.488Z', description: '독서기록 생성 날짜 ' })
     @Column({name:'created_at', type: 'datetime'})
     createdAt:Date;
 
-    @ApiProperty({ example: '2023-05-24T03:13:33.488Z', description: 'updatedAt' })   
+    @ApiProperty({ example: '2023-05-24T03:13:33.488Z', description: '독서기록 수정 날짜' })   
     @Column({nullable:true, name:'updated_at', type: 'datetime'})
     updatedAt:Date;
 
-    @ApiProperty({ example: '2023-05-21T00:00:00.000Z', description: 'readAt' })   
+    @ApiProperty({ example: '2023-05-21T00:00:00.000Z', description: '책 읽은 날짜' })   
     @Column({ name:'read_at', type: 'datetime'})
     readAt:Date;
     
