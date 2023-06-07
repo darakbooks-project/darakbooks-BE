@@ -17,10 +17,11 @@ import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import * as fs from 'fs';
-import { loadQAStuffChain, loadQAMapReduceChain, loadQARefineChain } from 'langchain/chains';
+import { loadQARefineChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
 import { RefineDocumentsChain } from 'langchain/chains';
 import { PromptTemplate } from 'langchain/prompts';
+import { StructuredOutputParser } from 'langchain/output_parsers';
 // API CHAIN:  https://js.langchain.com/docs/modules/chains/other_chains/api_chain
 // CONSTITUTIONAL CHAIN : https://js.langchain.com/docs/modules/chains/other_chains/constitutional_chain
 // INPUT MODERATION CHAIN: https://js.langchain.com/docs/modules/chains/other_chains/moderation_chain
@@ -57,39 +58,22 @@ export class GPTController {
       }),
     );
 
-    console.log(bookdata);
+    // With a `StructuredOutputParser` we can define a schema for the output.
+    const parser = StructuredOutputParser.fromNamesAndDescriptions({
+      Title: 'Title: of the recommendation',
+      Author: 'Author: of the recommendation',
+      Image: 'Book Image: of the recommendation',
+    });
+
+    const formatInstructions = parser.getFormatInstructions();
 
     const resA = await chainA.call({
       input_documents: bookdata,
       question:
         userInput.userInput +
-        'in Korean from the inputDocument. Return 3 recommendations in this format: Book Title: , Author: , Book Image: ',
+        `. Recommend 3 books in Korean from the input_documents in this format: ${formatInstructions} `,
     });
     console.log('CALL', resA.output_text);
-    // const cleanedText = resA.output_text.replace(/\n/g, '');
-
-    // Split the text by commas to separate the fields
-    // const entries = cleanedText.split(',');
-
-    // Format entries into JSON objects
-    // const books = entries.map((entry) => {
-    //   const bookInfo = entry.split(' - ');
-    //   const title = bookInfo[0].trim();
-    //   const author = bookInfo[1].trim();
-    //   const link = bookInfo[2].trim();
-
-    //   return {
-    //     bookTitle: title,
-    //     author: author,
-    //     link: link,
-    //   };
-    // });
-
-    // Convert the array of books into a JSON string
-    // const jsonOutput = JSON.stringify(books);
-
-    // console.log(jsonOutput);
-
     return resA.output_text;
   }
 
