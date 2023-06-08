@@ -22,20 +22,17 @@ import { Document } from 'langchain/document';
 import { RefineDocumentsChain } from 'langchain/chains';
 import { PromptTemplate } from 'langchain/prompts';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-// API CHAIN:  https://js.langchain.com/docs/modules/chains/other_chains/api_chain
-// CONSTITUTIONAL CHAIN : https://js.langchain.com/docs/modules/chains/other_chains/constitutional_chain
-// INPUT MODERATION CHAIN: https://js.langchain.com/docs/modules/chains/other_chains/moderation_chain
-// RETRIEVAL QA : https://js.langchain.com/docs/modules/chains/index_related_chains/retrieval_qa
-// DOCUMENT QA: https://js.langchain.com/docs/modules/chains/index_related_chains/document_qa
+import { TranslatorService } from 'nestjs-translator';
 
 @ApiTags('gpt_recs_test')
 @Controller('recs_test')
 export class GPTController {
+  constructor(private translator: TranslatorService) {}
+
   async generateBookRecommendations(
     bookdata: any[],
     @Body() userInput: any,
   ): Promise<any> {
-
     bookdata = await Promise.all(
       bookdata.map(async (book) => {
         const filteredContents = book[0].recomContents
@@ -55,6 +52,7 @@ export class GPTController {
         });
       }),
     );
+    console.log(bookdata);
 
     const parser = StructuredOutputParser.fromNamesAndDescriptions({
       Title: 'Title: of the recommendation',
@@ -65,13 +63,18 @@ export class GPTController {
 
     const formatInstructions = parser.getFormatInstructions();
 
-    const model = new OpenAI({ maxConcurrency: 10, temperature: 0 });
+    const model = new OpenAI({ maxConcurrency: 10, temperature: 1 });
     const chainA = loadQARefineChain(model);
+
+    const userRequest = this.translator.translate(userInput.userInput, {
+      lang: 'en',
+    });
+    console.log(userRequest);
 
     const resA = await chainA.call({
       input_documents: bookdata,
       question:
-        userInput.userInput +
+        userRequest +
         `. Recommend 3 books in Korean from the input_documents in this format: ${formatInstructions} `,
     });
     console.log('CALL', resA.output_text);
@@ -90,8 +93,7 @@ export class GPTController {
     const apiKey = process.env.LIBRARY_API_KEY;
     const startDate = '19400101';
     const endDate = '20230431';
-    const drCode = 11;
-    // 분류번호(11:문학, 6:인문과학, 5:사회과학, 4:자연과학)
+    const drCode = '11,6,5,4';
 
     const agent = new https.Agent({
       rejectUnauthorized: false,

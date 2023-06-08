@@ -36,9 +36,11 @@
     "axios": "^1.4.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "i18next": "^22.5.1",
     "langchain": "^0.0.91",
     "ml-matrix": "^6.10.4",
     "mysql2": "^3.3.0",
+    "nestjs-translator": "^0.0.6",
     "openai": "^3.2.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
@@ -47,6 +49,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.6.3",
+    "translate": "^2.0.2",
     "typeorm": "^0.3.16"
   },
   "devDependencies": {
