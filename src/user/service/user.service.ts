@@ -14,7 +14,9 @@ export class UserService {
     }
 
     async create(userData):Promise<User> {
-        return await this.userRepository.save(userData);
+        const user = await this.userRepository.save(userData);
+        user.bookshelves = [];
+        return await this.userRepository.save(user);
     }
     
     async validateUser(id:string){
@@ -32,6 +34,9 @@ export class UserService {
 
     async updateBookshelf(user:User,bookshelf:Bookshelf){
         //update method 
+        if (!user.bookshelves) {
+            user.bookshelves = [];
+        }
         user.bookshelves.push(bookshelf);
         return await this.userRepository.save(user);
     }

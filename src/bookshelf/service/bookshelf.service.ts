@@ -29,8 +29,7 @@ export class BookshelfService {
         await this.updateBookshelf(book,user);
 
     }
-
-    //
+    
     private async updateBookshelf(book: Book,user:User) {
         const bookshelf = new Bookshelf();
         bookshelf.user = user;
@@ -53,28 +52,13 @@ export class BookshelfService {
     }
 
     async addBookToDB(createDTO:BookDTO){
-        //책 없으면 책db에 추가 
+        // 책이 이미 존재하는 경우에는 바로 반환
         const isExist = await this.findOne(createDTO.bookIsbn);
         if(isExist) return isExist;
         const book = this.bookRepository.create(createDTO);
+        book.bookshelves = [];
         return await this.bookRepository.save(book);
     }
-
-    async addBookToBookshelfByRecord(userId:string, bookDTO:BookDTO){
-       
-        //책 있는지 확인 후 책 data 만들기 
-        const book = await this.addBookToDB(bookDTO);
-        console.log(bookDTO);
-
-        //user가 읽은책인지 확인
-        const isread = await this.isReadBook(userId,bookDTO.bookIsbn) ;
-        if(isread) return;
-        //user가 존재하는지 확인 
-        const user = await this.userService.validateUser(userId);
-        //안 읽은 책이라면 책장에 추가 
-        await this.updateBookshelf(book,user);
-    }
-
 
     async getBookshelfByUserId(ownerId:string, userId:string){
         //user의 책장이 공개인지 아닌지 확인 

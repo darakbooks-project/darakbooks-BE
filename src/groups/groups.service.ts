@@ -171,7 +171,9 @@ export class GroupsService {
 
   async deleteGroup(group_id: number, res: Response) {
     const groupfind = await this.getOneGroupById(group_id);
-    await this.usergroupRepository.delete({ group: groupfind });
+    const groupId = groupfind.group_id;
+
+    await this.usergroupRepository.delete({ group: { group_id: groupId } });
     await this.groupsRepository.delete(group_id);
 
     return res.status(204).send();
@@ -186,9 +188,8 @@ export class GroupsService {
   }
 
   async getAllUsersInGroup(group_id: number) {
-    const groupfind = await this.getOneGroupById(group_id);
     const groupusers = await this.usergroupRepository.find({
-      where: { group: groupfind },
+      where: { group: { group_id: group_id } },
       relations: ['user'],
     });
     const userIds = groupusers.map((userGroup) => userGroup.user);
@@ -208,11 +209,9 @@ export class GroupsService {
   }
 
   async removeUserFromGroup(group_id: number, user_id: string, res: Response) {
-    const groupfind = await this.getOneGroupById(group_id);
-    const userfind = await this.findUser(user_id);
     await this.usergroupRepository.delete({
-      user: userfind,
-      group: groupfind,
+      user: { userId: user_id },
+      group: { group_id: group_id },
     });
 
     return res.status(204).send();

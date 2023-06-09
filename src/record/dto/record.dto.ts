@@ -24,4 +24,7 @@ export class recordDTO {
     readAt: string;
   
     userId: string;
+
+    bookIsbn : string;
+    
 }

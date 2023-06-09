@@ -20,7 +20,7 @@ export class Book {
 
     @ApiProperty({ example: ["김영하",], description: '책의 작가' })
     @Column({ type: 'json', nullable: true })
-    tags: string[] ;
+    authors: string[] ;
 
     @OneToMany(() => Record, record => record.bookIsbn)
     records: Record[]; 

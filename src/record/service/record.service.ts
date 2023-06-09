@@ -13,7 +13,7 @@ export class RecordService {
   public recordColumns = [
     'record.recordId','record.readAt' , 'record.text', 'record.recordImg', 'record.recordImgUrl','record.tags',
     'book.bookIsbn','book.title', 'book.thumbnail', 'book.authors',
-    'record.userId', 'user.nickname', 'user.profileImg'];
+    'user.userId', 'user.nickname', 'user.profileImg'];
 
   constructor(
     @Inject('RECORD_REPOSITORY') private recordRepository:Repository<Record>, 
@@ -23,6 +23,12 @@ export class RecordService {
   async create(createDTO: recordDTO) {
     const record = this.recordRepository.create(createDTO);
     return await this.recordRepository.save(record);
+  }
+
+  async toDto(dto:recordDTO, userId:string, bookIsbn:string){
+    dto.bookIsbn = bookIsbn;
+    dto.userId   = userId;
+    return dto;
   }
 
   async findOne(id: number) {
@@ -50,13 +56,13 @@ export class RecordService {
     const result = await this.recordRepository
     .createQueryBuilder('record')
     .select(this.recordColumns)
-    .leftJoin('record.book', 'book')
-    .leftJoin('record.user', 'user')
+    .leftJoin('record.bookIsbn', 'book')
+    .leftJoin('record.userId', 'user')
     .where('record.recordId > :lastId', { lastId })
     .orderBy('record.recordId', 'ASC')
     .limit(pageSize)
     .getMany();
-    return result;
+    return this.transformRecords(result);
   }
 
   async getByLastIdAndBookId(lastId: number, pageSize: number, bookId: string): Promise<Record[]> {
@@ -64,14 +70,14 @@ export class RecordService {
     const result = await this.recordRepository
       .createQueryBuilder('record')
       .select(this.recordColumns)
-      .leftJoin('record.book', 'book')
-      .leftJoin('record.user', 'user')
+      .leftJoin('record.bookIsbn', 'book')
+      .leftJoin('record.userId', 'user')
       .where('record.recordId > :lastId', { lastId })
       .andWhere('record.bookIsbn = :bookId', { bookId })
-      .orderBy('record.id', 'ASC')
+      .orderBy('record.recordId', 'ASC')
       .limit(pageSize)
       .getMany();
-    return result;
+    return this.transformRecords(result);
   }
 
   async getByLastIdAndUserId(ownerId:string, userId:string, lastId: number, pageSize: number): Promise<Record[]>{
@@ -82,14 +88,14 @@ export class RecordService {
     const result = await this.recordRepository
       .createQueryBuilder('record')
       .select(this.recordColumns)
-      .leftJoin('record.book', 'book')
-      .leftJoin('record.user', 'user')
+      .leftJoin('record.bookIsbn', 'book')
+      .leftJoin('record.userId', 'user')
       .where('record.recordId > :lastId', { lastId }) // lastId보다 큰 ID를 가진 레코드를 필터링합니다.
       .andWhere('record.userId = :userId', { ownerId }) // 특정 사용자의 ID 값을 필터링합니다.
       .orderBy('record.recordId', 'ASC') // ID를 오름차순으로 정렬합니다.
       .limit(pageSize) // 결과를 pageSize만큼 제한합니다.
       .getMany();
-    return result;
+      return this.transformRecords(result);
   }
 
   async getByLastIdAndUserIdAndBookId(ownerId:string, userId:string,bookId:string, lastId: number, pageSize: number): Promise<Record[]>{
@@ -100,14 +106,40 @@ export class RecordService {
     const result = await this.recordRepository
       .createQueryBuilder('record')
       .select(this.recordColumns)
-      .leftJoin('record.book', 'book')
-      .leftJoin('record.user', 'user')
+      .leftJoin('record.bookIsbn', 'book')
+      .leftJoin('record.userId', 'user')
       .where('record.recordId > :lastId', { lastId }) // lastId보다 큰 ID를 가진 레코드를 필터링합니다.
       .andWhere('record.userId = :userId', { userId }) // 특정 userId와 일치하는 레코드를 필터링합니다.
       .andWhere('record.bookId = :bookId', { bookId }) // 특정 bookId와 일치하는 레코드를 필터링합니다.
       .orderBy('record.recordId', 'ASC') // ID를 오름차순으로 정렬합니다.
       .limit(pageSize) // 결과를 pageSize만큼 제한합니다.
       .getMany();
-    return result;
+      return this.transformRecords(result);
   }
+
+  async transformRecords(records){
+    const transformedRecords = records.map(record => {
+      return {
+        recordId: record.recordId,
+        text: record.text,
+        recordImg: record.recordImg,
+        recordImgUrl: record.recordImgUrl,
+        tags: record.tags,
+        readAt: record.readAt,
+        book: {
+          title: record.bookIsbn.title,
+          thumbnail: record.bookIsbn.thumbnail,
+          bookIsbn: record.bookIsbn.bookIsbn,
+          authors: record.bookIsbn.authors,
+        },
+        user: {
+          userId: record.userId.userId,
+          nickname: record.userId.nickname,
+          profileImg: record.userId.profileImg,
+        },
+      };
+    });
+    return transformedRecords;
+  }
+
 }

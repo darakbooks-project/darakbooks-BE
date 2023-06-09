@@ -70,15 +70,15 @@ export class User {
   @Column({ default: false, name: 'group_is_hidden' })
   groupIsHidden: boolean;
 
-    @OneToMany(() => Record, record => record.userId)
-    records: Record[];
+  @OneToMany(() => Record, record => record.userId)
+  records: Record[];
     
-    @OneToMany(() => Bookshelf, bookshelf => bookshelf.user)
-    bookshelves: Bookshelf[];
+  @OneToMany(() => Bookshelf, bookshelf => bookshelf.user)
+  bookshelves: Bookshelf[];
     
-    set update(dto:UpdateUserDTO){
-        Object.assign(this,dto);
-    }
+  set update(dto:UpdateUserDTO){
+      Object.assign(this,dto);
+  }
 
   @ApiProperty({
     example: [2, 3, 4],
