@@ -60,8 +60,8 @@ export class User{
     @Column({default:false, name:'group_is_hidden',})
     groupIsHidden:boolean;
 
-    // @OneToMany(() => Record, record => record.userId)
-    // records: Record[];
+    @OneToMany(() => Record, record => record.userId)
+    records: Record[];
     
     @OneToMany(() => Bookshelf, bookshelf => bookshelf.user)
     bookshelves: Bookshelf[];

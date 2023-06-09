@@ -65,6 +65,26 @@ export class GroupsService {
     return groups;
   }
 
+  async findNGroups(page, limit) {
+    // skip 할 만큼
+    const skipCount = (page - 1) * limit;
+
+    const [groups, totalGroups] = await this.groupsRepository
+      .createQueryBuilder('groupsentity')
+      .skip(skipCount)
+      .take(limit)
+      .getManyAndCount();
+
+    const totalPages = Math.ceil(totalGroups / limit);
+
+    return {
+      groups,
+      totalPages,
+      totalGroups,
+      currentPage: page,
+    };
+  }
+
   async getOneGroupById(group_id: number) {
     const group = await this.groupsRepository.findOne({
       where: { group_id },
@@ -123,15 +143,23 @@ export class GroupsService {
     const createdGroup = await this.groupsRepository.save(group);
     const userIds = body.userGroup;
     await this.findUserList(userIds);
+    const lastUserGroup = await this.usergroupRepository.findOne({
+      where: {},
+      order: { id: 'DESC' },
+    });
 
     const userGroupEntities = userIds.map((userId) => {
       const userGroup = new UserGroup();
-      userGroup.group = group;
+      userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
       userGroup.user = userId;
+      userGroup.group = group;
       return userGroup;
     });
-    await this.usergroupRepository.save(userGroupEntities);
 
+    const createdGroupUser = await this.usergroupRepository.save(
+      userGroupEntities,
+      { reload: true },
+    );
     return createdGroup;
   }
 
