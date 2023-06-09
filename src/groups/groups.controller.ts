@@ -59,11 +59,12 @@ export class GroupsController {
       limit,
     );
     const totalPages = Math.ceil(totalGroups / limit);
+    const currentPage = +page;
     return {
       groups,
       totalPages,
       totalGroups,
-      currentPage: page,
+      currentPage,
     };
   }
 

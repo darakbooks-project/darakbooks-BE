@@ -34,7 +34,9 @@ export class GroupsService {
   }
 
   async findUserList(userIds: User[]) {
+    console.log(userIds);
     for (const userId of userIds) {
+      console.log(userId);
       const user = await this.userRepository.findOne({
         where: { userId: userId.userId },
       });
@@ -65,7 +67,7 @@ export class GroupsService {
     return groups;
   }
 
-  async findNGroups(page, limit) {
+  async findNGroups(page: number, limit: number) {
     // skip 할 만큼
     const skipCount = (page - 1) * limit;
 
@@ -141,25 +143,29 @@ export class GroupsService {
     const group = new GroupEntity();
     this.saveGroupData(group, body);
     const createdGroup = await this.groupsRepository.save(group);
-    const userIds = body.userGroup;
-    await this.findUserList(userIds);
-    const lastUserGroup = await this.usergroupRepository.findOne({
-      where: {},
-      order: { id: 'DESC' },
-    });
 
-    const userGroupEntities = userIds.map((userId) => {
-      const userGroup = new UserGroup();
-      userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
-      userGroup.user = userId;
-      userGroup.group = group;
-      return userGroup;
-    });
+    if (body.userGroup) {
+      const userIds = body.userGroup;
+      await this.findUserList(userIds);
 
-    const createdGroupUser = await this.usergroupRepository.save(
-      userGroupEntities,
-      { reload: true },
-    );
+      const lastUserGroup = await this.usergroupRepository.findOne({
+        where: {},
+        order: { id: 'DESC' },
+      });
+
+      const userGroupEntities = userIds.map((userId) => {
+        const userGroup = new UserGroup();
+        userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
+        userGroup.user = userId;
+        userGroup.group = group;
+        return userGroup;
+      });
+
+      const createdGroupUser = await this.usergroupRepository.save(
+        userGroupEntities,
+        { reload: true },
+      );
+    }
     return createdGroup;
   }
 
