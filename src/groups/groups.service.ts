@@ -67,7 +67,7 @@ export class GroupsService {
     return groups;
   }
 
-  async findNGroups(page, limit) {
+  async findNGroups(page: number, limit: number) {
     // skip 할 만큼
     const skipCount = (page - 1) * limit;
 
