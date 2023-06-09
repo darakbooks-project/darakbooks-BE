@@ -25,7 +25,6 @@ export class JwtExceptionFilter implements ExceptionFilter {
       statusCode,
       message,
     });
-    throw exception;
   }
 }
 
