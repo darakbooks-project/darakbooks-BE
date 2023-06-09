@@ -12,11 +12,9 @@ import { photoDto } from '../dto/photo.dto';
 import { Record } from '../record.entity';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 import { BookshelfService } from 'src/bookshelf/service/bookshelf.service';
-import { FileResDTO, FileUploadDto, internalErrorDTO, recordNotfoundDTO, unahtorizedRecordDTO } from 'src/dto/RecordResponseDTO';
-import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponseDTO';
-import { create } from 'domain';
+import { FileResDTO, FileUploadDto, internalErrorDTO, recordNotfoundDTO, unahtorizedRecordDTO } from 'src/dto/RecordResponse.dto';
+import { unahtorizeddDTO, userNotfoundDTO } from '../../dto/LoginResponse.dto'
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
-import { use } from 'passport';
 
 
 @ApiTags('record')
@@ -54,30 +52,27 @@ export class RecordController {
   @Post()
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
   async create(@Body() createDTO: CreateRecordDTO,  @Req() req: Request) {
-    const create_record_DTO = createDTO ;
     const {userId} =  req.user as JwtPayload;
-    create_record_DTO.userId = userId;
-    //const userId = "239487289347289";
-    //create_record_DTO.userId = userId;
-    const record = await this.recordService.create(create_record_DTO);
+    createDTO.record.userId = userId; //setter로 바꾸자. 
+    const record = await this.recordService.create(createDTO.record);
     //책db에 책 저장하기 
-    await this.bookshelfService.addBookToBookshelfByRecord(userId,createDTO);
-    return record ; //post return 할 때는 그냥 tag로 string으로만 보내는데 괜찮나? 
+    await this.bookshelfService.addBookToBookshelfByRecord(userId, createDTO.book);
+    return record ; 
   }
 
 
-  @ApiBearerAuth()
-  @ApiOperation({summary: '독서기록 수정(수정하고 싶은 data만 전달하면 됨.)'})
-  @ApiResponse({status:200, type:Record})
-  @ApiBody({type:UpdateRecordDto})
-  @ApiUnauthorizedResponse({status:401, type:unahtorizedRecordDTO, description:'record에 접근 권한이 없습니다.' })
-  @ApiNotFoundResponse({status:404, type:recordNotfoundDTO, description:'존재하지 않는 독서기록 '})
-  @UseGuards(JwtAuthGuard,OwnerAuthGuard)
-  @Patch(':id')
-  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  async update(@Param('id') id: number, @Body() updateRecordDto: UpdateRecordDto) {
-    return await this.recordService.update(+id, updateRecordDto);
-  }
+  // @ApiBearerAuth()
+  // @ApiOperation({summary: '독서기록 수정(수정하고 싶은 data만 전달하면 됨.)'})
+  // @ApiResponse({status:200, type:Record})
+  // @ApiBody({type:UpdateRecordDto})
+  // @ApiUnauthorizedResponse({status:401, type:unahtorizedRecordDTO, description:'record에 접근 권한이 없습니다.' })
+  // @ApiNotFoundResponse({status:404, type:recordNotfoundDTO, description:'존재하지 않는 독서기록 '})
+  // @UseGuards(JwtAuthGuard,OwnerAuthGuard)
+  // @Patch(':id')
+  // @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+  // async update(@Param('id') id: number, @Body() updateRecordDto: UpdateRecordDto) {
+  //   return await this.recordService.update(+id, updateRecordDto);
+  // }
 
   @ApiOperation({summary: '전달한 BookIsbn와 일치하는 독서기록 요청'})
   @ApiResponse({status:200, type:[Record]})

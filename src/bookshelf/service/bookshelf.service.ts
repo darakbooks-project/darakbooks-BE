@@ -8,6 +8,7 @@ import { CreateRecordDTO } from 'src/record/dto/create-record.dto';
 import { User } from 'src/user/user.entity';
 import { create } from 'domain';
 
+
 @Injectable()
 export class BookshelfService {
     constructor(
@@ -59,16 +60,14 @@ export class BookshelfService {
         return await this.bookRepository.save(book);
     }
 
-    async addBookToBookshelfByRecord(userId:string, createDTO:CreateRecordDTO){
-        //책 data 추출하기 
-        const bookDTO = await this.createBookByRecord(createDTO);
-        
+    async addBookToBookshelfByRecord(userId:string, bookDTO:BookDTO){
+       
         //책 있는지 확인 후 책 data 만들기 
         const book = await this.addBookToDB(bookDTO);
-        console.log(book);
+        console.log(bookDTO);
 
         //user가 읽은책인지 확인
-        const isread = await this.isReadBook(userId,book.bookIsbn) ;
+        const isread = await this.isReadBook(userId,bookDTO.bookIsbn) ;
         if(isread) return;
         //user가 존재하는지 확인 
         const user = await this.userService.validateUser(userId);
@@ -76,11 +75,6 @@ export class BookshelfService {
         await this.updateBookshelf(book,user);
     }
 
-    private createBookByRecord(createDTO: CreateRecordDTO) {
-        const { title, thumbnail, bookIsbn } = createDTO;
-        const bookDTO = { title, thumbnail, bookIsbn };
-        return bookDTO;
-    }
 
     async getBookshelfByUserId(ownerId:string, userId:string){
         //user의 책장이 공개인지 아닌지 확인 
