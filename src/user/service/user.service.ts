@@ -5,6 +5,7 @@ import { Book } from 'src/entities/book.entity';
 import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { profileResDTO } from 'src/dto/profileResponse.dto';
+import { min } from 'class-validator';
 
 @Injectable()
 export class UserService {
@@ -36,7 +37,8 @@ export class UserService {
     }
 
     toDTO(profile,me:boolean):profileResDTO{
-        const dto = {...profile,isMine:me,};
+        const { userId, nickname, photoUrl, userInfo, bookshelfIsHidden } = profile;
+        const dto: profileResDTO = { userId, nickname, photoUrl, userInfo, bookshelfIsHidden, isMine: me };
         return dto;
     }
 
@@ -44,7 +46,8 @@ export class UserService {
         const user = await this.validateUser(id);
         //update method 
         user.update = updateDTO;
-        return await this.userRepository.save(user);
+        const profile = await this.userRepository.save(user);
+        return this.toDTO(profile,true);
     }
 
     

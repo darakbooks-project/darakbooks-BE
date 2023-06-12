@@ -4,7 +4,7 @@ import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 import { Request , Response} from 'express';
 import kakaoExceptionFilter from '../../exceptionFilter/kakao.filter';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiHeader, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { accessDTO, refreshHeader, refreshRes, unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { UserService } from '../service/user.service';
@@ -12,6 +12,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
 import { S3Service } from 'src/common/s3.service';
 import { UpdateUserDTO } from 'src/dto/updateUserDTO';
+import { FileResDTO, FileUploadDto, internalErrorDTO } from 'src/dto/RecordResponse.dto';
+import { profileResDTO } from 'src/dto/profileResponse.dto';
 @Controller('user')
 export class UserController {
     constructor(
@@ -72,6 +74,14 @@ export class UserController {
     }
 
     //my 프로필 요청
+    @ApiBearerAuth() 
+    @ApiTags('my page')
+    @ApiOperation({
+        summary: '사용자 자신의 프로필을 요청할 때 사용', 
+        description:"자신의 마이서재페이지의 프로필을 렌더링하는데 필요한 data 요청"})
+    @ApiResponse({status:200, type:profileResDTO})
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
+    @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @Get('/profile')
     @UseGuards(JwtAuthGuard)
     @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
@@ -82,7 +92,16 @@ export class UserController {
         return this.userService.toDTO(profile,true);
     }
 
-    //다른 유저의 프로필 보기 
+    //다른 유저의 프로필 보기
+    @ApiBearerAuth() 
+    @ApiTags('my page')
+    @ApiOperation({
+    summary: '자신의 프로필이 아닌 타인의 프로필을 요청할 때 사용 ', 
+    description:"타인의 프로필, 책장을 클릭했을 때 마이서재페이지의 프로필을 렌더링하는데 필요한 data 요청"})
+    @ApiResponse({status:200, type:profileResDTO})
+    @ApiParam({ name: 'ownerId', type: 'string' , description:'보고 싶은 profile 주인의 id'})
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
+    @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @Get('/profile/:ownerId')
     @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
     @UseGuards(JwtAuthGuard)
@@ -95,6 +114,13 @@ export class UserController {
         return this.userService.toDTO(profile,false);
     }
 
+    @ApiBearerAuth()
+    @ApiTags('my page')
+    @ApiOperation({summary: 'profile 사진 등록'})
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({type:FileUploadDto, description:'사진 파일'})
+    @ApiResponse({status:201,type:FileResDTO, })
+    @ApiInternalServerErrorResponse({type:internalErrorDTO,description:'file업로드 실패 '})
     @Post('/photo')
     @UseInterceptors(FileInterceptor('file'))
     @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
@@ -103,6 +129,13 @@ export class UserController {
         return result;
     }
 
+    @ApiBearerAuth() 
+    @ApiTags('my page')
+    @ApiOperation({summary: '프로필 수정(수정하고 싶은 data만 전달하면 됨.)'})
+    @ApiResponse({status:200, type:profileResDTO})
+    @ApiBody({type:UpdateUserDTO})
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
+    @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @UseGuards(JwtAuthGuard)
     @Patch('/profile')
     @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
