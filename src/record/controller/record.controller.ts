@@ -30,10 +30,9 @@ export class RecordController {
   //jwt auth guard 추가 해야 함. 
   @ApiBearerAuth()
   @ApiOperation({summary: 'record 사진 등록'})
-  @ApiResponse({status:201, type: photoDto})
   @ApiConsumes('multipart/form-data')
   @ApiBody({type:FileUploadDto, description:'사진 파일'})
-  @ApiResponse({type:FileResDTO, })
+  @ApiResponse({status:201,type:FileResDTO, })
   @ApiInternalServerErrorResponse({type:internalErrorDTO,description:'file업로드 실패 '})
   @Post('/photo')
   @UseInterceptors(FileInterceptor('file'))

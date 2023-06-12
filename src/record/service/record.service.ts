@@ -11,9 +11,9 @@ import { recordDTO } from '../dto/record.dto';
 @Injectable()
 export class RecordService {
   public recordColumns = [
-    'record.recordId','record.readAt' , 'record.text', 'record.recordImg', 'record.recordImgUrl','record.tags',
+    'record.recordId','record.readAt' , 'record.text', 'record.recordImgUrl','record.tags',
     'book.bookIsbn','book.title', 'book.thumbnail', 'book.authors',
-    'user.userId', 'user.nickname', 'user.profileImg'];
+    'user.userId', 'user.nickname', 'user.photoUrl', ];
 
   constructor(
     @Inject('RECORD_REPOSITORY') private recordRepository:Repository<Record>, 

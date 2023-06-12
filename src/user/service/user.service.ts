@@ -25,6 +25,11 @@ export class UserService {
         return user;
     }
 
+    async getMyProfile(id:string){
+        const user = await this.validateUser(id);
+        
+    }
+
     async update(id:string, updateDTO: UpdateUserDTO){
         const user = await this.validateUser(id);
         //update method 

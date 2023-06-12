@@ -46,7 +46,7 @@ export class recordUserDTO{
     example: 'profile_img path',
     description: '프로필 사진',
   })
-  profileImg: string;
+  photoUrl: string;
 }
 
 export class TransformedRecordDTO {
@@ -54,8 +54,6 @@ export class TransformedRecordDTO {
   recordId: number;
   @ApiProperty({ example: '다음권이 너무 궁금하다. ', description: '독서 기록 글' })
   text: string;
-  @ApiProperty({ example: '1684897517164_86', description: '독서기록 사진 key값'})
-  recordImg: string;
   @ApiProperty({ example: "https://avostorage.s3.amazonaws.com/1684897517164_86", description: '독서기록 사진 url' })
   recordImgUrl: string;
   @ApiProperty({ example: [{"id": 1, "data": "tag1"}, {"id": 2, "data": "tag2"}, {"id": 3, "data": "tag3"}], description: 'tags' })
