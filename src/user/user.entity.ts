@@ -33,14 +33,14 @@ export class User {
     example: '2039840298420',
     description: '프로필 사진 key',
   })
-  @Column({ nullable: true, name: 'photoId' })
+  @Column({ nullable: true, name: 'photo_id', default:"1686571657938_957" })
   photoId: string;
 
   @ApiProperty({
     example: 'profile_img path',
     description: '프로필 사진',
   })
-  @Column({ nullable: true, name: 'photoUrl' })
+  @Column({ nullable: true, name: 'photo_url', default:"https://darak-book-bucket.s3.ap-northeast-2.amazonaws.com/1686571657938_957" })
   photoUrl: string;
 
   @ApiProperty({
