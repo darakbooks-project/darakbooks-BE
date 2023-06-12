@@ -43,19 +43,19 @@ export class GroupsController {
     return await this.groupsService.findAllGroups();
   }
 
-  @ApiOperation({ summary: '유저가 속한 모든 그룹 조회' })
+  @ApiOperation({ summary: '요청보내는 유저가 속한 모든 그룹 조회' })
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({
     status: 404,
-    description: '해당 독서모임 또는 유저가 존재하지 않습니다.',
+    description: '해당 유저가 존재하지 않습니다.',
   })
   @Get('/user-group')
   async findUserGroup(@Req() req: Request) {
     const { userId } = req.user as JwtPayload;
-    return await this.groupsService.findAllGroups();
+    return await this.groupsService.findUserGroups(userId);
   }
 
-  @ApiOperation({ summary: '그룹 n개 조회' })
+  @ApiOperation({ summary: '그룹 n개 조회 - pagination' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
@@ -188,7 +188,7 @@ export class GroupsController {
     return await this.groupsService.getAllUsersInGroup(groupId);
   }
 
-  @ApiOperation({ summary: '유저를 그룹에 추가' })
+  @ApiOperation({ summary: '그룹장이 유저를 그룹에 추가' })
   @ApiResponse({
     status: 200,
     description: '유저가 그룹에 추가되었습니다.',
@@ -202,7 +202,7 @@ export class GroupsController {
     return await this.groupsService.addUserToGroup(groupId, userId);
   }
 
-  @ApiOperation({ summary: '유저를 그룹에서 제거' })
+  @ApiOperation({ summary: '그룹장이 유저를 그룹에서 제거' })
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({
     status: 404,
@@ -215,6 +215,34 @@ export class GroupsController {
     @Param('user_id') userId: string,
     @Res() res: Response,
   ) {
+    return await this.groupsService.removeUserFromGroup(groupId, userId, res);
+  }
+
+  @ApiOperation({ summary: '유저가 그룹에 참여하기' })
+  @ApiResponse({
+    status: 200,
+    description: '유저가 그룹에 추가되었습니다.',
+    type: ReadOnlyGroupsDto,
+  })
+  @Post('user/:group_id/join')
+  async UserjoinGroup(@Param('group_id') groupId: number, @Req() req: Request) {
+    const { userId } = req.user as JwtPayload;
+    return await this.groupsService.addUserToGroup(groupId, userId);
+  }
+
+  @ApiOperation({ summary: '유저가 그룹에 탈퇴하기' })
+  @ApiResponse({
+    status: 200,
+    description: '유저가 그룹에 추가되었습니다.',
+    type: ReadOnlyGroupsDto,
+  })
+  @Post('user/:group_id/leave')
+  async UserleaveGroup(
+    @Param('group_id') groupId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const { userId } = req.user as JwtPayload;
     return await this.groupsService.removeUserFromGroup(groupId, userId, res);
   }
 }

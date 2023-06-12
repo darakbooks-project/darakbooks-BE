@@ -32,7 +32,7 @@ export class GroupsService {
     group.region = dto.region;
   }
 
-  async userGroupInfo(userID, currentGroup){
+  // async userGroupInfo(userID, currentGroup){
     // if user is grouplead
     // group.is_group_lead = True
     // else
@@ -42,7 +42,7 @@ export class GroupsService {
     // group.is_participant = True
     // else
     // group.is_participant = False
-  }
+  // }
 
   async isGroupLead(group, userId) {
     if (group.group_lead == userId) {
@@ -96,11 +96,12 @@ export class GroupsService {
   }
 
   async findUserGroups(userId) {
-    const groups = await this.groupsRepository.find();
-    for (group in groups) {
-      group.group_id
+    const userGroups = await this.usergroupRepository.find({
+      where: { user: userId },
+      relations: ['group'],
+    });
 
-    }
+    return userGroups;
   }
 
   async findNGroups(page: number, limit: number) {
