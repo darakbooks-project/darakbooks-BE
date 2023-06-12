@@ -14,4 +14,8 @@ export class BookDTO {
     @IsArray()
     thumbnail: string;
 
+    @ApiProperty({ example: ['김영하'], description: '책 작가' })
+    @IsArray()
+    authors: string[];
+
 }

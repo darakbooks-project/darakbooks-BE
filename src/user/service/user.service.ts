@@ -14,13 +14,19 @@ export class UserService {
     }
 
     async create(userData):Promise<User> {
-        return await this.userRepository.save(userData);
+        const user = await this.userRepository.save(userData);
+        return await this.userRepository.save(user);
     }
     
     async validateUser(id:string){
         const user = await this.userRepository.findOneBy({userId: id});
         if(!user) throw new NotFoundException('USER'); 
         return user;
+    }
+
+    async getMyProfile(id:string){
+        const user = await this.validateUser(id);
+        
     }
 
     async update(id:string, updateDTO: UpdateUserDTO){
@@ -30,12 +36,7 @@ export class UserService {
         return await this.userRepository.save(user);
     }
 
-    async updateBookshelf(user:User,bookshelf:Bookshelf){
-        //update method 
-        user.bookshelves.push(bookshelf);
-        return await this.userRepository.save(user);
-    }
-
+    
     async canViewBookshelf(ownerId:string, userId:string){
         const user = await this.validateUser(ownerId);
         if(user.bookshelfIsHidden && userId!==ownerId) 

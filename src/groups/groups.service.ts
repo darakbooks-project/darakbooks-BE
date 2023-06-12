@@ -34,7 +34,9 @@ export class GroupsService {
   }
 
   async findUserList(userIds: User[]) {
+    console.log(userIds);
     for (const userId of userIds) {
+      console.log(userId);
       const user = await this.userRepository.findOne({
         where: { userId: userId.userId },
       });
@@ -63,6 +65,26 @@ export class GroupsService {
     const groups = await this.groupsRepository.find();
 
     return groups;
+  }
+
+  async findNGroups(page: number, limit: number) {
+    // skip 할 만큼
+    const skipCount = (page - 1) * limit;
+
+    const [groups, totalGroups] = await this.groupsRepository
+      .createQueryBuilder('groupsentity')
+      .skip(skipCount)
+      .take(limit)
+      .getManyAndCount();
+
+    const totalPages = Math.ceil(totalGroups / limit);
+
+    return {
+      groups,
+      totalPages,
+      totalGroups,
+      currentPage: page,
+    };
   }
 
   async getOneGroupById(group_id: number) {
@@ -121,23 +143,37 @@ export class GroupsService {
     const group = new GroupEntity();
     this.saveGroupData(group, body);
     const createdGroup = await this.groupsRepository.save(group);
-    const userIds = body.userGroup;
-    await this.findUserList(userIds);
 
-    const userGroupEntities = userIds.map((userId) => {
-      const userGroup = new UserGroup();
-      userGroup.group = group;
-      userGroup.user = userId;
-      return userGroup;
-    });
-    await this.usergroupRepository.save(userGroupEntities);
+    if (body.userGroup) {
+      const userIds = body.userGroup;
+      await this.findUserList(userIds);
 
+      const lastUserGroup = await this.usergroupRepository.findOne({
+        where: {},
+        order: { id: 'DESC' },
+      });
+
+      const userGroupEntities = userIds.map((userId) => {
+        const userGroup = new UserGroup();
+        userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
+        userGroup.user = userId;
+        userGroup.group = group;
+        return userGroup;
+      });
+
+      const createdGroupUser = await this.usergroupRepository.save(
+        userGroupEntities,
+        { reload: true },
+      );
+    }
     return createdGroup;
   }
 
   async deleteGroup(group_id: number, res: Response) {
     const groupfind = await this.getOneGroupById(group_id);
-    await this.usergroupRepository.delete({ group: groupfind });
+    const groupId = groupfind.group_id;
+
+    await this.usergroupRepository.delete({ group: { group_id: groupId } });
     await this.groupsRepository.delete(group_id);
 
     return res.status(204).send();
@@ -152,9 +188,8 @@ export class GroupsService {
   }
 
   async getAllUsersInGroup(group_id: number) {
-    const groupfind = await this.getOneGroupById(group_id);
     const groupusers = await this.usergroupRepository.find({
-      where: { group: groupfind },
+      where: { group: { group_id: group_id } },
       relations: ['user'],
     });
     const userIds = groupusers.map((userGroup) => userGroup.user);
@@ -174,11 +209,9 @@ export class GroupsService {
   }
 
   async removeUserFromGroup(group_id: number, user_id: string, res: Response) {
-    const groupfind = await this.getOneGroupById(group_id);
-    const userfind = await this.findUser(user_id);
     await this.usergroupRepository.delete({
-      user: userfind,
-      group: groupfind,
+      user: { userId: user_id },
+      group: { group_id: group_id },
     });
 
     return res.status(204).send();
