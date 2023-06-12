@@ -98,6 +98,20 @@ export class GroupEntity {
   @Column({ nullable: true })
   group_lead: string;
 
+  @ApiProperty({
+    example: 'true',
+    description: '그룹장 여부 확인',
+  })
+  @Column({ nullable: false })
+  is_group_lead: boolean;
+
+  @ApiProperty({
+    example: 'true',
+    description: '그룹맴버 여부 확인',
+  })
+  @Column({ nullable: false })
+  is_participant: string;
+
   @ApiProperty({ type: () => User, isArray: true })
   @ManyToMany(() => User, (user) => user.groups)
   @JoinTable()

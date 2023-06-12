@@ -30,7 +30,35 @@ export class GroupsService {
     group.description = dto.description;
     group.recruitment_status = dto.recruitment_status;
     group.region = dto.region;
-    group.group_lead = dto.group_lead;
+  }
+
+  async userGroupInfo(userID, currentGroup){
+    // if user is grouplead
+    // group.is_group_lead = True
+    // else
+    // group.is_group_lead = False
+
+    // is user is participant
+    // group.is_participant = True
+    // else
+    // group.is_participant = False
+  }
+
+  async isGroupLead(group, userId) {
+    if (group.group_lead == userId) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async isParticipant(group_id, userId) {
+    const groupUsers = await this.getAllUsersInGroup(group_id);
+    if (userId in groupUsers) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   async findUserList(userIds: User[]) {
@@ -65,6 +93,14 @@ export class GroupsService {
     const groups = await this.groupsRepository.find();
 
     return groups;
+  }
+
+  async findUserGroups(userId) {
+    const groups = await this.groupsRepository.find();
+    for (group in groups) {
+      group.group_id
+
+    }
   }
 
   async findNGroups(page: number, limit: number) {
@@ -142,6 +178,7 @@ export class GroupsService {
     }
     const group = new GroupEntity();
     this.saveGroupData(group, body);
+    // group.group_lead = userID 가입한
     const createdGroup = await this.groupsRepository.save(group);
 
     if (body.userGroup) {

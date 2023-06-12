@@ -7,12 +7,13 @@ import {
   Patch,
   Post,
   Res,
+  Req,
   Query,
   UseInterceptors,
   UseGuards,
 } from '@nestjs/common';
 import { GroupsMetaDto } from './dto/groups.meta.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GroupsCreateDto } from './dto/groups.create.dto';
@@ -39,6 +40,18 @@ export class GroupsController {
   })
   @Get()
   async findAllGroups() {
+    return await this.groupsService.findAllGroups();
+  }
+
+  @ApiOperation({ summary: '유저가 속한 모든 그룹 조회' })
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({
+    status: 404,
+    description: '해당 독서모임 또는 유저가 존재하지 않습니다.',
+  })
+  @Get('/user-group')
+  async findUserGroup(@Req() req: Request) {
+    const { userId } = req.user as JwtPayload;
     return await this.groupsService.findAllGroups();
   }
 
@@ -75,8 +88,22 @@ export class GroupsController {
     type: ReadOnlyGroupsDto,
   })
   @Get('/:group_id')
-  async getOneGroupById(@Param('group_id') group_id: number) {
-    return await this.groupsService.getOneGroupById(group_id);
+  async getOneGroupById(
+    @Param('group_id') group_id: number,
+    @Req() req: Request,
+  ) {
+    const group = await this.groupsService.getOneGroupById(group_id);
+    const { userId } = req.user as JwtPayload;
+    const is_group_lead = await this.groupsService.isGroupLead(group, userId);
+    const is_participant = await this.groupsService.isParticipant(
+      group_id,
+      userId,
+    );
+    return {
+      group,
+      is_group_lead: is_group_lead,
+      is_participant: is_participant,
+    };
   }
 
   @ApiOperation({ summary: 'user 수 가장 많은 top n개 그룹조회' })
@@ -109,7 +136,16 @@ export class GroupsController {
   })
   @Post()
   @UseInterceptors(FileInterceptor('image'))
-  async createGroup(@Body() body: GroupsCreateDto, @Res() res: Response) {
+  @UseGuards(JwtAuthGuard)
+  async createGroup(
+    @Body() body: GroupsCreateDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const { userId } = req.user as JwtPayload;
+    if (!body.group_lead) {
+      body.group_lead = userId;
+    }
     await this.groupsService.createGroup(body);
     return res.sendStatus(204);
   }
