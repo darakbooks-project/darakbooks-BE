@@ -15,7 +15,6 @@ export class UserService {
 
     async create(userData):Promise<User> {
         const user = await this.userRepository.save(userData);
-        user.bookshelves = [];
         return await this.userRepository.save(user);
     }
     
@@ -37,15 +36,7 @@ export class UserService {
         return await this.userRepository.save(user);
     }
 
-    async updateBookshelf(user:User,bookshelf:Bookshelf){
-        //update method 
-        if (!user.bookshelves) {
-            user.bookshelves = [];
-        }
-        user.bookshelves.push(bookshelf);
-        return await this.userRepository.save(user);
-    }
-
+    
     async canViewBookshelf(ownerId:string, userId:string){
         const user = await this.validateUser(ownerId);
         if(user.bookshelfIsHidden && userId!==ownerId) 

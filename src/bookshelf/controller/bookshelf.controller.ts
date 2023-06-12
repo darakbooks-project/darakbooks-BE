@@ -34,7 +34,7 @@ export class BookshelfController {
     @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
-    @Get('/')
+    @Get('/:ownerId')
     async getBookShelf( 
         @Param('ownerId') ownerId: string,
         @Req() req:Request
@@ -42,7 +42,7 @@ export class BookshelfController {
         const {userId} =  req.user as any;
         //특정 사용자의 책장 
         if(userId){
-            await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
+            return await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
         }
         else{ //메인화면에서 사용할 책장 
             //await this.bookshelfService.getRecommendedBookshelf()

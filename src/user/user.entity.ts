@@ -80,7 +80,7 @@ export class User {
   @OneToMany(() => Record, record => record.userId)
   records: Record[];
     
-  @OneToMany(() => Bookshelf, bookshelf => bookshelf.user)
+  @OneToMany(() => Bookshelf, bookshelf => bookshelf.userId)
   bookshelves: Bookshelf[];
     
   set update(dto:UpdateUserDTO){
