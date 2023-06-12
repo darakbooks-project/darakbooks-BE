@@ -5,8 +5,7 @@ import { BookshelfService } from '../service/bookshelf.service';
 import { BookDTO } from '../book.dto';
 import { Request , Response} from 'express';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponseDTO';
-import { Book } from 'src/entities/book.entity';
+import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
 
 @Controller('bookshelf')
 export class BookshelfController {

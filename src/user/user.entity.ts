@@ -30,11 +30,18 @@ export class User {
   nickname: string; //kakao nick name 받아오지만 수정 가능
 
   @ApiProperty({
+    example: '2039840298420',
+    description: '프로필 사진 key',
+  })
+  @Column({ nullable: true, name: 'photo_id', default:"1686571657938_957" })
+  photoId: string;
+
+  @ApiProperty({
     example: 'profile_img path',
     description: '프로필 사진',
   })
-  @Column({ nullable: true, name: 'profile_img' })
-  profileImg: string;
+  @Column({ nullable: true, name: 'photo_url', default:"https://darak-book-bucket.s3.ap-northeast-2.amazonaws.com/1686571657938_957" })
+  photoUrl: string;
 
   @ApiProperty({
     example: 'user_info',
@@ -70,14 +77,14 @@ export class User {
   @Column({ default: false, name: 'group_is_hidden' })
   groupIsHidden: boolean;
 
-  // @OneToMany(() => Record, record => record.userId)
-  // records: Record[];
-
-  @OneToMany(() => Bookshelf, (bookshelf) => bookshelf.user)
+  @OneToMany(() => Record, record => record.userId)
+  records: Record[];
+    
+  @OneToMany(() => Bookshelf, bookshelf => bookshelf.user)
   bookshelves: Bookshelf[];
-
-  set update(dto: UpdateUserDTO) {
-    Object.assign(this, dto);
+    
+  set update(dto:UpdateUserDTO){
+      Object.assign(this,dto);
   }
 
   @ApiProperty({

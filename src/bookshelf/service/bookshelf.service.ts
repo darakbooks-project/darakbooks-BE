@@ -8,6 +8,7 @@ import { CreateRecordDTO } from 'src/record/dto/create-record.dto';
 import { User } from 'src/user/user.entity';
 import { create } from 'domain';
 
+
 @Injectable()
 export class BookshelfService {
     constructor(
@@ -28,8 +29,7 @@ export class BookshelfService {
         await this.updateBookshelf(book,user);
 
     }
-
-    //
+    
     private async updateBookshelf(book: Book,user:User) {
         const bookshelf = new Bookshelf();
         bookshelf.user = user;
@@ -52,34 +52,12 @@ export class BookshelfService {
     }
 
     async addBookToDB(createDTO:BookDTO){
-        //책 없으면 책db에 추가 
+        // 책이 이미 존재하는 경우에는 바로 반환
         const isExist = await this.findOne(createDTO.bookIsbn);
         if(isExist) return isExist;
         const book = this.bookRepository.create(createDTO);
+        book.bookshelves = [];
         return await this.bookRepository.save(book);
-    }
-
-    async addBookToBookshelfByRecord(userId:string, createDTO:CreateRecordDTO){
-        //책 data 추출하기 
-        const bookDTO = await this.createBookByRecord(createDTO);
-        
-        //책 있는지 확인 후 책 data 만들기 
-        const book = await this.addBookToDB(bookDTO);
-        console.log(book);
-
-        //user가 읽은책인지 확인
-        const isread = await this.isReadBook(userId,book.bookIsbn) ;
-        if(isread) return;
-        //user가 존재하는지 확인 
-        const user = await this.userService.validateUser(userId);
-        //안 읽은 책이라면 책장에 추가 
-        await this.updateBookshelf(book,user);
-    }
-
-    private createBookByRecord(createDTO: CreateRecordDTO) {
-        const { title, thumbnail, bookIsbn } = createDTO;
-        const bookDTO = { title, thumbnail, bookIsbn };
-        return bookDTO;
     }
 
     async getBookshelfByUserId(ownerId:string, userId:string){

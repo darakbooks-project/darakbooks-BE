@@ -1,15 +1,19 @@
-import {Inject, Controller, Post, Get, UseGuards, forwardRef, Req, Res, UseFilters, Query } from '@nestjs/common';
+import {Inject, Controller, Post, Get, UseGuards, forwardRef, Req, Res, UseFilters, Query, Param } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service' ;
 import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 import { Request , Response} from 'express';
 import kakaoExceptionFilter from '../../exceptionFilter/kakao.filter';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiHeader, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { accessDTO, refreshHeader, refreshRes, unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponseDTO';
+import { accessDTO, refreshHeader, refreshRes, unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { UserService } from '../service/user.service';
 @Controller('user')
 export class UserController {
-    constructor(@Inject(forwardRef(()=>AuthService))private authService:AuthService,) {}
+    constructor(
+        @Inject(forwardRef(()=>AuthService))private authService:AuthService,
+        private readonly userService:UserService,
+    ) {}
     
     @ApiBearerAuth() 
     @ApiTags('Authentication')
@@ -61,5 +65,26 @@ export class UserController {
         await this.authService.logout(userId) ;
         res.status(204).send();
     }
+
+    //my 프로필 요청
+    @Get('/profile')
+    @UseGuards(JwtAuthGuard)
+    @UseFilters(JwtExceptionFilter,)
+    async getMyProfile(@Req() req: Request){
+        const {userId} =  req.user as JwtPayload;
+        //자기 자신의 프로필 불러오기
+        await this.userService.getMyProfile(userId);
+    }
+
+    //다른 유저의 프로필 보기 
+    @Get('/profile/:ownerId')
+    @UseFilters(JwtExceptionFilter,)
+    @UseGuards(JwtAuthGuard)
+    async getOtherProfile(
+        @Param('ownerId') ownerId: string,
+        @Req() req: Request){
+        //cons
+    }
+    
 
 }
