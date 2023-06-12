@@ -30,11 +30,18 @@ export class User {
   nickname: string; //kakao nick name 받아오지만 수정 가능
 
   @ApiProperty({
+    example: '2039840298420',
+    description: '프로필 사진 key',
+  })
+  @Column({ nullable: true, name: 'photoId' })
+  photoId: string;
+
+  @ApiProperty({
     example: 'profile_img path',
     description: '프로필 사진',
   })
-  @Column({ nullable: true, name: 'profile_img' })
-  profileImg: string;
+  @Column({ nullable: true, name: 'photoUrl' })
+  photoUrl: string;
 
   @ApiProperty({
     example: 'user_info',
