@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Book } from 'src/entities/book.entity';
 import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
+import { profileResDTO } from 'src/dto/profileResponse.dto';
 
 @Injectable()
 export class UserService {
@@ -24,9 +25,19 @@ export class UserService {
         return user;
     }
 
-    async getMyProfile(id:string){
-        const user = await this.validateUser(id);
-        
+    async getProfile(id:string){
+        //1.존재하는 사용자인지 확인 
+        //2. 자기 자신의 user profile 불러오기 
+        const profile = await this.userRepository.findOne({ 
+            where: { userId: id }, 
+            select: ['userId', 'nickname', 'photoUrl', 'userInfo', 'bookshelfIsHidden'] 
+        });
+        return profile;
+    }
+
+    toDTO(profile,me:boolean):profileResDTO{
+        const dto = {...profile,isMine:me,};
+        return dto;
     }
 
     async update(id:string, updateDTO: UpdateUserDTO){

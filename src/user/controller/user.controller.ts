@@ -1,4 +1,4 @@
-import {Inject, Controller, Post, Get, UseGuards, forwardRef, Req, Res, UseFilters, Query, Param } from '@nestjs/common';
+import {Inject, Controller, Post, Get, UseGuards, forwardRef, Req, Res, UseFilters, Query, Param, UseInterceptors, UploadedFile, Patch, Body } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service' ;
 import { kakaoGuard } from 'src/auth/kakao/kakao-auth.guard';
 import { Request , Response} from 'express';
@@ -8,11 +8,16 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiHeader, ApiNotFoundResponse, A
 import { accessDTO, refreshHeader, refreshRes, unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { UserService } from '../service/user.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
+import { S3Service } from 'src/common/s3.service';
+import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 @Controller('user')
 export class UserController {
     constructor(
         @Inject(forwardRef(()=>AuthService))private authService:AuthService,
         private readonly userService:UserService,
+        private readonly s3Service: S3Service,
     ) {}
     
     @ApiBearerAuth() 
@@ -69,22 +74,44 @@ export class UserController {
     //my 프로필 요청
     @Get('/profile')
     @UseGuards(JwtAuthGuard)
-    @UseFilters(JwtExceptionFilter,)
+    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
     async getMyProfile(@Req() req: Request){
         const {userId} =  req.user as JwtPayload;
         //자기 자신의 프로필 불러오기
-        await this.userService.getMyProfile(userId);
+        const profile = await this.userService.getProfile(userId);
+        return this.userService.toDTO(profile,true);
     }
 
     //다른 유저의 프로필 보기 
     @Get('/profile/:ownerId')
-    @UseFilters(JwtExceptionFilter,)
+    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
     @UseGuards(JwtAuthGuard)
     async getOtherProfile(
         @Param('ownerId') ownerId: string,
-        @Req() req: Request){
-        //cons
+        @Req() req: Request
+    ){
+        const {userId} =  req.user as JwtPayload;
+        const profile = await this.userService.getProfile(ownerId);
+        return this.userService.toDTO(profile,false);
     }
-    
+
+    @Post('/photo')
+    @UseInterceptors(FileInterceptor('file'))
+    @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+    async uploadFile(@UploadedFile() file: Express.Multer.File){
+        const result = await this.s3Service.uploadFile(file);
+        return result;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/profile')
+    @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
+    async update(
+        @Body() updateDto: UpdateUserDTO,
+        @Req() req: Request,
+    ): Promise<any> {
+        const {userId} =  req.user as JwtPayload;
+        return await this.userService.update(userId,updateDto)
+    }
 
 }

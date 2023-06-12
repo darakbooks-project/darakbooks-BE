@@ -8,7 +8,11 @@ export class UpdateUserDTO{
 
     @IsOptional()
     @IsString()
-    profileImg: string;
+    photoId: string;
+
+    @IsOptional()
+    @IsString()
+    photoUrl: string;
 
     @IsOptional()
     @IsString()
@@ -17,13 +21,5 @@ export class UpdateUserDTO{
     @IsOptional()
     @IsBoolean()
     bookshelfIsHidden:boolean;
-
-    @IsOptional()
-    @IsBoolean()
-    groupIsHidden:boolean;
-
-    @IsOptional()
-    @IsArray()
-    bookshelves: Bookshelf[];
     
 }
