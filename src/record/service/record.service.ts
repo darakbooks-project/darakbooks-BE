@@ -135,7 +135,7 @@ export class RecordService {
         user: {
           userId: record.userId.userId,
           nickname: record.userId.nickname,
-          profileImg: record.userId.profileImg,
+          photoUrl: record.userId.photoUrl,
         },
       };
     });
