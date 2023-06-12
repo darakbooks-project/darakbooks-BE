@@ -36,13 +36,6 @@ export class BookshelfService {
         bookshelf = await this.bookShelfRepository.save(bookshelf);
     }
 
-    async addUserToBook(bookIsbn: string, bookshelf: Bookshelf) {
-        const book = await this.findOne(bookIsbn);
-        if(!(book.bookshelves)) book.bookshelves = [];
-        book.bookshelves.push(bookshelf);
-        console.log((await this.bookRepository.save(book)).bookshelves);
-    }
-
     async findOne(id:string){
         const book = await this.bookRepository.findOneBy({bookIsbn:id});
         if(!book) return null;
