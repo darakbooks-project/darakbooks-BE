@@ -6,6 +6,7 @@ import { BookDTO } from '../book.dto';
 import { Request , Response} from 'express';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
+import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
 
 @Controller('bookshelf')
 export class BookshelfController {
@@ -48,6 +49,15 @@ export class BookshelfController {
             //await this.bookshelfService.getRecommendedBookshelf()
         }
 
+    }
+
+
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
+    async getMyBookshelf(@Req() req: Request){
+        const {userId} =  req.user as JwtPayload;
+        return await this.bookshelfService.getMyBookshelf(userId);
     }
 
 }

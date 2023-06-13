@@ -70,7 +70,14 @@ export class BookshelfService {
 
         return book;
     }
-
+    async getMyBookshelf(userId:string){
+        const books = await this.bookRepository.createQueryBuilder("book")
+        .innerJoin("book.bookshelves", "bookshelf")
+        .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: userId })
+        .getMany();
+        console.log(books);
+        return books;
+    }
 
     //async getRecommendedBookshelf
 
