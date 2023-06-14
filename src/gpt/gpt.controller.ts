@@ -3,19 +3,25 @@ import * as https from 'https';
 import {
   ApiOperation,
   ApiResponse,
+  ApiBody,
+  ApiTags,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { gptDTO } from './dto/gpt.dto';
+import { gptInputDTO } from './dto/gpt.input.dto';
 import { BookRecommendationService } from './gpt.service';
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
+
+@ApiTags('gpt')
 @Controller('recs')
 export class GPTController {
   constructor(
     private readonly bookRecommendationService: BookRecommendationService,
   ) {}
 
-  @ApiOperation({ summary: '추천받기' })
+  @ApiOperation({ summary: 'gpt 에게 책 추천받기' })
+  @ApiBody({ type: gptInputDTO })
   @ApiResponse({ status: 201, type: gptDTO })
   @ApiBadRequestResponse({
     status: 400,
@@ -25,11 +31,9 @@ export class GPTController {
   async getBookAPI(@Body() userInput: any): Promise<any> {
     const apiUrl = 'https://nl.go.kr/NL/search/openApi/saseoApi.do';
     const apiKey = process.env.LIBRARY_API_KEY;
-    const startRowNumApi = 1;
-    const endRowNumApi = 100;
-    const startDate = '19400101';
+    const startDate = '20000101';
     const endDate = '20230431';
-    const drCode = '11,6,5,4';
+    const drCode = '11';
 
     try {
       const agent = new https.Agent({
@@ -41,8 +45,6 @@ export class GPTController {
         httpsAgent: agent,
         params: {
           key: apiKey,
-          startRowNumApi: startRowNumApi,
-          endRowNumApi: endRowNumApi,
           start_date: startDate,
           end_date: endDate,
           drCode: drCode,
@@ -60,14 +62,14 @@ export class GPTController {
             items.map(async (item) => {
               const recomTitle = item.recomtitle[0];
               const recomAuthor = item.recomauthor[0];
-              const recomeISBN = item.recomISBN[0];
+              const recomISBN = item.recomisbn[0];
               const recomPublisher = item.recompublisher[0];
               const recomFilePath = item.recomfilepath[0];
               const recomContents = item.recomcontens[0];
               return {
                 recomTitle,
                 recomAuthor,
-                recomeISBN,
+                recomISBN,
                 recomPublisher,
                 recomFilePath,
                 recomContents,
@@ -76,6 +78,8 @@ export class GPTController {
           );
         }),
       );
+
+      console.log(processedData);
 
       const recommendations =
         await this.bookRecommendationService.generateBookRecommendations(

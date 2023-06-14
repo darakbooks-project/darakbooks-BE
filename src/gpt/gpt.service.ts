@@ -2,12 +2,12 @@ import { Document } from 'langchain/document';
 import { Injectable } from '@nestjs/common';
 import { OpenAI } from 'langchain/llms/openai';
 import { StructuredOutputParser } from 'langchain/output_parsers';
-import { TranslatorService } from 'nestjs-translator';
+// import { TranslatorService } from 'nestjs-translator';
 import { loadQARefineChain } from 'langchain/chains';
 
 @Injectable()
 export class BookRecommendationService {
-  constructor(private translator: TranslatorService) {}
+  // constructor(private translator: TranslatorService) {}
 
   async generateBookRecommendations(
     bookdata: any[],
@@ -18,6 +18,7 @@ export class BookRecommendationService {
         const filteredContents = book[0].recomContents
           .replace(/<\/?[^>]+(>|$)|&nbsp;/g, ' ')
           .replace(/\s+/g, ' ');
+        console.log(book[0]);
         book[0].recomContents = filteredContents;
         return new Document({
           pageContent:
@@ -41,23 +42,27 @@ export class BookRecommendationService {
       Author: 'Author: of the recommendation',
       ISBN: 'ISBN: of the recommendation',
       Image: 'Book Image: of the recommendation',
-      Reason: 'Why you recommended the book',
+      Reason: 'One sentence why you recommended the book. Return in Korean',
     });
 
     const formatInstructions = parser.getFormatInstructions();
 
-    const model = new OpenAI({ maxConcurrency: 10, temperature: 1 });
+    const model = new OpenAI({
+      maxConcurrency: 10,
+      temperature: 1,
+      maxTokens: 2048,
+    });
     const chainA = loadQARefineChain(model);
 
-    const userRequest = this.translator.translate(userInput.userInput, {
-      lang: 'en',
-    });
-    console.log(userRequest);
+    // const userRequest = this.translator.translate(userInput.userInput, {
+    //   lang: 'en',
+    // });
+    // console.log(userRequest);
 
     const resA = await chainA.call({
       input_documents: bookdata,
       question:
-        userRequest +
+        userInput.userInput +
         `. Recommend 3 books in Korean from the input_documents in this format: ${formatInstructions} `,
     });
     console.log('CALL', resA.output_text);

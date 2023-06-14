@@ -2,7 +2,6 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { GPTModule } from './gpt/gpt.module';
-import { GPTModuleTest } from './gpt copy/gpt.module';
 import { Module } from '@nestjs/common';
 import { RecordController } from './record/controller/record.controller';
 import { RecordModule } from './record/record.module';
@@ -22,7 +21,6 @@ import configuration from './config/configuration';
     RecordModule,
     DatabaseModule,
     GPTModule,
-    GPTModuleTest,
   ],
   controllers: [],
   providers: [],
