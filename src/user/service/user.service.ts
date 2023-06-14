@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Book } from 'src/entities/book.entity';
 import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
+import { profileResDTO } from 'src/dto/profileResponse.dto';
+import { min } from 'class-validator';
 
 @Injectable()
 export class UserService {
@@ -15,7 +17,6 @@ export class UserService {
 
     async create(userData):Promise<User> {
         const user = await this.userRepository.save(userData);
-        user.bookshelves = [];
         return await this.userRepository.save(user);
     }
     
@@ -25,27 +26,31 @@ export class UserService {
         return user;
     }
 
-    async getMyProfile(id:string){
-        const user = await this.validateUser(id);
-        
+    async getProfile(id:string){
+        //1.존재하는 사용자인지 확인 
+        //2. 자기 자신의 user profile 불러오기 
+        const profile = await this.userRepository.findOne({ 
+            where: { userId: id }, 
+            select: ['userId', 'nickname', 'photoUrl', 'userInfo', 'bookshelfIsHidden'] 
+        });
+        return profile;
+    }
+
+    toDTO(profile,me:boolean):profileResDTO{
+        const { userId, nickname, photoUrl, userInfo, bookshelfIsHidden } = profile;
+        const dto: profileResDTO = { userId, nickname, photoUrl, userInfo, bookshelfIsHidden, isMine: me };
+        return dto;
     }
 
     async update(id:string, updateDTO: UpdateUserDTO){
         const user = await this.validateUser(id);
         //update method 
         user.update = updateDTO;
-        return await this.userRepository.save(user);
+        const profile = await this.userRepository.save(user);
+        return this.toDTO(profile,true);
     }
 
-    async updateBookshelf(user:User,bookshelf:Bookshelf){
-        //update method 
-        if (!user.bookshelves) {
-            user.bookshelves = [];
-        }
-        user.bookshelves.push(bookshelf);
-        return await this.userRepository.save(user);
-    }
-
+    
     async canViewBookshelf(ownerId:string, userId:string){
         const user = await this.validateUser(ownerId);
         if(user.bookshelfIsHidden && userId!==ownerId) 

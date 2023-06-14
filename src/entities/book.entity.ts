@@ -25,6 +25,7 @@ export class Book {
     @OneToMany(() => Record, record => record.bookIsbn)
     records: Record[]; 
 
-    @OneToMany(() => Bookshelf, bookshelf => bookshelf.book)
+    @OneToMany(() => Bookshelf, bookshelf => bookshelf.bookIsbn)
     bookshelves: Bookshelf[];
+
 }

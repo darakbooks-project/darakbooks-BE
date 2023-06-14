@@ -1,9 +1,21 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class profileResDTO{
-    userId: string; 
-    nickname : string;
-    photoId : string;
-    photoUrl : string;
-    userInfo : string;
+    @ApiProperty()
+    userId: string;
+  
+    @ApiProperty()
+    nickname: string;
+  
+    @ApiProperty()
+    photoUrl: string;
+  
+    @ApiProperty()
+    userInfo: string;
+  
+    @ApiProperty()
     bookshelfIsHidden: boolean;
-    me:boolean;
+  
+    @ApiProperty()
+    isMine: boolean;
 }

@@ -91,7 +91,7 @@ export class RecordService {
       .leftJoin('record.bookIsbn', 'book')
       .leftJoin('record.userId', 'user')
       .where('record.recordId > :lastId', { lastId }) // lastId보다 큰 ID를 가진 레코드를 필터링합니다.
-      .andWhere('record.userId = :userId', { ownerId }) // 특정 사용자의 ID 값을 필터링합니다.
+      .andWhere('record.userId = :ownerId', { ownerId }) // 특정 사용자의 ID 값을 필터링합니다.
       .orderBy('record.recordId', 'ASC') // ID를 오름차순으로 정렬합니다.
       .limit(pageSize) // 결과를 pageSize만큼 제한합니다.
       .getMany();
@@ -135,7 +135,7 @@ export class RecordService {
         user: {
           userId: record.userId.userId,
           nickname: record.userId.nickname,
-          profileImg: record.userId.profileImg,
+          photoUrl: record.userId.photoUrl,
         },
       };
     });

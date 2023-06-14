@@ -17,9 +17,9 @@ export class FileUploadDto {
 
 export class FileResDTO{
     @ApiProperty({ type: 'string', example:"1685876995200_52" ,description:'사진 파일 이름(KEY 값)' })
-    recordImg:string;
+    photoId:string;
     @ApiProperty({ type: 'string', example:'https://darak-book-bucket.s3.ap-northeast-2.amazonaws.com/1685876995200_52' , description:'사진 파일 이름(KEY 값)' })
-    recordImgUrl:string;
+    photoUrl:string;
 }
 
 export class unahtorizedRecordDTO{
