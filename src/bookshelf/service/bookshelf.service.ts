@@ -4,10 +4,6 @@ import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
 import { BookDTO } from '../book.dto';
 import { UserService } from 'src/user/service/user.service';
-import { CreateRecordDTO } from 'src/record/dto/create-record.dto';
-import { User } from 'src/user/user.entity';
-import { create } from 'domain';
-
 
 @Injectable()
 export class BookshelfService {
@@ -70,8 +66,12 @@ export class BookshelfService {
 
         return book;
     }
-
-
-    //async getRecommendedBookshelf
-
+    async getMyBookshelf(userId:string){
+        const books = await this.bookRepository.createQueryBuilder("book")
+        .innerJoin("book.bookshelves", "bookshelf")
+        .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: userId })
+        .getMany();
+        console.log(books);
+        return books;
+    }
 }
