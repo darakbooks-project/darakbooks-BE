@@ -50,7 +50,6 @@ export class BookRecommendationService {
     const model = new OpenAI({
       maxConcurrency: 10,
       temperature: 1,
-      maxTokens: 2048,
     });
     const chainA = loadQARefineChain(model);
 
