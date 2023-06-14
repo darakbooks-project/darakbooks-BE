@@ -38,11 +38,11 @@ export class BookRecommendationService {
     console.log(bookdata);
 
     const parser = StructuredOutputParser.fromNamesAndDescriptions({
-      Title: 'Title: of the recommendation',
-      Author: 'Author: of the recommendation',
-      ISBN: 'ISBN: of the recommendation',
-      Image: 'Book Image: of the recommendation',
-      Reason: 'One sentence why you recommended the book. Return in Korean',
+      title: 'Title: of the recommendation',
+      author: 'Author: of the recommendation',
+      isbn: 'ISBN: of the recommendation',
+      image: 'Book Image: of the recommendation',
+      reason: 'One sentence why you recommended the book. Return in Korean',
     });
 
     const formatInstructions = parser.getFormatInstructions();

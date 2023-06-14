@@ -18,6 +18,14 @@ export class gptDTO {
   @IsString()
   @ApiProperty({
     example:
+      'https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9788932474892.jpg',
+    description: '책표지 url',
+  })
+  image: string;
+
+  @IsString()
+  @ApiProperty({
+    example:
       '이 책은 건축물 속에 담긴 독특한 생각들을 탐색하는 내용입니다. 요새 건축물과 예술에 관심이 생긴 당신에게 추천하는 책입니다.',
     description: 'gpt가 이 책을 추천하는 이유',
   })
