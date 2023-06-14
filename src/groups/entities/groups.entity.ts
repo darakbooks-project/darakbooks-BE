@@ -110,7 +110,7 @@ export class GroupEntity {
     description: '그룹맴버 여부 확인',
   })
   @Column({ nullable: false })
-  is_participant: string;
+  is_participant: boolean;
 
   @ApiProperty({ type: () => User, isArray: true })
   @ManyToMany(() => User, (user) => user.groups)

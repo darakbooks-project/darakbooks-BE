@@ -21,6 +21,7 @@ import { ReadOnlyGroupsDto } from './dto/groups.dto';
 import { GroupsService } from './groups.service';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { GroupAuthGuard } from 'src/auth/owner/group-auth.guard';
+import { GroupsUserGroupDto } from './dto/groups.user-group.dto';
 
 @ApiTags('groups')
 @ApiResponse({
@@ -48,6 +49,7 @@ export class GroupsController {
   @ApiResponse({
     status: 404,
     description: '해당 유저가 존재하지 않습니다.',
+    type: ReadOnlyGroupsDto,
   })
   @UseGuards(JwtAuthGuard)
   @Get('/user-group')
