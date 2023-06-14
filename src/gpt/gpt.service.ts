@@ -62,7 +62,7 @@ export class BookRecommendationService {
       input_documents: bookdata,
       question:
         userInput.userInput +
-        `. Recommend 3 books in Korean from the input_documents in this format: ${formatInstructions} `,
+        `. Recommend one book in Korean from the input_documents in this format: ${formatInstructions} `,
     });
     console.log('CALL', resA.output_text);
     return resA.output_text;
