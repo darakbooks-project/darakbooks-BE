@@ -30,19 +30,8 @@ export class GroupsService {
     group.description = dto.description;
     group.recruitment_status = dto.recruitment_status;
     group.region = dto.region;
+    group.group_lead = dto.group_lead;
   }
-
-  // async userGroupInfo(userID, currentGroup){
-    // if user is grouplead
-    // group.is_group_lead = True
-    // else
-    // group.is_group_lead = False
-
-    // is user is participant
-    // group.is_participant = True
-    // else
-    // group.is_participant = False
-  // }
 
   async isGroupLead(group, userId) {
     if (group.group_lead == userId) {
@@ -62,9 +51,7 @@ export class GroupsService {
   }
 
   async findUserList(userIds: User[]) {
-    console.log(userIds);
     for (const userId of userIds) {
-      console.log(userId);
       const user = await this.userRepository.findOne({
         where: { userId: userId.userId },
       });
@@ -97,8 +84,18 @@ export class GroupsService {
 
   async findUserGroups(userId) {
     const userGroups = await this.usergroupRepository.find({
-      where: { user: userId },
+      where: { user: { userId: userId } },
       relations: ['group'],
+    });
+
+    userGroups.forEach((userGroup: any) => {
+      userGroup.group.is_group_lead = true;
+      if (userGroup.group.group_lead == userId) {
+        userGroup.group.is_group_lead = true;
+      } else {
+        userGroup.group.is_group_lead = false;
+      }
+      userGroup.group.is_participant = true;
     });
 
     return userGroups;
@@ -174,13 +171,29 @@ export class GroupsService {
     const isExistName = await this.groupsRepository.findOne({
       where: { name: body.name },
     });
-    if (!!isExistName) {
+    if (isExistName) {
       throw new BadRequestException('해당 독서모임의 이름은 이미 존재 합니다.');
     }
     const group = new GroupEntity();
     this.saveGroupData(group, body);
-    // group.group_lead = userID 가입한
+
     const createdGroup = await this.groupsRepository.save(group);
+
+    const lastUserGroup = await this.usergroupRepository.findOne({
+      where: {},
+      order: { id: 'DESC' },
+    });
+
+    const grouplead = await this.userRepository.findOne({
+      where: { userId: body.group_lead },
+    });
+
+    const userGroup = new UserGroup();
+    userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
+    userGroup.user = grouplead;
+    userGroup.group = group;
+
+    await this.usergroupRepository.save(userGroup, { reload: true });
 
     if (body.userGroup) {
       const userIds = body.userGroup;

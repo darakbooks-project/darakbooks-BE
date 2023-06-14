@@ -49,6 +49,7 @@ export class GroupsController {
     status: 404,
     description: '해당 유저가 존재하지 않습니다.',
   })
+  @UseGuards(JwtAuthGuard)
   @Get('/user-group')
   async findUserGroup(@Req() req: Request) {
     const { userId } = req.user as JwtPayload;
@@ -88,6 +89,7 @@ export class GroupsController {
     type: ReadOnlyGroupsDto,
   })
   @Get('/:group_id')
+  @UseGuards(JwtAuthGuard)
   async getOneGroupById(
     @Param('group_id') group_id: number,
     @Req() req: Request,
@@ -224,6 +226,7 @@ export class GroupsController {
     description: '유저가 그룹에 추가되었습니다.',
     type: ReadOnlyGroupsDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post('user/:group_id/join')
   async UserjoinGroup(@Param('group_id') groupId: number, @Req() req: Request) {
     const { userId } = req.user as JwtPayload;
@@ -237,6 +240,7 @@ export class GroupsController {
     type: ReadOnlyGroupsDto,
   })
   @Post('user/:group_id/leave')
+  @UseGuards(JwtAuthGuard)
   async UserleaveGroup(
     @Param('group_id') groupId: number,
     @Req() req: Request,
