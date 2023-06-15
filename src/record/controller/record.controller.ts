@@ -102,7 +102,7 @@ export class RecordController {
 
   //mypage 용 특정 사용자의 독서기록 전체보기 
   @ApiOperation({
-    summary: '마이 서재페이지에 필요한 (특정 사용자) 독서기록 전체보기', 
+    summary: '마이 서재페이지에 필요한 (다른 사용자) 독서기록 전체보기', 
     description:"userId 123의 독서기록 전체를 보고 싶을 때는 GET /123?lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /123?lastId=10&pageSize=20&bookId=392387492  "})
   @ApiResponse({status:200, type:[TransformedRecordDTO]})
   @ApiParam({ name: 'ownerId', type: 'string' , description:'서재의 owner 사용자 id'})
@@ -124,7 +124,27 @@ export class RecordController {
     else return await this.recordService.getByLastIdAndUserId(ownerId,userId,lastId,pageSize);
   }  
 
-
+  //mypage 용 특정 사용자의 독서기록 전체보기 
+  @ApiOperation({
+    summary: '마이 서재페이지에 필요한 독서기록 전체보기', 
+    description:"userId 123의 독서기록 전체를 보고 싶을 때는 GET /123?lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /123?lastId=10&pageSize=20&bookId=392387492  "})
+  @ApiResponse({status:200, type:[TransformedRecordDTO]})
+  @ApiQuery({ name: 'lastId', type: 'number' , description:'마지막으로 전달받은 recordId'})
+  @ApiQuery({ name: 'pageSize', type: 'number', description:'전달받고 싶은 record 수' })
+  @ApiQuery({ name: 'bookID', type: 'string' , description:'특정 책의 독서기록을 보고 싶을 때 책의 isbn 코드'})
+  @UseGuards(JwtAuthGuard)
+  @Get('')
+  async getMyRecord(
+    @Query('lastId') lastId: number, 
+    @Query('pageSize') pageSize: number,
+    @Query('bookID') bookIsbn: string,
+    @Req() req: Request) {
+    const {userId} =  req.user as JwtPayload;
+    if (bookIsbn) {
+      return await this.recordService.getByLastIdAndUserIdAndBookId(userId,null,bookIsbn,lastId,pageSize);
+    }
+    else return await this.recordService.getByLastIdAndUserId(userId,null,lastId,pageSize);
+  } 
 
   // @ApiBearerAuth()
   // @ApiOperation({summary: '전달한 id와 일치하는 독서기록 요청'})
