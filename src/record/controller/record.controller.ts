@@ -103,8 +103,8 @@ export class RecordController {
 
   //mypage 용 특정 사용자의 독서기록 전체보기 
   @ApiOperation({
-    summary: '마이 서재페이지에 필요한 (다른 사용자) 독서기록 전체보기', 
-    description:"userId 123의 독서기록 전체를 보고 싶을 때는 GET /123?lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /123?lastId=10&pageSize=20&bookId=392387492  "})
+    summary: '마이 서재페이지에 필요한 (다른 사용자, 자기자신의) 독서기록 전체보기', 
+    description:"userId 123의 독서기록 전체를 보고 싶을 때는 GET /123?lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /123?lastId=10&pageSize=20&bookId=392387492<br> 자기 자신의 독서기록을 보고 싶을때는 records/my   "})
   @ApiResponse({status:200, type:[TransformedRecordDTO]})
   @ApiParam({ name: 'ownerId', type: 'string' , description:'서재의 owner 사용자 id'})
   @ApiQuery({ name: 'lastId', type: 'number' , description:'마지막으로 전달받은 recordId'})
