@@ -33,10 +33,25 @@ export class GroupsService {
     group.group_lead = dto.group_lead;
   }
 
+  async isGroupLead(group, userId) {
+    if (group.group_lead == userId) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async isParticipant(group_id, userId) {
+    const groupUsers = await this.getAllUsersInGroup(group_id);
+    if (userId in groupUsers) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async findUserList(userIds: User[]) {
-    console.log(userIds);
     for (const userId of userIds) {
-      console.log(userId);
       const user = await this.userRepository.findOne({
         where: { userId: userId.userId },
       });
@@ -65,6 +80,25 @@ export class GroupsService {
     const groups = await this.groupsRepository.find();
 
     return groups;
+  }
+
+  async findUserGroups(userId) {
+    const userGroups = await this.usergroupRepository.find({
+      where: { user: { userId: userId } },
+      relations: ['group'],
+    });
+
+    userGroups.forEach((userGroup: any) => {
+      userGroup.group.is_group_lead = true;
+      if (userGroup.group.group_lead == userId) {
+        userGroup.group.is_group_lead = true;
+      } else {
+        userGroup.group.is_group_lead = false;
+      }
+      userGroup.group.is_participant = true;
+    });
+
+    return userGroups;
   }
 
   async findNGroups(page: number, limit: number) {
@@ -137,12 +171,29 @@ export class GroupsService {
     const isExistName = await this.groupsRepository.findOne({
       where: { name: body.name },
     });
-    if (!!isExistName) {
+    if (isExistName) {
       throw new BadRequestException('해당 독서모임의 이름은 이미 존재 합니다.');
     }
     const group = new GroupEntity();
     this.saveGroupData(group, body);
+
     const createdGroup = await this.groupsRepository.save(group);
+
+    const lastUserGroup = await this.usergroupRepository.findOne({
+      where: {},
+      order: { id: 'DESC' },
+    });
+
+    const grouplead = await this.userRepository.findOne({
+      where: { userId: body.group_lead },
+    });
+
+    const userGroup = new UserGroup();
+    userGroup.id = lastUserGroup ? lastUserGroup.id + 1 : 1;
+    userGroup.user = grouplead;
+    userGroup.group = group;
+
+    await this.usergroupRepository.save(userGroup, { reload: true });
 
     if (body.userGroup) {
       const userIds = body.userGroup;
@@ -171,7 +222,9 @@ export class GroupsService {
 
   async deleteGroup(group_id: number, res: Response) {
     const groupfind = await this.getOneGroupById(group_id);
-    await this.usergroupRepository.delete({ group: groupfind });
+    const groupId = groupfind.group_id;
+
+    await this.usergroupRepository.delete({ group: { group_id: groupId } });
     await this.groupsRepository.delete(group_id);
 
     return res.status(204).send();
@@ -186,9 +239,8 @@ export class GroupsService {
   }
 
   async getAllUsersInGroup(group_id: number) {
-    const groupfind = await this.getOneGroupById(group_id);
     const groupusers = await this.usergroupRepository.find({
-      where: { group: groupfind },
+      where: { group: { group_id: group_id } },
       relations: ['user'],
     });
     const userIds = groupusers.map((userGroup) => userGroup.user);
@@ -208,11 +260,9 @@ export class GroupsService {
   }
 
   async removeUserFromGroup(group_id: number, user_id: string, res: Response) {
-    const groupfind = await this.getOneGroupById(group_id);
-    const userfind = await this.findUser(user_id);
     await this.usergroupRepository.delete({
-      user: userfind,
-      group: groupfind,
+      user: { userId: user_id },
+      group: { group_id: group_id },
     });
 
     return res.status(204).send();
