@@ -8,8 +8,8 @@ export class Bookshelf {
   id: number;
 
   @ManyToOne(() => User, user => user.bookshelves)
-  user: User;
+  userId: string;
 
   @ManyToOne(() => Book, book => book.bookshelves)
-  book: Book;
+  bookIsbn: string;
 }
