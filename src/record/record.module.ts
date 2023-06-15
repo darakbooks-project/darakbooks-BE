@@ -9,10 +9,11 @@ import { bookProvider } from 'src/repositories/book.provider';
 import { bookshelfProviders } from 'src/repositories/bookshelf.provider';
 import { UserService } from 'src/user/service/user.service';
 import { userProviders } from 'src/user/user.provider';
+import { OwnerAuthGuard } from 'src/auth/owner/owner-auth.guard';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [RecordController],
-  providers: [...recordProviders,...bookProvider,...bookshelfProviders,...userProviders,RecordService,S3Service,BookshelfService,UserService,]
+  providers: [...recordProviders,...bookProvider,...bookshelfProviders,...userProviders,RecordService,S3Service,BookshelfService,UserService,OwnerAuthGuard]
 })
 export class RecordModule {}
