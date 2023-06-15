@@ -6,6 +6,7 @@ import { BookDTO } from '../book.dto';
 import { Request , Response} from 'express';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
+import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
 
 @Controller('bookshelf')
 export class BookshelfController {
@@ -34,7 +35,7 @@ export class BookshelfController {
     @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
-    @Get('/')
+    @Get('/:ownerId')
     async getBookShelf( 
         @Param('ownerId') ownerId: string,
         @Req() req:Request
@@ -42,12 +43,21 @@ export class BookshelfController {
         const {userId} =  req.user as any;
         //특정 사용자의 책장 
         if(userId){
-            await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
+            return await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
         }
         else{ //메인화면에서 사용할 책장 
             //await this.bookshelfService.getRecommendedBookshelf()
         }
 
+    }
+
+
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
+    async getMyBookshelf(@Req() req: Request){
+        const {userId} =  req.user as JwtPayload;
+        return await this.bookshelfService.getMyBookshelf(userId);
     }
 
 }
