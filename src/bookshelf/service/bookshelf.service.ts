@@ -81,7 +81,7 @@ export class BookshelfService {
     async remove(userId:string,bookId:string){
         //recordService
         const records = await this.recordService.getByLastIdAndUserIdAndBookId("mine",userId,bookId,undefined,undefined);
-        if(records) throw new ForbiddenException('책의 독서기록이 작성 돼 있기 때문에 삭제가 안됩니다.');
+        if(records.records.length>=1) throw new ForbiddenException('책의 독서기록이 작성 돼 있기 때문에 삭제가 안됩니다.');
         else await this.bookShelfRepository.delete({ userId: userId, bookIsbn: bookId });
     }
 
