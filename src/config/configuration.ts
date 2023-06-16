@@ -38,6 +38,9 @@ export default () => ({
         secretKey: required('AWS_SECRET_ACCESS_KEY'),
         bucket   : required('AWS_BUCKET_NAME'),
     },
+    gpt:{
+        openaiKey: required('OPENAI_API_KEY'),
+        libraryKey: required('LIBRARY_API_KEY'),
     cache:{
         host:required('CACHE_HOST'),
         port:required('CACHE_PORT'),
