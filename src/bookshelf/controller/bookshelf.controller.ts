@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Res, Req, UseFilters, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, Req, UseFilters, UseGuards, Param, Delete } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
 import { BookshelfService } from '../service/bookshelf.service';
@@ -82,5 +82,18 @@ export class BookshelfController {
         //특정 사용자의 책장 
         return await this.bookshelfService.getRandomBookshelf();
     }
+
+    @UseFilters(JwtExceptionFilter)
+    @UseGuards(JwtAuthGuard)
+    @Delete(':bookId')
+    async remove(
+        @Param('bookId') bookId: string,
+        @Req() req:Request,
+        @Res() res: Response
+    ) {
+        const {userId} =  req.user as JwtPayload;
+        await this.bookshelfService.remove(userId,bookId);
+        res.status(204).send();
+  }
 
 }

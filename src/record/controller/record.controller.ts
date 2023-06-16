@@ -134,7 +134,7 @@ export class RecordController {
   @ApiNotFoundResponse({status:404, type:recordNotfoundDTO, description:'존재하지 않는 독서기록 '})
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
   @UseGuards(JwtAuthGuard,OwnerAuthGuard)
-  @Delete('/:id')
+  @Delete(':id')
   async remove(@Param('id') id: number,@Res() res: Response) {
     await this.recordService.remove(+id);
     res.status(204).send();

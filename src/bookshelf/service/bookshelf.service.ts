@@ -1,10 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
 import { BookDTO } from '../book.dto';
 import { UserService } from 'src/user/service/user.service';
 import { PythonShell } from 'python-shell';
+import { RecordService } from 'src/record/service/record.service';
 
 @Injectable()
 export class BookshelfService {
@@ -15,6 +16,7 @@ export class BookshelfService {
         @Inject('BOOK_REPOSITORY') private bookRepository:Repository<Book>, 
         @Inject('BOOKSHELF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
         private userService:UserService,
+        private recordService:RecordService,
     ){
         this.options = {
             pythonPath: 'C:/Users/pozxc/AppData/Local/Microsoft/WindowsApps/python.exe',
@@ -74,6 +76,13 @@ export class BookshelfService {
             result = await Promise.all(promises);
         }
         return result;
+    }
+
+    async remove(userId:string,bookId:string){
+        //recordService
+        const records = await this.recordService.getByLastIdAndUserIdAndBookId("mine",userId,bookId,undefined,undefined);
+        if(records) throw new ForbiddenException('책의 독서기록이 작성 돼 있기 때문에 삭제가 안됩니다.');
+        else await this.bookShelfRepository.delete({ userId: userId, bookIsbn: bookId });
     }
 
     async addBookToBookshelf(userId:string, createDTO:BookDTO){

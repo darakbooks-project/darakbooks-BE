@@ -6,10 +6,12 @@ import { bookProvider } from 'src/repositories/book.provider';
 import { BookshelfService } from './service/bookshelf.service';
 import { UserService } from 'src/user/service/user.service';
 import { userProviders } from 'src/user/user.provider';
+import { RecordService } from 'src/record/service/record.service';
+import { recordProviders } from 'src/record/record.provider';
 
 @Module({
     imports: [DatabaseModule],
     controllers: [BookshelfController],
-    providers: [...bookshelfProviders,...bookProvider,...userProviders,BookshelfService,UserService,]
+    providers: [...bookshelfProviders,...bookProvider,...userProviders,...recordProviders,BookshelfService,UserService,RecordService]
 })
 export class BookshelfModule {}
