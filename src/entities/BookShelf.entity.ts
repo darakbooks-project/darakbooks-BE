@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Book } from './book.entity';
 import { User } from 'src/user/user.entity';
 
@@ -8,8 +8,10 @@ export class Bookshelf {
   id: number;
 
   @ManyToOne(() => User, user => user.bookshelves)
+  @Column({ name: 'user_id' })
   userId: string;
 
   @ManyToOne(() => Book, book => book.bookshelves)
+  @Column({ name: 'book_isbn' })
   bookIsbn: string;
 }

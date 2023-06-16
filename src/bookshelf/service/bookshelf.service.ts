@@ -4,19 +4,46 @@ import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
 import { BookDTO } from '../book.dto';
 import { UserService } from 'src/user/service/user.service';
+import { PythonShell } from 'python-shell';
 
 @Injectable()
 export class BookshelfService {
+    private options;
     constructor(
         @Inject('BOOK_REPOSITORY') private bookRepository:Repository<Book>, 
         @Inject('BOOKSHELF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
         private userService:UserService,
     ){
-        const options = {
+        this.options = {
             pythonPath: 'C:/Users/pozxc/AppData/Local/Microsoft/WindowsApps/python.exe',
-            scriptPath: 'src/scripts/recommendations.py', // Python 스크립트 경로 (현재 디렉토리 기준)
+            scriptPath: 'src/scripts', // Python 스크립트 경로 (현재 디렉토리 기준)
             args: [] // Python 스크립트에 전달할 인자 (옵션)
         }
+
+    }
+
+    async getRecommendedBookshelf(userId:string,){
+        const pyshell = new PythonShell('recommendations.py', this.options);
+        const bookshelves =  await this.bookShelfRepository.find({
+            select:['userId', 'bookIsbn']
+        });
+        const jsonBookshelfs = JSON.stringify(bookshelves);
+
+        pyshell.send(jsonBookshelfs);
+        pyshell.send(userId);
+        //userId 3개 나옴 
+        const recommendedUsers: string[] = await new Promise((resolve, reject) => {
+            pyshell.on('message', (message) => {
+                resolve(JSON.parse(message));
+            });
+            pyshell.end((err) => {
+              if (err) {
+                reject(err);
+              }
+            });
+          });
+        //만약 없다면 랜덤추천 하기 
+        //bookshelf 결과값 생성하기 
 
     }
 

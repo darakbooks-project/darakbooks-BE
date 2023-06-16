@@ -20,7 +20,7 @@ export class BookshelfController {
     @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
-    @Post('/')
+    @Post('')
     async addBook(@Body() bookDTO:BookDTO, @Req() req:Request, @Res() res: Response){
         const {userId} =  req.user as any;
         await this.bookshelfService.addBookToBookshelf(userId,bookDTO);
@@ -35,19 +35,18 @@ export class BookshelfController {
     @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
-    @Get('/:ownerId')
+    @Get(':ownerId')
     async getBookShelf( 
         @Param('ownerId') ownerId: string,
         @Req() req:Request
     ){
+        console.log("here?");
         const {userId} =  req.user as any;
         //특정 사용자의 책장 
-        if(userId){
+        if(ownerId){
             return await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
         }
-        else{ //메인화면에서 사용할 책장 
-            //await this.bookshelfService.getRecommendedBookshelf()
-        }
+        
 
     }
 
@@ -57,11 +56,24 @@ export class BookshelfController {
     @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
     @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @Get()
-    @UseGuards(JwtAuthGuard)
     @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
+    @UseGuards(JwtAuthGuard)
     async getMyBookshelf(@Req() req: Request){
         const {userId} =  req.user as JwtPayload;
         return await this.bookshelfService.getMyBookshelf(userId);
+    }
+
+    @UseFilters(JwtExceptionFilter)
+    @UseGuards(JwtAuthGuard)
+    @Get('/main/recommend')
+    async getRecommendedBookshelf( 
+        @Req() req:Request
+    ){
+        const {userId} =  req.user as any;
+        //특정 사용자의 책장 
+        return await this.bookshelfService.getRecommendedBookshelf(userId);
+        
+
     }
 
 }
