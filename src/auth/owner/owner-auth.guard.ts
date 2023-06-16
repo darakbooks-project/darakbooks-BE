@@ -19,7 +19,6 @@ export class OwnerAuthGuard implements CanActivate {
 
     // 요청된 리소스의 소유자 정보 (예시로 userId 필드 사용)
     const resourceOwnerId = resource.userId;
-    console.log(resource);
     // 인증된 사용자의 ID와 리소스의 소유자 ID를 비교하여 본인인증 여부를 확인합니다.
     const isOwner = userId === resourceOwnerId;
     if (!isOwner) {

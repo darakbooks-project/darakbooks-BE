@@ -51,7 +51,11 @@ export class BookshelfController {
 
     }
 
-
+    @ApiBearerAuth()
+    @ApiOperation({summary: '사용자 자신의 책장의 책 가져오기 '})
+    @ApiResponse({status:200, type:[BookDTO]})
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
+    @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
     @Get()
     @UseGuards(JwtAuthGuard)
     @UseFilters(JwtExceptionFilter,NotFoundExceptionFilter)
