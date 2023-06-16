@@ -9,6 +9,8 @@ import { PythonShell } from 'python-shell';
 @Injectable()
 export class BookshelfService {
     private options;
+    private minBookCount;
+    private bookshelfLimit;
     constructor(
         @Inject('BOOK_REPOSITORY') private bookRepository:Repository<Book>, 
         @Inject('BOOKSHELF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
@@ -19,16 +21,19 @@ export class BookshelfService {
             scriptPath: 'src/scripts', // Python 스크립트 경로 (현재 디렉토리 기준)
             args: [] // Python 스크립트에 전달할 인자 (옵션)
         }
+        this.minBookCount=3;
+        this.bookshelfLimit=3;//py에도 넘기도록 수정 
 
     }
 
     async getRecommendedBookshelf(userId:string,){
+        let result=[];
         const pyshell = new PythonShell('recommendations.py', this.options);
         const bookshelves =  await this.bookShelfRepository.find({
             select:['userId', 'bookIsbn']
         });
         const jsonBookshelfs = JSON.stringify(bookshelves);
-
+        console.log(bookshelves);
         pyshell.send(jsonBookshelfs);
         pyshell.send(userId);
         //userId 3개 나옴 
@@ -42,9 +47,33 @@ export class BookshelfService {
               }
             });
           });
+        console.log(recommendedUsers);
+        if(recommendedUsers.length>1) {
+            const promises = recommendedUsers.map((user) => this.getMyBookshelf(user));
+            result = await Promise.all(promises);
+        }
         //만약 없다면 랜덤추천 하기 
-        //bookshelf 결과값 생성하기 
+        if(recommendedUsers.length<=1) return await this.getRandomBookshelf();
+        return result;
+    }
 
+    async getRandomBookshelf(){
+        let result;
+        const randomUsers = await this.bookShelfRepository
+        .createQueryBuilder('bookshelf')
+        .addSelect('COUNT(*)', 'bookCount')
+        .groupBy('bookshelf.userId')
+        .having('COUNT(*) >= :minBookCount', { minBookCount: this.minBookCount })
+        .orderBy('RAND()')
+        .limit(this.bookshelfLimit)
+        .select('bookshelf.userId')
+        .getMany();
+        const randomUserIds = randomUsers.map(item => item.userId);
+        if(randomUserIds.length>1) {
+            const promises = randomUserIds.map((user) => this.getMyBookshelf(user));
+            result = await Promise.all(promises);
+        }
+        return result;
     }
 
     async addBookToBookshelf(userId:string, createDTO:BookDTO){

@@ -72,8 +72,15 @@ export class BookshelfController {
         const {userId} =  req.user as any;
         //특정 사용자의 책장 
         return await this.bookshelfService.getRecommendedBookshelf(userId);
-        
+    }
 
+
+    @Get('/main/random')
+    async getRandomBookshelf( 
+        @Req() req:Request
+    ){
+        //특정 사용자의 책장 
+        return await this.bookshelfService.getRandomBookshelf();
     }
 
 }
