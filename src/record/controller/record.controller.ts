@@ -48,6 +48,7 @@ export class RecordController {
   @ApiResponse({status:201, type: Record})
   @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
   @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
@@ -102,13 +103,14 @@ export class RecordController {
 
   //mypage 용 특정 사용자의 독서기록 전체보기 
   @ApiOperation({
-    summary: '마이 서재페이지에 필요한 (특정 사용자) 독서기록 전체보기', 
+    summary: '마이 서재페이지에 필요한 (다른 사용자) 독서기록 전체보기', 
     description:"userId 123의 독서기록 전체를 보고 싶을 때는 GET /123?lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /123?lastId=10&pageSize=20&bookId=392387492  "})
   @ApiResponse({status:200, type:[TransformedRecordDTO]})
   @ApiParam({ name: 'ownerId', type: 'string' , description:'서재의 owner 사용자 id'})
   @ApiQuery({ name: 'lastId', type: 'number' , description:'마지막으로 전달받은 recordId'})
   @ApiQuery({ name: 'pageSize', type: 'number', description:'전달받고 싶은 record 수' })
   @ApiQuery({ name: 'bookID', type: 'string' , description:'특정 책의 독서기록을 보고 싶을 때 책의 isbn 코드'})
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
   @UseGuards(JwtAuthGuard)
   @Get('/:ownerId')
   async getRecordsByUserId(
@@ -124,31 +126,16 @@ export class RecordController {
     else return await this.recordService.getByLastIdAndUserId(ownerId,userId,lastId,pageSize);
   }  
 
-
-
-  // @ApiBearerAuth()
-  // @ApiOperation({summary: '전달한 id와 일치하는 독서기록 요청'})
-  // @ApiResponse({status:200, type:Record})
-  // @ApiQuery({ name: 'id', type: 'string' , description:'요청하는 record의 recordId'})
-  // @ApiUnauthorizedResponse({status:401, type:unahtorizedRecordDTO, description:'record에 접근 권한이 없습니다.' })
-  // @ApiNotFoundResponse({status:404, type:recordNotfoundDTO, description:'존재하지 않는 독서기록 '})
-  // @UseGuards(JwtAuthGuard)
-  // @Get(':id')
-  // @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
-  // async findOne(@Param('id') id: number) {
-  //   return await this.recordService.findOne(+id);
-  // }
-
-
   @ApiBearerAuth()
   @ApiOperation({summary: '독서기록 삭제'})
   @ApiResponse({status:204})
   @ApiParam({ name: 'id', type: 'string' , description:'요청하는 record의 recordId'})
   @ApiUnauthorizedResponse({status:401, type:unahtorizedRecordDTO, description:'record에 접근 권한이 없습니다.' })
   @ApiNotFoundResponse({status:404, type:recordNotfoundDTO, description:'존재하지 않는 독서기록 '})
+  @UseFilters(JwtExceptionFilter, NotFoundExceptionFilter)
   @UseGuards(JwtAuthGuard,OwnerAuthGuard)
-  @Delete(':id')
-  @UseFilters(NotFoundExceptionFilter)  async remove(@Param('id') id: number,@Res() res: Response) {
+  @Delete('/:id')
+  async remove(@Param('id') id: number,@Res() res: Response) {
     await this.recordService.remove(+id);
     res.status(204).send();
   }
