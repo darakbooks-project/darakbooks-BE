@@ -11,7 +11,14 @@ export class BookshelfService {
         @Inject('BOOK_REPOSITORY') private bookRepository:Repository<Book>, 
         @Inject('BOOKSHELF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
         private userService:UserService,
-    ){}
+    ){
+        const options = {
+            pythonPath: 'C:/Users/pozxc/AppData/Local/Microsoft/WindowsApps/python.exe',
+            scriptPath: 'src/scripts/recommendations.py', // Python 스크립트 경로 (현재 디렉토리 기준)
+            args: [] // Python 스크립트에 전달할 인자 (옵션)
+        }
+
+    }
 
     async addBookToBookshelf(userId:string, createDTO:BookDTO){
         //책 있는지 확인 후 책 data 만들기 
