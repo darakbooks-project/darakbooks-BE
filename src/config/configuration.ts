@@ -1,3 +1,6 @@
+import { rmSync } from 'fs';
+import { parse } from 'path';
+
 function required(key: string, defaultValue = undefined) {
     const value = process.env[key] || defaultValue;
     // if (value == null) {
@@ -21,7 +24,7 @@ export default () => ({
     jwt: {
         jwtAccessSecret: required('JWT_SECRET_ACCESS'),
         accessExpiresInHour: parseInt(required('ACCESS_EXPIRES_HOUR', 6)),
-        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 10)),
+        accessExpiresInSec: parseInt(required('ACCESS_EXPIRES_SEC', 30)),
         jwtRefreshSecret: required('JWT_SECRET_REFRESH'),
         refreshExpiresInDay: parseInt(required('REFRESH_EXPIRES_DAY', 60)),
     },
@@ -38,5 +41,13 @@ export default () => ({
     gpt:{
         openaiKey: required('OPENAI_API_KEY'),
         libraryKey: required('LIBRARY_API_KEY'),
+    cache:{
+        host:required('CACHE_HOST'),
+        port:required('CACHE_PORT'),
+        password:required('CACHE_PASSWORD'),
+        ttls:parseInt(required('CACHE_TTLS')),
+    },
+    redis:{
+        ttls:parseInt(required('REDIS_TTLS'))
     }
 });
