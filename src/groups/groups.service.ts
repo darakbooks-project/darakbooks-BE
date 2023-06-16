@@ -108,7 +108,6 @@ export class GroupsService {
   }
 
   async findNGroups(page: number, limit: number) {
-    // skip 할 만큼
     const skipCount = (page - 1) * limit;
 
     const [groups, totalGroups] = await this.groupsRepository
@@ -259,7 +258,7 @@ export class GroupsService {
     const groupfind = await this.getOneGroupById(group_id);
     const userfind = await this.findUser(user_id);
     const userGroup = new UserGroup();
-    userGroup.group = groupfind[0];
+    userGroup.group = groupfind;
     userGroup.user = userfind;
     const savedUserGroup = await this.usergroupRepository.save(userGroup);
 
