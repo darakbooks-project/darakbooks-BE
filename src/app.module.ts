@@ -12,7 +12,6 @@ import { APP_FILTER } from '@nestjs/core';
 import { NotFoundExceptionFilter } from './exceptionFilter/notfound.filter';
 import { BookshelfModule } from './bookshelf/bookshelf.module';
 import { GroupsModule } from './groups/groups.module';
-import { Module } from '@nestjs/common';
 @Module({
   imports: [ConfigModule.forRoot({
     envFilePath: `.env/.env.${process.env.NODE_ENV || "development"}`,

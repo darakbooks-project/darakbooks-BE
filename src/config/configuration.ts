@@ -41,6 +41,7 @@ export default () => ({
     gpt:{
         openaiKey: required('OPENAI_API_KEY'),
         libraryKey: required('LIBRARY_API_KEY'),
+    },
     cache:{
         host:required('CACHE_HOST'),
         port:required('CACHE_PORT'),
@@ -50,4 +51,4 @@ export default () => ({
     redis:{
         ttls:parseInt(required('REDIS_TTLS'))
     }
-});
+    });
