@@ -35,7 +35,7 @@ export class BookshelfService {
         const pyshell = new PythonShell('recommendations.py', this.options);
         const bookshelves =  await this.bookShelfRepository.find({
             select:['userId', 'bookIsbn']
-        });
+        }); 
         const jsonBookshelfs = JSON.stringify(bookshelves);
         //console.log(bookshelves);
         pyshell.send(jsonBookshelfs);
@@ -53,12 +53,12 @@ export class BookshelfService {
           });
         //console.log(recommendedUsers);
         if(recommendedUsers.length>1) {
-            const promises = recommendedUsers.map((user) => this.getMyBookshelf(user));
+            const promises = recommendedUsers.map((user) => this.getMyBookshelf(user,this.bookshelfLimit));
             result = await Promise.all(promises);
         }
         //만약 없다면 랜덤추천 하기 
         if(recommendedUsers.length<=1) return await this.getRandomBookshelf();
-        return result;
+        return {users:recommendedUsers,bookshelves:result};
     }
 
     async getRandomBookshelf(){
@@ -74,10 +74,10 @@ export class BookshelfService {
         .getMany();
         const randomUserIds = randomUsers.map(item => item.userId);
         if(randomUserIds.length>1) {
-            const promises = randomUserIds.map((user) => this.getMyBookshelf(user));
+            const promises = randomUserIds.map((user) => this.getMyBookshelf(user,this.bookshelfLimit));
             result = await Promise.all(promises);
         }
-        return result;
+        return {users:randomUserIds,bookshelves:result};
     }
 
     async remove(userId:string,bookId:string){
@@ -146,12 +146,21 @@ export class BookshelfService {
 
         return book;
     }
-    async getMyBookshelf(userId:string){
-        const books = await this.bookRepository.createQueryBuilder("book")
-        .innerJoin("book.bookshelves", "bookshelf")
-        .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: userId })
-        .getMany();
-        console.log(books);
+    async getMyBookshelf(userId:string,bookLimit:number=0){
+        let books;
+        if(bookLimit===0) {
+            books = await this.bookRepository.createQueryBuilder("book")
+            .innerJoin("book.bookshelves", "bookshelf")
+            .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: userId })
+            .getMany();
+        }
+        else{
+            books = await this.bookRepository.createQueryBuilder("book")
+            .innerJoin("book.bookshelves", "bookshelf")
+            .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: userId })            
+            .limit(bookLimit)
+            .getMany();
+        }      
         return books;
     }
 

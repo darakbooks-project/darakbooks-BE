@@ -4,9 +4,10 @@ import JwtExceptionFilter from 'src/exceptionFilter/jwt.filter';
 import { BookshelfService } from '../service/bookshelf.service';
 import { BookDTO } from '../book.dto';
 import { Request , Response} from 'express';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
+import { bookshelfForbiddenDTO, bookshelfNotfoundDTO, bookshelfResDTO } from 'src/dto/bookshelfResponse.dto';
 
 @Controller('bookshelf')
 export class BookshelfController {
@@ -61,6 +62,9 @@ export class BookshelfController {
         return await this.bookshelfService.getMyBookshelf(userId);
     }
 
+    @ApiBearerAuth()
+    @ApiOperation({summary: '로그인한 사용자의 맞춤 책장 추천'})
+    @ApiResponse({status:200, type:bookshelfResDTO,description:"추천사용자의 배열과 추천사용자의 책장 속 책3권 배열"})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
     @Get('/main/recommend')
@@ -72,7 +76,8 @@ export class BookshelfController {
         return await this.bookshelfService.getRecommendedBookshelf(userId);
     }
 
-
+    @ApiOperation({summary: '비로그인 사용자의 맞춤 책장 추천'})
+    @ApiResponse({status:200, type:bookshelfResDTO,description:"추천사용자의 배열과 추천사용자의 책장 속 책3권 배열"})
     @Get('/main/random')
     async getRandomBookshelf( 
         @Req() req:Request
@@ -81,6 +86,12 @@ export class BookshelfController {
         return await this.bookshelfService.getRandomBookshelf();
     }
 
+    @ApiBearerAuth()    
+    @ApiResponse({status:204})
+    @ApiOperation({summary: '마이서재페이지에서 책장 속 책 삭제'})
+    @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '})
+    @ApiForbiddenResponse({status:403, type:bookshelfForbiddenDTO, description:"책장에 책을 삭제하려고 하나 독서기록이 있을 때 에러 메세지"}) 
+    @ApiNotFoundResponse({status:404, type:bookshelfNotfoundDTO ,description:'책장에 책이 없을 때 발생하는 에러 메세지'})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
     @Delete(':bookId')
