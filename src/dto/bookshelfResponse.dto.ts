@@ -11,9 +11,9 @@ export class bookshelfForbiddenDTO{
 }
 
 export class bookshelfResDTO{
-    @ApiProperty({ example: "책장 추천: 추천 사용자의 책장에 담겨 있는 책 3권으로 이루어진 배열"})
-    bookshelfves:BookDTO[];
-    @ApiProperty({ example: "책장 추천: 추천 사용자의 3명 id 배열"})
+    @ApiProperty({ description: "책장 추천: 추천 사용자의 책장에 담겨 있는 책 3권으로 이루어진 배열(swagger에는 책1권 밖에 안나오지만 보이는 책data3개*3 배열)"})
+    bookshelves:BookDTO;
+    @ApiProperty({ example: ["02984029842","02984029842","02984029842"]})
     users:string[];
 
 
