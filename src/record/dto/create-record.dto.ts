@@ -1,26 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsDate, IsOptional, IsArray } from 'class-validator';
+import { recordDTO } from './record.dto';
+import { BookDTO } from 'src/bookshelf/book.dto';
 
 export class CreateRecordDTO {
-  @IsString()
-  bookIsbn: string;
-
-  @IsString()
-  text: string;
-
-  @IsString()
-  recordImg: string;
-
-  @IsString()
-  recordImgUrl: string;
-
-  @IsOptional()
-  @IsArray()
-  tags: { id: number, data: string }[] ;
-
-  @IsString()
-  readAt: string;
-
-  userId: string;
-
+  @ApiProperty({ description: 'Book information' })
+  book: BookDTO;
+  @ApiProperty({ description: 'Record information' })
+  record : recordDTO;
 }
-
