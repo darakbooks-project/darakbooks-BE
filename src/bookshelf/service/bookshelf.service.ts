@@ -6,6 +6,7 @@ import { BookDTO } from '../book.dto';
 import { UserService } from 'src/user/service/user.service';
 import { PythonShell } from 'python-shell';
 import { RecordService } from 'src/record/service/record.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BookshelfService {
@@ -17,9 +18,10 @@ export class BookshelfService {
         @Inject('BOOKSHELF_REPOSITORY') private bookShelfRepository:Repository<Bookshelf>, 
         private userService:UserService,
         private recordService:RecordService,
+        private configService:ConfigService,
     ){
         this.options = {
-            pythonPath: 'C:/Users/pozxc/AppData/Local/Microsoft/WindowsApps/python.exe',
+            pythonPath: configService.get('python.path'),
             scriptPath: 'src/scripts', // Python 스크립트 경로 (현재 디렉토리 기준)
             args: [] // Python 스크립트에 전달할 인자 (옵션)
         }
@@ -35,7 +37,7 @@ export class BookshelfService {
             select:['userId', 'bookIsbn']
         });
         const jsonBookshelfs = JSON.stringify(bookshelves);
-        console.log(bookshelves);
+        //console.log(bookshelves);
         pyshell.send(jsonBookshelfs);
         pyshell.send(userId);
         //userId 3개 나옴 
@@ -49,7 +51,7 @@ export class BookshelfService {
               }
             });
           });
-        console.log(recommendedUsers);
+        //console.log(recommendedUsers);
         if(recommendedUsers.length>1) {
             const promises = recommendedUsers.map((user) => this.getMyBookshelf(user));
             result = await Promise.all(promises);
