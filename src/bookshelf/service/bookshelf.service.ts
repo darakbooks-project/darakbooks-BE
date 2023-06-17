@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
@@ -84,9 +84,15 @@ export class BookshelfService {
         //recordService
         const records = await this.recordService.getByLastIdAndUserIdAndBookId("mine",userId,bookId,undefined,undefined);
         if(records.records.length>=1) throw new ForbiddenException('책의 독서기록이 작성 돼 있기 때문에 삭제가 안됩니다.');
-        else await this.bookShelfRepository.delete({ userId: userId, bookIsbn: bookId });
+        await this.findBookshelf(userId,bookId );
+        await this.bookShelfRepository.delete({ userId: userId, bookIsbn: bookId });
     }
 
+    async findBookshelf(userId:string,bookId:string){
+        const bookshelf = await this.bookShelfRepository.findBy({ userId: userId, bookIsbn: bookId });
+        if(!bookshelf) throw new NotFoundException("사용자의 책장에 저장 돼 있지 않은 책입니다.");
+    }
+    
     async addBookToBookshelf(userId:string, createDTO:BookDTO){
         //책 있는지 확인 후 책 data 만들기 
         const bookIsbn = await this.addBookToDB(createDTO);

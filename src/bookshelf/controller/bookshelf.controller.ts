@@ -40,13 +40,11 @@ export class BookshelfController {
         @Param('ownerId') ownerId: string,
         @Req() req:Request
     ){
-        console.log("here?");
         const {userId} =  req.user as any;
         //특정 사용자의 책장 
         if(ownerId){
             return await this.bookshelfService.getBookshelfByUserId(ownerId,userId);
         }
-        
 
     }
 
