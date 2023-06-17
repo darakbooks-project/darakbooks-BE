@@ -104,7 +104,11 @@ export class GroupsService {
       userGroup.group.is_participant = true;
     });
 
-    return userGroups;
+    const groupValues = userGroups.map((item) => {
+      return item.group;
+    });
+
+    return groupValues;
   }
 
   async findNGroups(page: number, limit: number) {
