@@ -12,7 +12,7 @@ import { photoDto } from '../dto/photo.dto';
 import { Record } from '../record.entity';
 import { CreateRecordDTO } from '../dto/create-record.dto';
 import { BookshelfService } from 'src/bookshelf/service/bookshelf.service';
-import { FileResDTO, FileUploadDto, TransformedRecordDTO, internalErrorDTO, recordNotfoundDTO, unahtorizedRecordDTO } from 'src/dto/RecordResponse.dto';
+import { FileResDTO, FileUploadDto, TransformedRecordDTO, getRecordsDTO, internalErrorDTO, recordNotfoundDTO, unahtorizedRecordDTO } from 'src/dto/RecordResponse.dto';
 import { unahtorizeddDTO, userNotfoundDTO } from '../../dto/LoginResponse.dto'
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
 import { last } from 'rxjs';
@@ -79,7 +79,7 @@ export class RecordController {
   @ApiOperation({
     summary: '메인페이지, 도서상세 페이지에 필요한 독서기록 전체보기 ', 
     description:"메인페이지의 독서기록 요청 GET /lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /bookId=392387492&lastId=10&pageSize=20  "})
-  @ApiResponse({status:200, type:[TransformedRecordDTO]})
+  @ApiResponse({status:200, type:[getRecordsDTO]})
   @ApiQuery({ name: 'bookID', type: 'string' , description:'특정 책의 독서기록을 보고 싶을 때 책의 isbn 코드'})
   @ApiQuery({ name: 'lastId', type: 'number' , description:'마지막으로 전달받은 recordId'})
   @ApiQuery({ name: 'pageSize', type: 'number', description:'전달받고 싶은 record 수' })
@@ -105,7 +105,7 @@ export class RecordController {
   @ApiOperation({
     summary: '마이 서재페이지에 필요한 (다른 사용자, 자기자신의) 독서기록 전체보기', 
     description:"userId 123의 독서기록 전체를 보고 싶을 때는 GET /123?lastId=10&pageSize=20 <br>userId 123의 특정 책의 독서기록 전체를 보고 싶을때는 GET /123?lastId=10&pageSize=20&bookId=392387492<br> 자기 자신의 독서기록을 보고 싶을때는 records/my   "})
-  @ApiResponse({status:200, type:[TransformedRecordDTO]})
+  @ApiResponse({status:200, type:[getRecordsDTO]})
   @ApiParam({ name: 'ownerId', type: 'string' , description:'서재의 owner 사용자 id'})
   @ApiQuery({ name: 'lastId', type: 'number' , description:'마지막으로 전달받은 recordId'})
   @ApiQuery({ name: 'pageSize', type: 'number', description:'전달받고 싶은 record 수' })

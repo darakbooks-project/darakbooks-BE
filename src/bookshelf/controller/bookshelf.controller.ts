@@ -64,7 +64,7 @@ export class BookshelfController {
 
     @ApiBearerAuth()
     @ApiOperation({summary: '로그인한 사용자의 맞춤 책장 추천'})
-    @ApiResponse({status:200, type:bookshelfResDTO,description:"추천사용자의 배열과 추천사용자의 책장 속 책3권 배열"})
+    @ApiResponse({status:200, type:bookshelfResDTO,description:"추천사용자의 배열과 추천사용자의 책장 속 책3권 배열(swagger에는 책1권 밖에 안나오지만 보이는 책data3개*3 배열)"})
     @UseFilters(JwtExceptionFilter)
     @UseGuards(JwtAuthGuard)
     @Get('/main/recommend')
@@ -77,7 +77,7 @@ export class BookshelfController {
     }
 
     @ApiOperation({summary: '비로그인 사용자의 맞춤 책장 추천'})
-    @ApiResponse({status:200, type:bookshelfResDTO,description:"추천사용자의 배열과 추천사용자의 책장 속 책3권 배열"})
+    @ApiResponse({status:200, type:bookshelfResDTO,description:"추천사용자의 배열과 추천사용자의 책장 속 책3권 배열(swagger에는 책1권 밖에 안나오지만 보이는 책data3개*3 배열)"})
     @Get('/main/random')
     async getRandomBookshelf( 
         @Req() req:Request
