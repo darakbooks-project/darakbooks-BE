@@ -42,7 +42,7 @@ export class BookRecommendationService {
       author: 'Author: of the recommendation',
       isbn: 'ISBN: of the recommendation',
       image: 'Book Image: of the recommendation',
-      reason: 'One sentence why you recommended the book. Return in Korean',
+      reason: 'short sentence why you recommended the book. Return in Korean',
     });
 
     const formatInstructions = parser.getFormatInstructions();
@@ -62,9 +62,10 @@ export class BookRecommendationService {
       input_documents: bookdata,
       question:
         userInput.userInput +
-        `. Recommend one book in Korean from the input_documents in this format: ${formatInstructions} `,
+        `. Recommend one book from the input_documents in this format: ${formatInstructions} `,
     });
-    console.log('CALL', resA.output_text);
-    return resA.output_text;
+    const final = await parser.parse(resA.output_text);
+    console.log('CALL', await parser.parse(resA.output_text));
+    return final;
   }
 }
