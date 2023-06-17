@@ -128,6 +128,7 @@ export class RecordService {
     .select('record.recordId')
     .orderBy('record.recordId', 'DESC')
     .getOne();
+    if(!maxRecord) return 0;
     return maxRecord.recordId;
   }
 

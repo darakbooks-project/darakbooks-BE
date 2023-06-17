@@ -96,17 +96,17 @@ export class GroupsController {
     @Param('group_id') group_id: number,
     @Req() req: Request,
   ) {
-    const group = await this.groupsService.getOneGroupById(group_id);
     const { userId } = req.user as JwtPayload;
+    const group = await this.groupsService.getOneGroupById(group_id);
     const is_group_lead = await this.groupsService.isGroupLead(group, userId);
     const is_participant = await this.groupsService.isParticipant(
       group_id,
       userId,
     );
+    group.is_group_lead = is_group_lead;
+    group.is_participant = is_participant;
     return {
       group,
-      is_group_lead: is_group_lead,
-      is_participant: is_participant,
     };
   }
 
