@@ -150,12 +150,20 @@ export class GroupsService {
       where: { group_id },
       relations: ['userGroup'],
     });
-
     if (!group) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+      throw new NotFoundException(
+        '해당 독서모임 정보가 존재하지 않습니다. 독서모임 id 를 다시 확인해주세요.',
+      );
     }
 
-    return group;
+    const groupUsers = await this.usergroupRepository.find({
+      where: { group: { group_id: group_id } },
+      relations: ['user'],
+    });
+    const users = groupUsers.map((userGroup) => userGroup.user);
+    console.log(users);
+
+    return { ...group, userGroup: users };
   }
 
   async getTopGroups(count: number) {
