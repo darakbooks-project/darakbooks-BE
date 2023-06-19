@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookDTO } from 'src/bookshelf/book.dto';
+import { User } from 'src/user/user.entity';
 
 export class bookshelfNotfoundDTO{
     @ApiProperty({ example: "사용자의 책장에 저장 돼 있지 않은 책입니다."})
@@ -13,8 +14,8 @@ export class bookshelfForbiddenDTO{
 export class bookshelfResDTO{
     @ApiProperty({ description: "책장 추천: 추천 사용자의 책장에 담겨 있는 책 3권으로 이루어진 배열"})
     bookshelves:BookDTO;
-    @ApiProperty({ example: ["02984029842","02984029842","02984029842"]})
-    users:string[];
+    @ApiProperty()
+    users:User
 
 }
 

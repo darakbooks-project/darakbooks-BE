@@ -26,12 +26,12 @@ export class BookshelfService {
             args: [] // Python 스크립트에 전달할 인자 (옵션)
         }
         this.minBookCount=3;
-        this.bookshelfLimit=3;//py에도 넘기도록 수정 
+        this.bookshelfLimit=1;//py에도 넘기도록 수정 
 
     }
 
     async getRecommendedBookshelf(userId:string,){
-        let result=[];
+        let result, users;
         const pyshell = new PythonShell('recommendations.py', this.options);
         const bookshelves =  await this.bookShelfRepository.find({
             select:['userId', 'bookIsbn']
@@ -52,17 +52,20 @@ export class BookshelfService {
             });
           });
         //console.log(recommendedUsers);
-        if(recommendedUsers.length>1) {
+        if(recommendedUsers.length>0) {
             const promises = recommendedUsers.map((user) => this.getMyBookshelf(user,this.bookshelfLimit));
             result = await Promise.all(promises);
-        }
-        //만약 없다면 랜덤추천 하기 
-        if(recommendedUsers.length<=1) return await this.getRandomBookshelf();
-        return {users:recommendedUsers,bookshelves:result};
+            const userPromises = recommendedUsers.map((user) => this.userService.findByuserId(user));
+            users = await Promise.all(userPromises);
+            return {users:users,bookshelves:result};
+        }else{
+            return await this.getRandomBookshelf();
+        } 
+        
     }
 
     async getRandomBookshelf(){
-        let result;
+        let result, users ;
         const randomUsers = await this.bookShelfRepository
         .createQueryBuilder('bookshelf')
         .addSelect('COUNT(*)', 'bookCount')
@@ -73,11 +76,14 @@ export class BookshelfService {
         .select('bookshelf.userId')
         .getMany();
         const randomUserIds = randomUsers.map(item => item.userId);
-        if(randomUserIds.length>1) {
+        if(randomUserIds.length>0) {
             const promises = randomUserIds.map((user) => this.getMyBookshelf(user,this.bookshelfLimit));
             result = await Promise.all(promises);
+            const userPromises = randomUserIds.map((user) => this.userService.findByuserId(user));
+            users = await Promise.all(userPromises);
         }
-        return {users:randomUserIds,bookshelves:result};
+        
+        return {users:users,bookshelves:result};
     }
 
     async remove(userId:string,bookId:string){

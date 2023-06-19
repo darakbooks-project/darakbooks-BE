@@ -30,10 +30,10 @@ user_idx = user_map[targetId]
 similar_users = np.argsort(similarity_matrix[user_idx])[::-1][1:]  # 자기 자신을 제외한 가장 유사한 사용자들의 인덱스
 
 # 추천 결과 생성
-if similar_users.shape[0] < 3:
-    n = 3
+if similar_users.shape[0] < 1:
+    n = 1
 else:
-    n = min(similar_users.shape[0], 3)
+    n = min(similar_users.shape[0], 1)
 recommended_users = []
 for idx in similar_users[:n]:
     similar_user_id = next((u for u, i in user_map.items() if i == idx), None)
