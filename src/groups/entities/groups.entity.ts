@@ -12,6 +12,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { User } from '../../user/user.entity';
+import { UserGroup } from '../../user-group/entities/user-group.entity';
 
 export enum MeetingType {
   ONLINE = 'online',
@@ -113,7 +114,7 @@ export class GroupEntity {
   is_participant: boolean;
 
   @ApiProperty({ type: () => User, isArray: true })
-  @ManyToMany(() => User, (user) => user.groups)
+  @ManyToMany(() => User, (user) => user)
   @JoinTable()
   userGroup: User[];
 
