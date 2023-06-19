@@ -7,7 +7,7 @@ import { Request , Response} from 'express';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { unahtorizeddDTO, userNotfoundDTO } from 'src/dto/LoginResponse.dto';
 import { NotFoundExceptionFilter } from 'src/exceptionFilter/notfound.filter';
-import { bookshelfForbiddenDTO, bookshelfNotfoundDTO, bookshelfResDTO } from 'src/dto/bookshelfResponse.dto';
+import { bookshelfForbiddenDTO, bookshelfNotfoundDTO, bookshelfResDTO, forbiddenDTO } from 'src/dto/bookshelfResponse.dto';
 import { ForbiddenExceptionFilter } from 'src/exceptionFilter/forbidden.filter';
 
 @Controller('bookshelf')
@@ -20,6 +20,7 @@ export class BookshelfController {
     @ApiResponse({status:204,})
     @ApiUnauthorizedResponse({status:401, type:unahtorizeddDTO, description:'token이 유효하지 않습니다. '}) 
     @ApiNotFoundResponse({status:404, type:userNotfoundDTO,description:'존재하지 않는 사용자 '})
+    @ApiForbiddenResponse({status:403, type:forbiddenDTO, description:"이미 책장에 담겨 있는 책" })
     @UseFilters(JwtExceptionFilter,ForbiddenExceptionFilter)
     @UseGuards(JwtAuthGuard)
     @Post('')

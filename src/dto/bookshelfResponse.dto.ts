@@ -16,5 +16,11 @@ export class bookshelfResDTO{
     @ApiProperty({ example: ["02984029842","02984029842","02984029842"]})
     users:string[];
 
-
 }
+
+
+export class forbiddenDTO{
+    @ApiProperty({ example: "이미 책장에 저장된 책입니다." })
+      message: string;
+  }
+  
