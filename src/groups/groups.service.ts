@@ -83,9 +83,23 @@ export class GroupsService {
   }
 
   async findAllGroups() {
-    const groups = await this.groupsRepository.find();
+    const groups = await this.groupsRepository.find({
+      relations: ['userGroup'],
+    });
 
-    return groups;
+    const groupsWithUsers = await Promise.all(
+      groups.map(async (group) => {
+        const groupUsers = await this.usergroupRepository.find({
+          where: { group: { group_id: group.group_id } },
+          relations: ['user'],
+        });
+
+        const users = groupUsers.map((userGroup) => userGroup.user);
+        return { ...group, userGroup: users };
+      }),
+    );
+
+    return groupsWithUsers;
   }
 
   async findUserGroups(userId) {
@@ -98,6 +112,7 @@ export class GroupsService {
       userGroup.group.is_group_lead = true;
       if (userGroup.group.group_lead == userId) {
         userGroup.group.is_group_lead = true;
+        userGroup.group.is_participant = true;
       } else {
         userGroup.group.is_group_lead = false;
       }
