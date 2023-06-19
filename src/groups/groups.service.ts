@@ -83,9 +83,23 @@ export class GroupsService {
   }
 
   async findAllGroups() {
-    const groups = await this.groupsRepository.find();
+    const groups = await this.groupsRepository.find({
+      relations: ['userGroup'],
+    });
 
-    return groups;
+    const groupsWithUsers = await Promise.all(
+      groups.map(async (group) => {
+        const groupUsers = await this.usergroupRepository.find({
+          where: { group: { group_id: group.group_id } },
+          relations: ['user'],
+        });
+
+        const users = groupUsers.map((userGroup) => userGroup.user);
+        return { ...group, userGroup: users };
+      }),
+    );
+
+    return groupsWithUsers;
   }
 
   async findUserGroups(userId) {
@@ -94,20 +108,36 @@ export class GroupsService {
       relations: ['group'],
     });
 
-    userGroups.forEach((userGroup: any) => {
-      userGroup.group.is_group_lead = true;
-      if (userGroup.group.group_lead == userId) {
-        userGroup.group.is_group_lead = true;
+    const groups = await this.groupsRepository.find({
+      relations: ['userGroup'],
+    });
+
+    const groupsWithUsers = await Promise.all(
+      groups.map(async (group) => {
+        const groupUsers = await this.usergroupRepository.find({
+          where: { group: { group_id: group.group_id } },
+          relations: ['user'],
+        });
+
+        const users = groupUsers.map((userGroup) => userGroup.user);
+        return { ...group, userGroup: users };
+      }),
+    );
+
+    // console.log(groupsWithUsers);
+    const groupValues = groupsWithUsers.map((userGroup: any) => {
+      console.log(userGroup);
+      userGroup.is_group_lead = true;
+      if (userGroup.is_group_lead == userId) {
+        userGroup.is_group_lead = true;
+        userGroup.is_participant = true;
       } else {
-        userGroup.group.is_group_lead = false;
+        userGroup.is_group_lead = false;
+        userGroup.is_participant = false;
       }
-      userGroup.group.is_participant = true;
+      return userGroup;
     });
-
-    const groupValues = userGroups.map((item) => {
-      return item.group;
-    });
-
+    console.log(groupValues);
     return groupValues;
   }
 
@@ -135,12 +165,20 @@ export class GroupsService {
       where: { group_id },
       relations: ['userGroup'],
     });
-
     if (!group) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+      throw new NotFoundException(
+        '해당 독서모임 정보가 존재하지 않습니다. 독서모임 id 를 다시 확인해주세요.',
+      );
     }
 
-    return group;
+    const groupUsers = await this.usergroupRepository.find({
+      where: { group: { group_id: group_id } },
+      relations: ['user'],
+    });
+    const users = groupUsers.map((userGroup) => userGroup.user);
+    console.log(users);
+
+    return { ...group, userGroup: users };
   }
 
   async getTopGroups(count: number) {
