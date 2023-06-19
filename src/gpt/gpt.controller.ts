@@ -33,7 +33,7 @@ export class GPTController {
     const apiKey = process.env.LIBRARY_API_KEY;
     const startDate = '20000101';
     const endDate = '20230431';
-    const drCode = '11';
+    const drCode = ['11', '6', '5', '4'];
 
     try {
       const agent = new https.Agent({
