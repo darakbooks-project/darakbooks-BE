@@ -42,7 +42,6 @@ export class BookRecommendationService {
       author: 'Author: of the recommendation',
       isbn: 'ISBN: of the recommendation',
       image: 'Book Image: of the recommendation',
-      reason: 'short sentence why you recommended the book. Return in Korean',
     });
 
     const formatInstructions = parser.getFormatInstructions();
@@ -62,7 +61,7 @@ export class BookRecommendationService {
       input_documents: bookdata,
       question:
         userInput.userInput +
-        `. Recommend one book from the input_documents in this format: ${formatInstructions} `,
+        `.What is one book I should read? Return response in this format: ${formatInstructions} `,
     });
     const final = await parser.parse(resA.output_text);
     console.log('CALL', await parser.parse(resA.output_text));
