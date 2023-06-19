@@ -18,7 +18,7 @@ export class BookRecommendationService {
         const filteredContents = book[0].recomContents
           .replace(/<\/?[^>]+(>|$)|&nbsp;/g, ' ')
           .replace(/\s+/g, ' ');
-        console.log(book[0]);
+        //console.log(book[0]);
         book[0].recomContents = filteredContents;
         return new Document({
           pageContent:
@@ -35,7 +35,7 @@ export class BookRecommendationService {
         });
       }),
     );
-    console.log(bookdata);
+    //console.log(bookdata);
 
     const parser = StructuredOutputParser.fromNamesAndDescriptions({
       title: 'Title: of the recommendation',
@@ -65,7 +65,7 @@ export class BookRecommendationService {
         `. Recommend one book from the input_documents in this format: ${formatInstructions} `,
     });
     const final = await parser.parse(resA.output_text);
-    console.log('CALL', await parser.parse(resA.output_text));
+    console.log('CALL', final);
     return final;
   }
 }

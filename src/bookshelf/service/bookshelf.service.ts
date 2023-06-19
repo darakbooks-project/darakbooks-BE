@@ -57,6 +57,7 @@ export class BookshelfService {
             result = await Promise.all(promises);
             const userPromises = recommendedUsers.map((user) => this.userService.findByuserId(user));
             users = await Promise.all(userPromises);
+            users = users.map(user=>{user.userId,user.nickname})
             return {users:users,bookshelves:result};
         }else{
             return await this.getRandomBookshelf();
@@ -81,6 +82,7 @@ export class BookshelfService {
             result = await Promise.all(promises);
             const userPromises = randomUserIds.map((user) => this.userService.findByuserId(user));
             users = await Promise.all(userPromises);
+            users = users.map(user=>{user.userId,user.nickname})
         }
         
         return {users:users,bookshelves:result};
@@ -134,7 +136,7 @@ export class BookshelfService {
 
     async getBookshelfByUserId(ownerId:string, userId:string){
         //user의 책장이 공개인지 아닌지 확인 
-        await this.userService.canViewBookshelf(ownerId,userId);
+        if(!await this.userService.canViewBookshelf(ownerId,userId)) return [];
         const books = await this.bookRepository.createQueryBuilder("book")
         .innerJoin("book.bookshelves", "bookshelf")
         .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: ownerId })

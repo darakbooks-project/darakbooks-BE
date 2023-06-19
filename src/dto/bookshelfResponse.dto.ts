@@ -11,11 +11,17 @@ export class bookshelfForbiddenDTO{
     message: string;
 }
 
+export class bookshelfUserDTO{
+    @ApiProperty({example:"242089420843", description:"userId"})
+    userId : string;
+    @ApiProperty({example:"뽀로로또", description:"user nickname"})
+    nickname:string;
+}
 export class bookshelfResDTO{
     @ApiProperty({ description: "책장 추천: 추천 사용자의 책장에 담겨 있는 책 3권으로 이루어진 배열"})
     bookshelves:BookDTO;
     @ApiProperty()
-    users:User
+    users:bookshelfUserDTO;
 
 }
 

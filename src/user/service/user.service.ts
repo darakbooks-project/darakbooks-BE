@@ -62,8 +62,10 @@ export class UserService {
     
     async canViewBookshelf(ownerId:string, userId:string){
         const user = await this.validateUser(ownerId);
-        if(user.bookshelfIsHidden && userId!==ownerId) 
-            throw new UnauthorizedException("Unahtorized: this is hideen booksehlf");
-        return ;
+        if(user.bookshelfIsHidden && userId!==ownerId){
+            //throw new UnauthorizedException("Unahtorized: this is hideen booksehlf");
+            return false;
+        }             
+        return true;
     }
 }

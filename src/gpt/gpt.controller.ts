@@ -79,7 +79,7 @@ export class GPTController {
         }),
       );
 
-      console.log(processedData);
+      //console.log(processedData);
 
       const recommendations =
         await this.bookRecommendationService.generateBookRecommendations(
