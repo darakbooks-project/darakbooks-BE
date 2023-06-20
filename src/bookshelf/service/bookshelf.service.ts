@@ -31,7 +31,7 @@ export class BookshelfService {
     }
 
     async getRecommendedBookshelf(userId:string,){
-        let result, users;
+        let result, user;
         const pyshell = new PythonShell('recommendations.py', this.options);
         const bookshelves =  await this.bookShelfRepository.find({
             select:['userId', 'bookIsbn']
@@ -41,7 +41,7 @@ export class BookshelfService {
         pyshell.send(jsonBookshelfs);
         pyshell.send(userId);
         //userId 3개 나옴 
-        const recommendedUsers: string[] = await new Promise((resolve, reject) => {
+        const recommendedUser: string = await new Promise((resolve, reject) => {
             pyshell.on('message', (message) => {
                 resolve(JSON.parse(message));
             });
@@ -52,13 +52,16 @@ export class BookshelfService {
             });
           });
         //console.log(recommendedUsers);
-        if(recommendedUsers.length>0) {
-            const promises = recommendedUsers.map((user) => this.getMyBookshelf(user,this.bookshelfLimit));
-            result = await Promise.all(promises);
-            const userPromises = recommendedUsers.map((user) => this.userService.findByuserId(user));
-            users = await Promise.all(userPromises);
-            users = users.map(user=>{user.userId,user.nickname})
-            return {users:users,bookshelves:result};
+        if(recommendedUser.length>0) {
+            // const promises = recommendedUsers.map((user) => this.getMyBookshelf(user,this.minBookCount));
+            // result = await Promise.all(promises);
+            result = await this.getMyBookshelf(recommendedUser,this.minBookCount);
+            // const userPromises = recommendedUser.map((user) => this.userService.findByuserId(user));
+            // users = await Promise.all(userPromises);
+            // users = users.map(user=>{return {userId:user.userId,nickname:user.nickname};})
+            user = await this.userService.findByuserId(recommendedUser);
+            user = {userId:user.userId, nickname:user.nickname};
+            return {users:user,bookshelves:result};
         }else{
             return await this.getRandomBookshelf();
         } 
@@ -66,7 +69,7 @@ export class BookshelfService {
     }
 
     async getRandomBookshelf(){
-        let result, users ;
+        let result, user ;
         const randomUsers = await this.bookShelfRepository
         .createQueryBuilder('bookshelf')
         .addSelect('COUNT(*)', 'bookCount')
@@ -75,17 +78,21 @@ export class BookshelfService {
         .orderBy('RAND()')
         .limit(this.bookshelfLimit)
         .select('bookshelf.userId')
-        .getMany();
-        const randomUserIds = randomUsers.map(item => item.userId);
-        if(randomUserIds.length>0) {
-            const promises = randomUserIds.map((user) => this.getMyBookshelf(user,this.bookshelfLimit));
-            result = await Promise.all(promises);
-            const userPromises = randomUserIds.map((user) => this.userService.findByuserId(user));
-            users = await Promise.all(userPromises);
-            users = users.map(user=>{user.userId,user.nickname})
+        .getOne();
+        //const randomUserIds = randomUsers.map(item => item.userId);
+        const randomUserId = randomUsers.userId;
+        if(randomUserId.length>0) {
+            //const promises = randomUserIds.map((user) => this.getMyBookshelf(user,this.minBookCount));
+            //result = await Promise.all(promises);
+            result = await this.getMyBookshelf(randomUserId,this.minBookCount);
+            //const userPromises = randomUserId.map((user) => this.userService.findByuserId(user));
+            //users = await Promise.all(userPromises);
+            //users = users.map(user=>{return {userId:user.userId,nickname:user.nickname};})
+            user = await this.userService.findByuserId(randomUserId);
+            user = {userId:user.userId, nickname:user.nickname};
         }
         
-        return {users:users,bookshelves:result};
+        return {users:user,bookshelves:result};
     }
 
     async remove(userId:string,bookId:string){
@@ -101,13 +108,12 @@ export class BookshelfService {
         if(!bookshelf) throw new NotFoundException("사용자의 책장에 저장 돼 있지 않은 책입니다.");
     }
     
-    async addBookToBookshelf(userId:string, createDTO:BookDTO){
+    async addBookToBookshelf(userId:string, createDTO:BookDTO, callbyRecord:boolean=false){
         //책 있는지 확인 후 책 data 만들기 
         const bookIsbn = await this.addBookToDB(createDTO);
         //user가 읽은책인지 확인
         const isread = await this.isReadBook(userId,bookIsbn) ;
-        console.log("isread",isread);
-        if(isread) throw new ForbiddenException("이미 책장에 저장된 책입니다.");
+        if(isread&&!callbyRecord) throw new ForbiddenException("이미 책장에 저장된 책입니다.");
         //user가 존재하는지 확인 
         const user = await this.userService.validateUser(userId);
         console.log(user);

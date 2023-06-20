@@ -55,7 +55,7 @@ export class RecordController {
   async create(@Body() createDTO: CreateRecordDTO,  @Req() req: Request) {
     const {userId} =  req.user as JwtPayload;
     //책db에 책 저장하기 
-    await this.bookshelfService.addBookToBookshelf(userId, createDTO.book);
+    await this.bookshelfService.addBookToBookshelf(userId, createDTO.book,true);
     const recordDto = await this.recordService.toDto(createDTO.record,userId,createDTO.book.bookIsbn)
     const record = await this.recordService.create(recordDto);
 

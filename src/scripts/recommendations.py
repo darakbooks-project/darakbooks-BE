@@ -31,13 +31,14 @@ similar_users = np.argsort(similarity_matrix[user_idx])[::-1][1:]  # 자기 자�
 
 # 추천 결과 생성
 if similar_users.shape[0] < 1:
-    n = 1
+    print(json.dumps(""))
 else:
     n = min(similar_users.shape[0], 1)
-recommended_users = []
-for idx in similar_users[:n]:
-    similar_user_id = next((u for u, i in user_map.items() if i == idx), None)
-    recommended_users.append(similar_user_id)
+    recommended_user = ""
+    for idx in similar_users[:n]:
+        similar_user_id = next((u for u, i in user_map.items() if i == idx), None)
+        recommended_user = similar_user_id
+        #recommended_users.append(similar_user_id)
 
-# 결과 출력
-print(json.dumps(recommended_users))
+    # 결과 출력
+    print(json.dumps(recommended_user))
