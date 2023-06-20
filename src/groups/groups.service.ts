@@ -98,8 +98,6 @@ export class GroupsService {
       return userGroup;
     });
 
-    console.log(groups);
-
     const groupsWithUsers = await Promise.all(
       groups.map(async (group) => {
         const groupUsers = await this.usergroupRepository.find({
@@ -120,7 +118,7 @@ export class GroupsService {
       where: { user: { userId: userId } },
       relations: ['group'],
     });
-
+    console.log(userGroups);
     const groupIds = userGroups.map((userGroup) => userGroup.group.group_id);
 
     const groups = await this.groupsRepository.find({
@@ -188,7 +186,6 @@ export class GroupsService {
       relations: ['user'],
     });
     const users = groupUsers.map((userGroup) => userGroup.user);
-    console.log(users);
 
     return { ...group, userGroup: users };
   }
@@ -302,7 +299,6 @@ export class GroupsService {
       where: { group: { group_id: group_id } },
       relations: ['user'],
     });
-    console.log(groupusers);
     const userIds = groupusers.map((userGroup) => userGroup.user);
 
     return userIds;
