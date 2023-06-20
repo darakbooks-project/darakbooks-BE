@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
 import { GroupEntity } from './entities/groups.entity';
 import { User } from '../user/user.entity';
@@ -43,7 +43,7 @@ export class GroupsService {
 
   async isParticipant(group_id, userId) {
     const groupUsers = await this.getAllUsersInGroup(group_id);
-    const userIds: string[] = []; // Array to store the user IDs
+    const userIds: string[] = [];
 
     for (const user of groupUsers) {
       userIds.push(user.userId);
@@ -82,10 +82,35 @@ export class GroupsService {
     return userfind;
   }
 
-  async findAllGroups() {
-    const groups = await this.groupsRepository.find();
+  async findAllGroups(userId) {
+    let groups = await this.groupsRepository.find({
+      relations: ['userGroup'],
+    });
 
-    return groups;
+    groups = groups.map((userGroup: any) => {
+      if (userGroup.group_lead == userId) {
+        userGroup.is_group_lead = true;
+        userGroup.is_participant = true;
+      } else {
+        userGroup.is_group_lead = false;
+        userGroup.is_participant = false;
+      }
+      return userGroup;
+    });
+
+    const groupsWithUsers = await Promise.all(
+      groups.map(async (group) => {
+        const groupUsers = await this.usergroupRepository.find({
+          where: { group: { group_id: group.group_id } },
+          relations: ['user'],
+        });
+
+        const users = groupUsers.map((userGroup) => userGroup.user);
+        return { ...group, userGroup: users };
+      }),
+    );
+
+    return groupsWithUsers;
   }
 
   async findUserGroups(userId) {
@@ -93,21 +118,36 @@ export class GroupsService {
       where: { user: { userId: userId } },
       relations: ['group'],
     });
+    console.log(userGroups);
+    const groupIds = userGroups.map((userGroup) => userGroup.group.group_id);
 
-    userGroups.forEach((userGroup: any) => {
-      userGroup.group.is_group_lead = true;
-      if (userGroup.group.group_lead == userId) {
-        userGroup.group.is_group_lead = true;
+    const groups = await this.groupsRepository.find({
+      where: { group_id: In(groupIds) },
+      relations: ['userGroup'],
+    });
+
+    const groupsWithUsers = await Promise.all(
+      groups.map(async (group) => {
+        const groupUsers = await this.usergroupRepository.find({
+          where: { group: { group_id: group.group_id } },
+          relations: ['user'],
+        });
+
+        const users = groupUsers.map((userGroup) => userGroup.user);
+        return { ...group, userGroup: users };
+      }),
+    );
+
+    const groupValues = groupsWithUsers.map((userGroup) => {
+      if (userGroup.group_lead == userId) {
+        userGroup.is_group_lead = true;
+        userGroup.is_participant = true;
       } else {
-        userGroup.group.is_group_lead = false;
+        userGroup.is_group_lead = false;
+        userGroup.is_participant = true; // Only change this line to set is_participant to true
       }
-      userGroup.group.is_participant = true;
+      return userGroup;
     });
-
-    const groupValues = userGroups.map((item) => {
-      return item.group;
-    });
-
     return groupValues;
   }
 
@@ -135,12 +175,19 @@ export class GroupsService {
       where: { group_id },
       relations: ['userGroup'],
     });
-
     if (!group) {
-      throw new NotFoundException('해당 독서모임 정보가 존재하지 않습니다.');
+      throw new NotFoundException(
+        '해당 독서모임 정보가 존재하지 않습니다. 독서모임 id 를 다시 확인해주세요.',
+      );
     }
 
-    return group;
+    const groupUsers = await this.usergroupRepository.find({
+      where: { group: { group_id: group_id } },
+      relations: ['user'],
+    });
+    const users = groupUsers.map((userGroup) => userGroup.user);
+
+    return { ...group, userGroup: users };
   }
 
   async getTopGroups(count: number) {
@@ -252,7 +299,6 @@ export class GroupsService {
       where: { group: { group_id: group_id } },
       relations: ['user'],
     });
-    console.log(groupusers);
     const userIds = groupusers.map((userGroup) => userGroup.user);
 
     return userIds;

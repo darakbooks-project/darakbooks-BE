@@ -28,28 +28,17 @@ export class BookRecommendationService {
             book[0].recomAuthor +
             ' ISBN: ' +
             book[0].recomISBN +
-            ' Book Intro: ' +
-            book[0].recomContents +
-            ' Book Image: ' +
-            book[0].recomFilePath,
+            ' Image: ' +
+            book[0].recomFilePath +
+            ' Intro: ' +
+            book[0].recomContents,
         });
       }),
     );
-    //console.log(bookdata);
-
-    const parser = StructuredOutputParser.fromNamesAndDescriptions({
-      title: 'Title: of the recommendation',
-      author: 'Author: of the recommendation',
-      isbn: 'ISBN: of the recommendation',
-      image: 'Book Image: of the recommendation',
-      reason: 'short sentence why you recommended the book. Return in Korean',
-    });
-
-    const formatInstructions = parser.getFormatInstructions();
 
     const model = new OpenAI({
       maxConcurrency: 10,
-      temperature: 1,
+      temperature: 0,
     });
     const chainA = loadQARefineChain(model);
 
@@ -58,14 +47,50 @@ export class BookRecommendationService {
     // });
     // console.log(userRequest);
 
+    bookdata = bookdata.sort(() => Math.random() - 0.5);
+    console.log(bookdata[0]);
+
     const resA = await chainA.call({
-      input_documents: bookdata,
-      question:
-        userInput.userInput +
-        `. Recommend one book from the input_documents in this format: ${formatInstructions} `,
+      input_documents: [bookdata[0]],
+      question: `Why is ${bookdata[0].pageContent} good for ${userInput.userInput}? Return at least four sentences in Korean and Always finish your sentences. continue till period(.) `,
     });
-    const final = await parser.parse(resA.output_text);
-    console.log('CALL', final);
-    return final;
+
+    const final = resA.output_text;
+    const cleanedText =
+      final.replace(/\n\n/g, '').match(/.*?\.(?=[^.]*$)/)?.[0] || '';
+
+    const pageContent = bookdata[0].pageContent;
+    interface Book {
+      Title: string;
+      Author: string;
+      ISBN: string;
+      Image: string;
+      Intro: string;
+      Reason: string;
+    }
+
+    const book: Book = {
+      Title: '',
+      Author: '',
+      ISBN: '',
+      Image: '',
+      Intro: '',
+      Reason: '',
+    };
+
+    // Extracting values from the pageContent string
+    const regex = /Title:\s*(.*?)\s*Author:\s*(.*?)\s*ISBN:\s*(.*?)\s*Image:\s*(.*?)\s*Intro:\s*(.*?)$/gm;
+    const matches = regex.exec(pageContent);
+
+    if (matches) {
+      book.Title = matches[1];
+      book.Author = matches[2];
+      book.ISBN = matches[3];
+      book.Image = matches[4];
+      book.Intro = matches[5];
+      book.Reason = cleanedText;
+    }
+    console.log(book);
+    return book;
   }
 }
