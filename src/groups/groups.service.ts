@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { GroupsCreateDto } from './dto/groups.create.dto';
 import { GroupEntity } from './entities/groups.entity';
 import { User } from '../user/user.entity';
@@ -43,7 +43,7 @@ export class GroupsService {
 
   async isParticipant(group_id, userId) {
     const groupUsers = await this.getAllUsersInGroup(group_id);
-    const userIds: string[] = []; // Array to store the user IDs
+    const userIds: string[] = [];
 
     for (const user of groupUsers) {
       userIds.push(user.userId);
@@ -82,10 +82,23 @@ export class GroupsService {
     return userfind;
   }
 
-  async findAllGroups() {
-    const groups = await this.groupsRepository.find({
+  async findAllGroups(userId) {
+    let groups = await this.groupsRepository.find({
       relations: ['userGroup'],
     });
+
+    groups = groups.map((userGroup: any) => {
+      if (userGroup.group_lead == userId) {
+        userGroup.is_group_lead = true;
+        userGroup.is_participant = true;
+      } else {
+        userGroup.is_group_lead = false;
+        userGroup.is_participant = false;
+      }
+      return userGroup;
+    });
+
+    console.log(groups);
 
     const groupsWithUsers = await Promise.all(
       groups.map(async (group) => {
@@ -108,7 +121,10 @@ export class GroupsService {
       relations: ['group'],
     });
 
+    const groupIds = userGroups.map((userGroup) => userGroup.group.group_id);
+
     const groups = await this.groupsRepository.find({
+      where: { group_id: In(groupIds) },
       relations: ['userGroup'],
     });
 
@@ -124,20 +140,16 @@ export class GroupsService {
       }),
     );
 
-    // console.log(groupsWithUsers);
-    const groupValues = groupsWithUsers.map((userGroup: any) => {
-      console.log(userGroup);
-      userGroup.is_group_lead = true;
-      if (userGroup.is_group_lead == userId) {
+    const groupValues = groupsWithUsers.map((userGroup) => {
+      if (userGroup.group_lead == userId) {
         userGroup.is_group_lead = true;
         userGroup.is_participant = true;
       } else {
         userGroup.is_group_lead = false;
-        userGroup.is_participant = false;
+        userGroup.is_participant = true; // Only change this line to set is_participant to true
       }
       return userGroup;
     });
-    console.log(groupValues);
     return groupValues;
   }
 
