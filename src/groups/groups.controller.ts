@@ -40,8 +40,10 @@ export class GroupsController {
     type: ReadOnlyGroupsDto,
   })
   @Get()
-  async findAllGroups() {
-    return await this.groupsService.findAllGroups();
+  @UseGuards(JwtAuthGuard)
+  async findAllGroups(@Req() req: Request) {
+    const { userId } = req.user as JwtPayload;
+    return await this.groupsService.findAllGroups(userId);
   }
 
   @ApiOperation({ summary: '요청보내는 유저가 속한 모든 그룹 조회' })
@@ -55,6 +57,19 @@ export class GroupsController {
   @Get('/user-group')
   async findUserGroup(@Req() req: Request) {
     const { userId } = req.user as JwtPayload;
+    return await this.groupsService.findUserGroups(userId);
+  }
+
+  @ApiOperation({ summary: '유저가 속한 모든 그룹 조회' })
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({
+    status: 404,
+    description: '해당 유저가 존재하지 않습니다.',
+    type: ReadOnlyGroupsDto,
+  })
+  @Get('/user-group/:userId')
+  async findOneUserGroup(@Param('userId') userId: string) {
+    console.log('here', userId);
     return await this.groupsService.findUserGroups(userId);
   }
 
@@ -141,17 +156,12 @@ export class GroupsController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   @UseGuards(JwtAuthGuard)
-  async createGroup(
-    @Body() body: GroupsCreateDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
+  async createGroup(@Body() body: GroupsCreateDto, @Req() req: Request) {
     const { userId } = req.user as JwtPayload;
     if (!body.group_lead) {
       body.group_lead = userId;
     }
-    await this.groupsService.createGroup(body);
-    return res.sendStatus(204);
+    return await this.groupsService.createGroup(body);
   }
 
   @ApiOperation({ summary: '그룹 삭제' })
