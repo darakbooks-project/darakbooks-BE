@@ -50,5 +50,8 @@ export default () => ({
     },
     redis:{
         ttls:parseInt(required('REDIS_TTLS'))
+    },
+    python:{
+        path:required('PYTHON_PATH')
     }
     });

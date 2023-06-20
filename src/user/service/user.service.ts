@@ -6,10 +6,14 @@ import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 import { Bookshelf } from 'src/entities/BookShelf.entity';
 import { profileResDTO } from 'src/dto/profileResponse.dto';
 import { min } from 'class-validator';
+import { S3Service } from 'src/common/s3.service';
 
 @Injectable()
 export class UserService {
-    constructor(@Inject('USER_REPOSITORY') private userRepository:Repository<User>){}
+    constructor(
+        @Inject('USER_REPOSITORY') private userRepository:Repository<User>,
+        private s3Service:S3Service,
+        ){}
 
     async findByuserId(id: string ):Promise<User | null> {
         return await this.userRepository.findOneBy({userId: id});
@@ -44,7 +48,12 @@ export class UserService {
 
     async update(id:string, updateDTO: UpdateUserDTO){
         const user = await this.validateUser(id);
-        //update method 
+        //update method
+        if(updateDTO.photoId){
+            //이전 photo 지우기
+            const photoId = user.photoId
+            if(photoId !== "1686571657938_957")this.s3Service.deleteFile(photoId);
+        } 
         user.update = updateDTO;
         const profile = await this.userRepository.save(user);
         return this.toDTO(profile,true);
@@ -53,8 +62,10 @@ export class UserService {
     
     async canViewBookshelf(ownerId:string, userId:string){
         const user = await this.validateUser(ownerId);
-        if(user.bookshelfIsHidden && userId!==ownerId) 
-            throw new UnauthorizedException("Unahtorized: this is hideen booksehlf");
-        return ;
+        if(user.bookshelfIsHidden && userId!==ownerId){
+            //throw new UnauthorizedException("Unahtorized: this is hideen booksehlf");
+            return false;
+        }             
+        return true;
     }
 }

@@ -49,6 +49,7 @@ export class recordUserDTO{
   photoUrl: string;
 }
 
+
 export class TransformedRecordDTO {
   @ApiProperty({ example: 1 , description: 'record_id' })   
   recordId: number;
@@ -64,4 +65,11 @@ export class TransformedRecordDTO {
   book: BookDTO;
   @ApiProperty({ description: 'Record information' })
   user: recordUserDTO;
-};
+}
+
+export class getRecordsDTO{
+  @ApiProperty({ example: 1 , description: '마지막으로 전달한 recordId' })   
+  lastId: number;
+  @ApiProperty()
+  records:TransformedRecordDTO; 
+}

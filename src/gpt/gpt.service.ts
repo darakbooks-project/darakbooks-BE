@@ -18,7 +18,7 @@ export class BookRecommendationService {
         const filteredContents = book[0].recomContents
           .replace(/<\/?[^>]+(>|$)|&nbsp;/g, ' ')
           .replace(/\s+/g, ' ');
-        console.log(book[0]);
+        //console.log(book[0]);
         book[0].recomContents = filteredContents;
         return new Document({
           pageContent:
@@ -54,6 +54,7 @@ export class BookRecommendationService {
       input_documents: [bookdata[0]],
       question: `Why is ${bookdata[0].pageContent} good for ${userInput.userInput}? Return at least four sentences in Korean and Always finish your sentences. continue till period(.) `,
     });
+
     const final = resA.output_text;
     const cleanedText =
       final.replace(/\n\n/g, '').match(/.*?\.(?=[^.]*$)/)?.[0] || '';
