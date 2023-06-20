@@ -33,9 +33,16 @@ export class BookshelfService {
     async getRecommendedBookshelf(userId:string,){
         let result, user;
         const pyshell = new PythonShell('recommendations.py', this.options);
-        const bookshelves =  await this.bookShelfRepository.find({
-            select:['userId', 'bookIsbn']
-        }); 
+        const bookshelves = await this.bookShelfRepository
+        .createQueryBuilder('bookshelf')
+        .select('bookshelf.userId')
+        .addSelect('bookshelf.bookIsbn',)
+        .addSelect('COUNT(*)', 'bookCount')
+        .groupBy('bookshelf.userId')
+        .having('COUNT(*) >= :minBookCount', { minBookCount: this.minBookCount })
+        .orderBy('RAND()')
+        .getMany();
+        console.log(bookshelves);
         const jsonBookshelfs = JSON.stringify(bookshelves);
         //console.log(bookshelves);
         pyshell.send(jsonBookshelfs);
