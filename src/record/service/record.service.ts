@@ -86,7 +86,7 @@ export class RecordService {
       ownerId = userId;
     }else {
       const isHidden = await this.validateIsHidden(ownerId, userId);
-      if(!isHidden) return [];
+      if(!isHidden) return {lastId:0, records:[]};
     }
 
 
@@ -109,7 +109,7 @@ export class RecordService {
       ownerId = userId;
     }else {
       const isHidden = await this.validateIsHidden(ownerId, userId);
-      if(!isHidden) return [];
+      if(!isHidden) return {lastId:0, records:[]};
     }
 
 
