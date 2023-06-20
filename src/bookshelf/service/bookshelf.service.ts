@@ -110,6 +110,7 @@ export class BookshelfService {
         if(isread) throw new ForbiddenException("이미 책장에 저장된 책입니다.");
         //user가 존재하는지 확인 
         const user = await this.userService.validateUser(userId);
+        console.log(user);
         //안 읽은 책이라면 책장에 추가 
         await this.updateBookshelf(bookIsbn,userId);
 
