@@ -143,17 +143,12 @@ export class GroupsController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   @UseGuards(JwtAuthGuard)
-  async createGroup(
-    @Body() body: GroupsCreateDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
+  async createGroup(@Body() body: GroupsCreateDto, @Req() req: Request) {
     const { userId } = req.user as JwtPayload;
     if (!body.group_lead) {
       body.group_lead = userId;
     }
-    await this.groupsService.createGroup(body);
-    return res.sendStatus(204);
+    return await this.groupsService.createGroup(body);
   }
 
   @ApiOperation({ summary: '그룹 삭제' })
