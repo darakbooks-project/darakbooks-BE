@@ -40,8 +40,10 @@ export class GroupsController {
     type: ReadOnlyGroupsDto,
   })
   @Get()
-  async findAllGroups() {
-    return await this.groupsService.findAllGroups();
+  @UseGuards(JwtAuthGuard)
+  async findAllGroups(@Req() req: Request) {
+    const { userId } = req.user as JwtPayload;
+    return await this.groupsService.findAllGroups(userId);
   }
 
   @ApiOperation({ summary: '요청보내는 유저가 속한 모든 그룹 조회' })
