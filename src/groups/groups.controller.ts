@@ -60,6 +60,19 @@ export class GroupsController {
     return await this.groupsService.findUserGroups(userId);
   }
 
+  @ApiOperation({ summary: '유저가 속한 모든 그룹 조회' })
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({
+    status: 404,
+    description: '해당 유저가 존재하지 않습니다.',
+    type: ReadOnlyGroupsDto,
+  })
+  @Get('/user-group/:userId')
+  async findOneUserGroup(@Param('userId') userId: string) {
+    console.log('here', userId);
+    return await this.groupsService.findUserGroups(userId);
+  }
+
   @ApiOperation({ summary: '그룹 n개 조회 - pagination' })
   @ApiResponse({
     status: 200,
