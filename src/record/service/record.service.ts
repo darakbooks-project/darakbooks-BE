@@ -84,8 +84,11 @@ export class RecordService {
     if(!lastId) lastId = await this.getMaxRecordId()+1;
     if(ownerId==="mine"){
       ownerId = userId;
+    }else {
+      const isHidden = await this.validateIsHidden(ownerId, userId);
+      if(!isHidden) return {lastId:0, records:[]};
     }
-    else await this.validateIsHidden(ownerId, userId);
+
 
     const result = await this.recordRepository
       .createQueryBuilder('record')
@@ -104,8 +107,10 @@ export class RecordService {
     if(!lastId) lastId = await this.getMaxRecordId()+1;
     if(ownerId==="mine"){
       ownerId = userId;
+    }else {
+      const isHidden = await this.validateIsHidden(ownerId, userId);
+      if(!isHidden) return {lastId:0, records:[]};
     }
-    else await this.validateIsHidden(ownerId, userId);
 
 
     const result = await this.recordRepository
@@ -128,12 +133,17 @@ export class RecordService {
     .select('record.recordId')
     .orderBy('record.recordId', 'DESC')
     .getOne();
+    if(!maxRecord) return 0;
     return maxRecord.recordId;
   }
 
   private async validateIsHidden(ownerId: string, userId: string) {
     const isHidden = (await this.userService.validateUser(ownerId)).bookshelfIsHidden;
-    if (isHidden && ownerId !== userId) throw new UnauthorizedException("비공개 서재입니다.");
+    if (isHidden && ownerId !== userId) {
+      //throw new UnauthorizedException("비공개 서재입니다.");
+      return false;
+    }
+    return true;
   }
 
   async transformRecords(records){

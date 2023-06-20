@@ -18,6 +18,10 @@ import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 
 @Entity()
 export class User {
+  @ApiProperty({
+    example:"20394820934",
+    description:"userId"
+  })
   @PrimaryColumn({ name: 'user_id', type: 'bigint' })
   @Transform(({ value }) => String(value))
   userId: string;
