@@ -180,7 +180,7 @@ export class BookshelfService {
             books = await this.bookRepository.createQueryBuilder("book")
             .innerJoin("book.bookshelves", "bookshelf")
             .innerJoin("bookshelf.userId", "user", "user.userId = :userId", { userId: userId })            
-            .limit(bookLimit+1)
+            .limit(bookLimit)
             .getMany();
         }      
         return books;
