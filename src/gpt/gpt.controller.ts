@@ -8,8 +8,10 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { gptDTO } from './dto/gpt.dto';
+import { gptTwoDTO } from './dto/gpt.dto.two';
 import { gptInputDTO } from './dto/gpt.input.dto';
 import { BookRecommendationService } from './gpt.service';
+import { BookRecommendationServiceTwo } from './gpt.service2';
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
 
@@ -18,6 +20,7 @@ import { parseStringPromise } from 'xml2js';
 export class GPTController {
   constructor(
     private readonly bookRecommendationService: BookRecommendationService,
+    private readonly bookRecommendationServiceTwo: BookRecommendationServiceTwo,
   ) {}
 
   @ApiOperation({ summary: 'gpt 에게 책 추천받기' })
@@ -92,5 +95,24 @@ export class GPTController {
       console.error('Error retrieving book data:', error);
       throw new Error('Failed to retrieve book data');
     }
+  }
+  @ApiOperation({ summary: 'gpt 에게 책 추천받기' })
+  @ApiBody({ type: gptInputDTO })
+  @ApiResponse({ status: 201, type: gptTwoDTO })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Bad Request: error message',
+  })
+  @Get('recommendations/two')
+  async getBookAPITwo(@Body() userInput: any): Promise<any> {
+    const recs =
+      await this.bookRecommendationServiceTwo.generateBookRecommendations(
+        userInput,
+      );
+    return recs;
+  }
+  catch(error) {
+    console.error('Error retrieving book data:', error);
+    throw new Error('Failed to retrieve book data');
   }
 }
