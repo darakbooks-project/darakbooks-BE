@@ -187,6 +187,7 @@ export class GroupsController {
     @Param('groupId') groupId: number,
     @Body() body: ReadOnlyGroupsDto,
   ) {
+    console.log('nobooks', body);
     return await this.groupsService.editGroup(groupId, body);
   }
 
