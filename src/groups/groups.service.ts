@@ -21,16 +21,28 @@ export class GroupsService {
   ) {}
 
   async saveGroupData(group: GroupEntity, dto: GroupsCreateDto) {
-    group.name = dto.name;
-    group.meeting_type = dto.meeting_type;
-    group.open_chat_link = dto.open_chat_link;
-    group.participant_limit = dto.participant_limit;
-    group.day = dto.day;
-    group.time = dto.time;
-    group.description = dto.description;
-    group.recruitment_status = dto.recruitment_status;
-    group.region = dto.region;
-    group.group_lead = dto.group_lead;
+    group.name = dto.name != null ? dto.name : group.name;
+    group.meeting_type =
+      dto.meeting_type != null ? dto.meeting_type : group.meeting_type;
+    group.open_chat_link =
+      dto.open_chat_link != null ? dto.open_chat_link : group.open_chat_link;
+    group.participant_limit =
+      dto.participant_limit != null
+        ? dto.participant_limit
+        : group.participant_limit;
+    group.day = dto.day != null ? dto.day : group.day;
+    group.time = dto.time != null ? dto.time : group.time;
+    group.description =
+      dto.description != null ? dto.description : group.description;
+    group.recruitment_status =
+      dto.recruitment_status != null
+        ? dto.recruitment_status
+        : group.recruitment_status;
+    group.region = dto.region != null ? dto.region : group.region;
+    group.group_lead =
+      dto.group_lead != null ? dto.group_lead : group.group_lead;
+
+    return group;
   }
 
   async isGroupLead(group, userId) {
@@ -289,9 +301,11 @@ export class GroupsService {
   async editGroup(group_id: number, body: GroupsCreateDto) {
     const group = await this.getOneGroupById(group_id);
     this.saveGroupData(group, body);
-    const editedGroup = await this.groupsRepository.save(group);
+    const editedGroup = { ...group };
+    delete editedGroup.userGroup;
+    const final = await this.groupsRepository.save(editedGroup);
 
-    return editedGroup;
+    return final;
   }
 
   async getAllUsersInGroup(group_id: number) {
