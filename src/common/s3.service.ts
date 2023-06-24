@@ -44,17 +44,19 @@ export class S3Service{
     }
 
     async getFile(fileKey : string ){
-        // try {
-        //     const params   = {
-        //         Bucket : this.configService.get('s3.bucket'),
-        //         Key    : fileKey,
-        //     }
-        //     const result = await this.s3.getObject(params).promise() ;
+        try {
+            const params   = {
+                Bucket : this.configService.get('s3.bucket'),
+                Key    : fileKey,
+                Expires: 21600
+            }
+            const result = await this.s3.getSignedUrl(params) ;
             
-        // } catch (error) {
-        //     throw new InternalServerErrorException(`File get failed : ${error}`);
-        // }
-        return `https://${this.configService.get('s3.bucket')}.s3.amazonaws.com/${fileKey}`;
+        } catch (error) {
+            throw new InternalServerErrorException(`File get failed : ${error}`);
+        }
+        //return `https://${this.configService.get('s3.bucket')}.s3.amazonaws.com/${fileKey}`;
+        
     }
 
 }
