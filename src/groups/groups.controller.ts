@@ -223,9 +223,9 @@ export class GroupsController {
     description: '해당 독서모임 또는 유저가 존재하지 않습니다.',
   })
   @UseGuards(JwtAuthGuard, GroupAuthGuard)
-  @Delete('/:group_id/delete-user/:user_id')
+  @Delete('/:groupId/delete-user/:user_id')
   async removeUserFromGroup(
-    @Param('group_id') groupId: number,
+    @Param('groupId') groupId: number,
     @Param('user_id') userId: string,
     @Res() res: Response,
   ) {

@@ -16,8 +16,10 @@ export class GroupAuthGuard implements CanActivate {
     const resourceId = request.params.groupId;
 
     // 리소스의 소유자 정보 조회(그룹장 찾는 method 연결해주세요)
-    const resource = await this.groupService.getOneGroupById(resourceId);
-    const resourceOwner = resource.group_lead;
+    const resource = await this.groupService.getGroupLeadById(resourceId);
+    const resourceOwner = resource.userId;
+    console.log(resourceOwner);
+    console.log(userId);
     // 인증된 사용자의 ID와 리소스의 소유자 ID를 비교하여 본인인증 여부를 확인합니다.
     const isOwner = userId === resourceOwner;
     if (!isOwner) {
