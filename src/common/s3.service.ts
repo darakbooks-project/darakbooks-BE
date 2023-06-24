@@ -50,8 +50,8 @@ export class S3Service{
                 Key    : fileKey,
                 Expires: 21600
             }
-            const result = await this.s3.getSignedUrl(params) ;
-            
+            const result = await this.s3.getSignedUrl('getObject',params) ;
+            return result;
         } catch (error) {
             throw new InternalServerErrorException(`File get failed : ${error}`);
         }
