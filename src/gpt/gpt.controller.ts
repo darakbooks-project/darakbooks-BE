@@ -1,4 +1,4 @@
-import { Controller, Get, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import * as https from 'https';
 import {
   ApiOperation,
@@ -103,7 +103,7 @@ export class GPTController {
     status: 400,
     description: 'Bad Request: error message',
   })
-  @Get('recommendations/two')
+  @Post('recommendations/two')
   async getBookAPITwo(@Body() userInput: any): Promise<any> {
     const recs =
       await this.bookRecommendationServiceTwo.generateBookRecommendations(

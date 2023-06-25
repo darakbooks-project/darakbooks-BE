@@ -22,8 +22,8 @@ export class BookRecommendationServiceTwo {
 
     const resA = await model.call(
       `What could be a good book for a user who is ${userInput.userInput}?
-       Return the title and reason. Return at least four sentences in Korean for the reason and always finish your sentences.
-        continue till period(.)
+       Return the title and reason. Return in Korean for the reason and always finish your sentences.
+        continue till period(.) 
         
         Return the output in this json format : ${format}`,
     );
