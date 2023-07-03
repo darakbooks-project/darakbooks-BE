@@ -26,13 +26,13 @@ import { GroupsUserGroupDto } from './dto/groups.user-group.dto';
 @ApiTags('groups')
 @ApiResponse({
   status: 500,
-  description: '서버처리오류, 담당자 문의',
+  description: '서버처리오류, 담당자 문의 | Error handling request. Please contact owner',
 })
 @Controller('groups')
 export class GroupsController {
   constructor(private groupsService: GroupsService) {}
 
-  @ApiOperation({ summary: '모든 그룹 조회' })
+  @ApiOperation({ summary: '모든 그룹 조회 | View all groups' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
@@ -46,11 +46,14 @@ export class GroupsController {
     return await this.groupsService.findAllGroups(userId);
   }
 
-  @ApiOperation({ summary: '요청보내는 유저가 속한 모든 그룹 조회' })
+  @ApiOperation({
+    summary:
+      '요청보내는 유저가 속한 모든 그룹 조회 | Groups the user is part of',
+  })
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({
     status: 404,
-    description: '해당 유저가 존재하지 않습니다.',
+    description: '해당 유저가 존재하지 않습니다. | User does not exist',
     type: ReadOnlyGroupsDto,
   })
   @UseGuards(JwtAuthGuard)
@@ -60,11 +63,13 @@ export class GroupsController {
     return await this.groupsService.findUserGroups(userId);
   }
 
-  @ApiOperation({ summary: '유저가 속한 모든 그룹 조회' })
+  @ApiOperation({
+    summary: '유저가 속한 모든 그룹 조회 | View all groups the user (specific id) is part of',
+  })
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({
     status: 404,
-    description: '해당 유저가 존재하지 않습니다.',
+    description: '해당 유저가 존재하지 않습니다. | User does not exist',
     type: ReadOnlyGroupsDto,
   })
   @Get('/user-group/:userId')
@@ -73,7 +78,7 @@ export class GroupsController {
     return await this.groupsService.findUserGroups(userId);
   }
 
-  @ApiOperation({ summary: '그룹 n개 조회 - pagination' })
+  @ApiOperation({ summary: '그룹 n개 조회 - pagination | View n groups - pagination' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
@@ -99,7 +104,7 @@ export class GroupsController {
     };
   }
 
-  @ApiOperation({ summary: '특정 그룹 조회' })
+  @ApiOperation({ summary: '특정 그룹 조회 | View specific group' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
@@ -125,7 +130,7 @@ export class GroupsController {
     };
   }
 
-  @ApiOperation({ summary: 'user 수 가장 많은 top n개 그룹조회' })
+  @ApiOperation({ summary: 'user 수 가장 많은 top n개 그룹조회 | View top n groups with most users' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
@@ -136,7 +141,7 @@ export class GroupsController {
     return await this.groupsService.getTopGroups(count);
   }
 
-  @ApiOperation({ summary: '특정 그룹의 그룹장 조회' })
+  @ApiOperation({ summary: '특정 그룹의 그룹장 조회 | View group lead of specific group' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
@@ -147,7 +152,7 @@ export class GroupsController {
     return await this.groupsService.getGroupLeadById(group_id);
   }
 
-  @ApiOperation({ summary: '그룹 생성' })
+  @ApiOperation({ summary: '그룹 생성 | Create Group' })
   @ApiResponse({
     status: 201,
     description: '응답성공',
@@ -164,7 +169,7 @@ export class GroupsController {
     return await this.groupsService.createGroup(body);
   }
 
-  @ApiOperation({ summary: '그룹 삭제' })
+  @ApiOperation({ summary: '그룹 삭제 | Delete Group' })
   @ApiResponse({
     status: 200,
     description: '삭제 성공',
@@ -176,7 +181,7 @@ export class GroupsController {
     return res.sendStatus(204);
   }
 
-  @ApiOperation({ summary: '그룹 수정' })
+  @ApiOperation({ summary: '그룹 수정 | Edit Group' })
   @ApiResponse({
     status: 200,
     description: '수정 성공',
@@ -191,7 +196,7 @@ export class GroupsController {
     return await this.groupsService.editGroup(groupId, body);
   }
 
-  @ApiOperation({ summary: '그룹의 모든 user 조회' })
+  @ApiOperation({ summary: '그룹의 모든 user 조회 | View all users in group' })
   @ApiResponse({
     status: 200,
     description: '응답성공',
