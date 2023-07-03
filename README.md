@@ -7,7 +7,7 @@
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
 
-  <p align="center">The backend API Github Repository for <a href="https://frontend-book-platform.vercel.app/">DarakBooks(다락책방). DarakBooks is an application that allows you to record books and find book clubs. </a>
+  <p align="center">The backend API Github Repository for <a href="https://frontend-book-platform.vercel.app/">DarakBooks(다락책방). </a> DarakBooks is an application that allows you to record books and find book clubs.
 
 
   <br/>
