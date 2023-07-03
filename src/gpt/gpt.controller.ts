@@ -23,7 +23,10 @@ export class GPTController {
     private readonly bookRecommendationServiceTwo: BookRecommendationServiceTwo,
   ) {}
 
-  @ApiOperation({ summary: 'gpt 에게 책 추천받기' })
+  @ApiOperation({
+    summary:
+      'gpt 에게 책 추천받기 | Get book Recommendations from GPT method 1',
+  })
   @ApiBody({ type: gptInputDTO })
   @ApiResponse({ status: 201, type: gptDTO })
   @ApiBadRequestResponse({
@@ -96,7 +99,10 @@ export class GPTController {
       throw new Error('Failed to retrieve book data');
     }
   }
-  @ApiOperation({ summary: 'gpt 에게 책 추천받기' })
+  @ApiOperation({
+    summary:
+      'gpt 에게 책 추천받기 방식 2 | Get book recommendations from GPT method 2',
+  })
   @ApiBody({ type: gptInputDTO })
   @ApiResponse({ status: 201, type: gptTwoDTO })
   @ApiBadRequestResponse({
