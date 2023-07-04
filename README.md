@@ -42,6 +42,17 @@ This is the github repository for [Nest](https://github.com/nestjs/nest) framewo
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 ![](https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+
+## API
+- [Korean National Library Librarian Recommendation API  (국립중앙도서관 사서추천 API)](https://www.nl.go.kr/NL/contents/N31101030900.do) 
+- [OpenAI Chat GPT API](https://platform.openai.com/docs/introduction)
+- [LangChainJS](https://js.langchain.com/docs/)
+
+## Related References 
+
+- To generate recommendations based on given documents/datasets we used the [DocQA available on LangchainJS](https://js.langchain.com/docs/modules/chains/index_related_chains/document_qa) 
+
+- For further finetuning your model with specific data, you can also refer to [ChatGPT OpenAI's Finetuning feature](https://platform.openai.com/docs/guides/fine-tuning)
 ## 🖊 Main Services
 1. ✅ Account Login
 > - Login (Kakao), Logout, Jwt Token Authorization 
