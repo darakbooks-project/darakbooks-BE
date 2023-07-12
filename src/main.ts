@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import { config } from 'dotenv';
+config();
 
 declare const module: any;
 
@@ -10,14 +12,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, 
     {
       cors:{
-        origin:'http://localhost:3000',
+        origin:process.env.CORS_ORIGIN,
         methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization'] ,
         credentials:true,
         
       }
     });
-  
+  console.log(process.env.CORS_ORIGIN, process.env.PORT);
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
@@ -42,6 +44,6 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();

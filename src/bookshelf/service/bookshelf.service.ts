@@ -120,8 +120,10 @@ export class BookshelfService {
         const bookIsbn = await this.addBookToDB(createDTO);
         //user가 읽은책인지 확인
         const isread = await this.isReadBook(userId,bookIsbn) ;
+        //읽은 책인데 책장에 추가한 경우 
         if(isread&&!callbyRecord) throw new ForbiddenException("이미 책장에 저장된 책입니다.");
-        if(callbyRecord) return;
+        //독서기록으로 인해 자동 추가 되는 경우 
+        if(isread&&callbyRecord) return;
         //user가 존재하는지 확인 
         const user = await this.userService.validateUser(userId);
         console.log(user);
