@@ -1,15 +1,25 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+
+# 다락책방(DarakBooks) Backend API
+
+
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+
+  <p align="center">The backend API Github Repository for <a href="https://frontend-book-platform.vercel.app/">DarakBooks(다락책방). </a> DarakBooks is an application that allows you to record books and find book clubs.
+
+
+  <br/>
+
+DarakBook Website - [https://frontend-book-platform.vercel.app/](https://frontend-book-platform.vercel.app/)
+
+## 📖 Swagger Documentation
+ <a href="https://mafiawithbooks.site/docs"> 다락책방 Swagger API (한국어)</a><br/>
+  <a href="https://mafiawithbooks.site/docs">DarakBooks Swagger API documentation (English)</a>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
 <a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
 <a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
 <a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
@@ -17,14 +27,58 @@
 <a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
   <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
     <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is the github repository for [Nest](https://github.com/nestjs/nest) framework TypeScript API for DarakBooks.
+
+
+## ⚒️ Backend Development Stack
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
+![](https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+
+## API
+- [Korean National Library Librarian Recommendation API  (국립중앙도서관 사서추천 API)](https://www.nl.go.kr/NL/contents/N31101030900.do) 
+- [OpenAI Chat GPT API](https://platform.openai.com/docs/introduction)
+- [LangChainJS](https://js.langchain.com/docs/)
+
+## Related References 
+
+- To generate recommendations based on given documents/datasets we used the [DocQA available on LangchainJS](https://js.langchain.com/docs/modules/chains/index_related_chains/document_qa) 
+
+- For further finetuning your model with specific data, you can also refer to [ChatGPT OpenAI's Finetuning feature](https://platform.openai.com/docs/guides/fine-tuning)
+## 🖊 Main Services
+1. ✅ Account Login
+> - Login (Kakao), Logout, Jwt Token Authorization 
+
+2. ✅ BookGroups 
+> - CRUD (Create,Read,Update,Delete) Operations on groups</br>
+> - Add, Remove, View, Delete users in group
+> - View all Groups, View Groups user is part of, View specific group
+> - View top n groups with most members
+> - Pagination groups
+
+
+3. ✅ GPT Recommendations
+> - Get GPT Book Recommendations 
+
+4. ✅ My Bookshelf
+> - CRUD Operations on books in my Bookshelf
+> - Bookshelf Recommendations
+> - Get Bookshelf of Specific User
+
+5. ✅ My Page
+> - View my profile, view other user's profile
+> - User photo
+
+6. ✅ Record
+> - CRUD Operations on Book Records
 
 ## Installation
 
@@ -58,16 +112,10 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## 📌 Team
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Backend Developers 
+  > [Seonghee Lee(이승희)](https://github.com/shljessie) : BookClub API, GPT API <br/>
+  > [Jiyoung Park (박지영)](https://github.com/jyjyjy17): Login, Book Records API, Bookshelves API  
+- DarakBook Website - [https://frontend-book-platform.vercel.app/](https://frontend-book-platform.vercel.app/)
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
