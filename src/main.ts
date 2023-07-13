@@ -9,7 +9,6 @@ config();
 declare const module: any;
 
 async function bootstrap() {
-<<<<<<< HEAD
   
   const app = await NestFactory.create(AppModule, 
     {
@@ -22,17 +21,6 @@ async function bootstrap() {
       }
     });
   console.log(process.env.CORS_ORIGIN, process.env.PORT);
-=======
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: 'http://localhost:3000',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
-    },
-  });
-
->>>>>>> 1a106d1775ba189e21485c6337b50b7263968bb0
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
