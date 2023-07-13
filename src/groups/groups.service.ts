@@ -163,19 +163,21 @@ export class GroupsService {
     return groupValues;
   }
 
-  async findNGroups(page: number, limit: number) {
+  async findNGroups(page: number, limit: number, userId: string) {
     const skipCount = (page - 1) * limit;
-
     const [groups, totalGroups] = await this.groupsRepository
       .createQueryBuilder('groupsentity')
+      .orderBy('groupsentity.group_id', 'DESC')
       .skip(skipCount)
       .take(limit)
       .getManyAndCount();
 
     const totalPages = Math.ceil(totalGroups / limit);
+    const userGroups = await this.findAllGroups(userId);
+    userGroups.reverse();
 
     return {
-      groups,
+      groups: userGroups,
       totalPages,
       totalGroups,
       currentPage: page,

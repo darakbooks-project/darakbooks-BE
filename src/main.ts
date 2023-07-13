@@ -2,25 +2,23 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
-import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
+import cookieParser from 'cookie-parser';
+
 config();
 
 declare const module: any;
 
 async function bootstrap() {
-  
-  const app = await NestFactory.create(AppModule, 
-    {
-      cors:{
-        origin:process.env.CORS_ORIGIN,
-        methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
-        allowedHeaders: ['Content-Type', 'Authorization'] ,
-        credentials:true,
-        
-      }
-    });
-  console.log(process.env.CORS_ORIGIN, process.env.PORT);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: 'http://localhost:3000',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+    },
+  });
+
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
