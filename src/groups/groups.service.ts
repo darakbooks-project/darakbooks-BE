@@ -168,6 +168,7 @@ export class GroupsService {
 
     const [groups, totalGroups] = await this.groupsRepository
       .createQueryBuilder('groupsentity')
+      .orderBy('groupsentity.group_id', 'DESC')
       .skip(skipCount)
       .take(limit)
       .getManyAndCount();

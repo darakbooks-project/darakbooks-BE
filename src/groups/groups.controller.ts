@@ -78,7 +78,9 @@ export class GroupsController {
     return await this.groupsService.findUserGroups(userId);
   }
 
-  @ApiOperation({ summary: '그룹 n개 조회 - pagination | View n groups - pagination' })
+  @ApiOperation({
+    summary: '그룹 n개 조회 - pagination | View n groups - pagination',
+  })
   @ApiResponse({
     status: 200,
     description: '응답성공',
