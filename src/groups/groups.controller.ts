@@ -88,13 +88,17 @@ export class GroupsController {
     type: GroupsMetaDto,
   })
   @Get('/find')
+  @UseGuards(JwtAuthGuard)
   async findNGroups(
+    @Req() req: Request,
     @Query('page') page: number,
     @Query('limit') limit: number,
   ) {
+    const { userId } = req.user as JwtPayload;
     const { groups, totalGroups } = await this.groupsService.findNGroups(
       page,
       limit,
+      userId,
     );
     const totalPages = Math.ceil(totalGroups / limit);
     const currentPage = +page;
