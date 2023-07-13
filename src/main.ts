@@ -2,23 +2,24 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
-import { config } from 'dotenv';
 import cookieParser from 'cookie-parser';
-
+import { config } from 'dotenv';
 config();
 
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: 'http://localhost:3000',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
-    },
-  });
-
+  const app = await NestFactory.create(AppModule, 
+    {
+      cors:{
+        origin:process.env.CORS_ORIGIN,
+        methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization'] ,
+        credentials:true,
+        
+      }
+    });
+  console.log(process.env.CORS_ORIGIN, process.env.PORT);
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
@@ -41,10 +42,10 @@ async function bootstrap() {
 
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
+  // if (module.hot) {
+  //   module.hot.accept();
+  //   module.hot.dispose(() => app.close());
+  // }
   await app.listen(process.env.PORT);
 }
 bootstrap();
