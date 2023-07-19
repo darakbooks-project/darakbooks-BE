@@ -8,13 +8,14 @@
 
 
   <p align="center">The backend API Github Repository for <a href="https://frontend-book-platform.vercel.app/">DarakBooks(다락책방). </a> 
-    DarakBooks is an application that allows you to record books and find book clubs.
-DarabkBooks is an online platform designed for book lovers. Our service allows users to search for books, manage their reading records, and receive personalized book recommendations. We leverage the power of ChatGPT to provide tailored book recommendations based on users' requests. Additionally, we facilitate both online and offline book clubs and reading communities.
+DarakBooks is an application that allows you to record books and find book clubs.<br>
+DarabkBooks is an online platform designed for book lovers. Our service allows users to search for books, manage their reading records, and receive personalized book recommendations.<br>
+We leverage the power of ChatGPT to provide tailored book recommendations based on users' requests. Additionally, we facilitate both online and offline book clubs and reading communities.
 
   <br/>
 
-DarakBook Website - [https://frontend-book-platform.vercel.app/](https://frontend-book-platform.vercel.app/)
-DarakBook Notion - [nothion](https://necessary-base-8db.notion.site/Team-Project-Template-b0350ed686c84ee58931b4715efc7a6f?pvs=4) 
+DarakBook Website - [https://frontend-book-platform.vercel.app/](https://frontend-book-platform.vercel.app/)<br>
+DarakBook Notion - [nothion](https://necessary-base-8db.notion.site/Team-Project-Template-b0350ed686c84ee58931b4715efc7a6f?pvs=4) <br>
 
 ## 📖 Swagger Documentation
  <a href="https://mafiawithbooks.site/docs"> 다락책방 Swagger API (한국어)</a><br/>
@@ -35,7 +36,7 @@ DarakBook Notion - [nothion](https://necessary-base-8db.notion.site/Team-Project
 ## Description
 This is the github repository for [Nest](https://github.com/nestjs/nest) framework TypeScript API for DarakBooks.
 
-# To make the most of our platform, follow these steps:
+### To make the most of our platform, follow these steps:
 1. Sign up for an Darak Books account on our website.
 2. Explore the book search feature to find books of interest. Use filters and search parameters to refine your search results.
 3. Manage your reading records by adding books to your reading list, recording progress, and making personal notes.
@@ -43,7 +44,7 @@ This is the github repository for [Nest](https://github.com/nestjs/nest) framewo
 5. Engage with ChatGPT to receive real-time book recommendations and have interactive conversations about books.
 6. Join online book clubs, participate in discussions, and connect with fellow book lovers. Attend offline book club meetups and events in your area.
 
-# Feature
+### Feature
 1. Book Search: Users can easily search for books using kakao search api. They can explore various genres, authors, and book details to find their next reading adventure.
 2. Reading Record Management: Our platform enables users to track their reading progress, record personal notes, and manage their reading lists. Users can conveniently add, remove, and delve into their reading records, creating a personalized reading history.
 3. Personalized Bookshelf Recommendations: By analyzing users' reading preferences and book records, our recommendation system generates tailored bookshelf recommendations. Users receive suggestions for books that align with their interests and reading habits, helping them discover new titles and expand their literary horizons.
