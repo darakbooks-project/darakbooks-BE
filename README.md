@@ -74,7 +74,7 @@ This is the github repository for [Nest](https://github.com/nestjs/nest) framewo
 - For further finetuning your model with specific data, you can also refer to [ChatGPT OpenAI's Finetuning feature](https://platform.openai.com/docs/guides/fine-tuning)
 
 - To generate recommendation(bookshelf) based on given documents or datasets, we utilized popular Python libraries, including scikit-learn and NumPy.
-- 
+  
 ## 🖊 Main Services
 1. ✅ Account Login
 > - JWT, OAuth 2.0-based Kakao Account Login
