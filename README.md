@@ -15,7 +15,7 @@ We leverage the power of ChatGPT to provide tailored book recommendations based 
   <br/>
 
 DarakBook Website - [https://frontend-book-platform.vercel.app/](https://frontend-book-platform.vercel.app/)<br>
-DarakBook Notion - [nothion](https://necessary-base-8db.notion.site/Team-Project-Template-b0350ed686c84ee58931b4715efc7a6f?pvs=4) <br>
+DarakBook Notion - [notion](https://necessary-base-8db.notion.site/Team-Project-Template-b0350ed686c84ee58931b4715efc7a6f?pvs=4) <br>
 
 ## 📖 Swagger Documentation
  <a href="https://mafiawithbooks.site/docs"> 다락책방 Swagger API (한국어)</a><br/>
