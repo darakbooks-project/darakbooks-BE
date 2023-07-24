@@ -20,11 +20,18 @@ import { UpdateUserDTO } from 'src/dto/updateUserDTO';
 export class User {
   @ApiProperty({
     example:"20394820934",
-    description:"userId"
+    description:"kakao id"
   })
-  @PrimaryColumn({ name: 'user_id', type: 'bigint' })
+  @Column({ name: 'kakao_id', type: 'bigint' })
   @Transform(({ value }) => String(value))
-  userId: string;
+  kakaoId: string;
+  
+  @ApiProperty({
+    example: '209342934802',
+    description: '사용자 서비스 id',
+  })
+  @PrimaryColumn({ name: 'user_id'})
+  userId:string;
 
   @ApiProperty({
     example: '민아',

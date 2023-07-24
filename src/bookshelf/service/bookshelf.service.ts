@@ -87,8 +87,10 @@ export class BookshelfService {
         .select('bookshelf.userId')
         .getOne();
         //const randomUserIds = randomUsers.map(item => item.userId);
-        const randomUserId = randomUsers.userId;
-        if(randomUserId.length>0) {
+        if(!randomUsers) return {users:null,bookshelves:null};
+        
+        if(randomUsers) {
+            const randomUserId = randomUsers.userId;
             //const promises = randomUserIds.map((user) => this.getMyBookshelf(user,this.minBookCount));
             //result = await Promise.all(promises);
             result = await this.getMyBookshelf(randomUserId,this.minBookCount);

@@ -53,12 +53,14 @@ import {
   internalErrorDTO,
 } from 'src/dto/RecordResponse.dto';
 import { profileResDTO } from 'src/dto/profileResponse.dto';
+import { ConfigService } from '@nestjs/config';
 @Controller('user')
 export class UserController {
   constructor(
     @Inject(forwardRef(() => AuthService)) private authService: AuthService,
     private readonly userService: UserService,
     private readonly s3Service: S3Service,
+    private configService:ConfigService,
   ) {}
 
   @ApiBearerAuth()
@@ -90,7 +92,7 @@ export class UserController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'none',
-      domain: 'mafiawithbooks.site',
+      domain: this.configService.get("server"),
       path: '/',
       secure: false,
     });

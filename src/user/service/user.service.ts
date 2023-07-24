@@ -14,8 +14,13 @@ export class UserService {
         @Inject('USER_REPOSITORY') private userRepository:Repository<User>,
         private s3Service:S3Service,
         ){}
+    //kakao id 기반으로 userId 찾기 
+    async findByKakaoId(id:string){
+        return await this.userRepository.findOneBy({kakaoId: id});
+    }
 
     async findByuserId(id: string ):Promise<User | null> {
+        
         return await this.userRepository.findOneBy({userId: id});
     }
 

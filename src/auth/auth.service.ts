@@ -19,9 +19,22 @@ export class AuthService {
     ){}
 
     async login(userData) {
-        let user:User = await this.userService.findByuserId(userData.userId);
-        if(!user) user = await this.userService.create(userData);
+        let user:User = await this.userService.findByKakaoId(userData.kakaoId);
+        //kakao Id 기반으로 userId 만들기 
+        if(!user) {
+            const userId = this.getRandomId();
+            userData.userId = userId;
+            user = await this.userService.create(userData);
+        }
         return this.setToken(user.userId);
+    }
+
+    getRandomId(){
+        let result = '';
+        for (let i = 0; i < 7; i++) {
+            result += Math.floor(Math.random() * 10); // 0부터 9까지의 랜덤한 숫자 선택
+        }
+        return String(result);
     }
 
     async setToken(userId:string):Promise<object>{

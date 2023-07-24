@@ -13,6 +13,7 @@ export default () => ({
     app: {
         port: parseInt(required('PORT', 3000)),
         enviroment: required('NODE_ENV', 'development'),
+        server:required('SERVER'),
     },
     db: {
         host: required('DATABASE_HOST'),

@@ -17,7 +17,7 @@ export class kakaoStrategy extends PassportStrategy(Strategy,"kakao"){
 
     async validate(accessToken: string, refreshToken: string, profile: any) {
         const user= {
-            userId:profile.id,
+            kakaoId:profile.id,
             nickname:profile.username,
             photoUrl:profile._json.properties.profile_image,
             gender:profile._json.kakao_account.gender,
