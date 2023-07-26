@@ -87,6 +87,7 @@ export class GroupsController {
     isArray: true,
     type: GroupsMetaDto,
   })
+  
   @Get('/find')
   @UseGuards(JwtAuthGuard)
   async findNGroups(
