@@ -141,8 +141,9 @@ $ npm run test:cov
 
 ## 📌 Team
 
-- Backend Developers 
-  > [Jiyoung Park (박지영:Lead Developer)](https://github.com/jyjyjy17): Login, Book Records API, Bookshelves API  
-  > [Seonghee Lee(이승희)](https://github.com/shljessie) : BookClub API, GPT API <br/>
+- Backend Developers
+  > [Seonghee Lee(이승희)](https://github.com/shljessie) : User Groups - Book Club API, GPT Based Book Recommendation API <br/>
+  > [Jiyoung Park (박지영:Developer)](https://github.com/jyjyjy17): Login, Book Records API, Bookshelves API  
+
 - DarakBook Website - [https://frontend-book-platform.vercel.app/](https://frontend-book-platform.vercel.app/)
 
